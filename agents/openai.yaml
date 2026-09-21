@@ -1,0 +1,16 @@
+interface:
+  display_name: Field
+  short_description: 'Field v4: wordless SVG drone field, whole-thread tone'
+  default_prompt: 'Use $field: read the current skill and its references, then express
+    the whole substantive conversation as one wordless SVG field around the fixed
+    central drone using the supplied renderer or template; if those resources are
+    unavailable, say so instead of generating an infographic or another substitute.'
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true
