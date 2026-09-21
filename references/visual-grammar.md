@@ -66,6 +66,14 @@ A folded lip, a curling thread, a split-and-rejoined contour, or a local interfe
 
 ## Rendering and manual portability
 
+Rendering revision 4.1 refines the finish within grammar v4. All control names, defaults, ranges, palette meanings, and the fixed body remain compatible. The SVG root records `data-field-renderer="4.1"`; `field-spec` continues to record the original v4 drawing controls. Earlier v4 fields remain comparable in meaning, although surface light and linework differ.
+
+Make the silhouette, aperture, and space around the capsule read first. Let secondary detail support that expression on closer inspection. Preserve generous breathing room and the selected posture; do not fill empty areas just because they are available. Use smooth, deliberate curves and tapered ends. Avoid accidental corners, repetitive outlines of equal weight, and abrupt seams between surface layers.
+
+Build depth through transparent color, gentle changes of surface light, and selective edge definition. A few articulated edges can carry the form while other edges recede. Let definition govern how much resolves; a diffuse stance must remain diffuse. Keep illumination inside the selected hue families, reserving pearl as an expressive color for clarity or integration. Preserve the capsule's existing pearl rim. Favor light that describes the envelope over an all-over glow or added sparkle.
+
+Let folding reveal changes of surface direction and overlapping translucent curves. Let complexity govern the richness of filaments, with varied intervals and emphasis rather than uniformly spaced stripes. Quiet fields need fewer marks, careful curvature, and well-held space. Complex fields need a clear hierarchy that remains legible when details merge at phone size. Avoid extra ornamental layers, dramatic lighting, or heightened controls solely for visual appeal.
+
 Use `scripts/render_field.py`. If execution is unavailable, copy `assets/field-template.svg`, retain the viewBox and `drone-body` with its material definitions, and adapt the other groups under this grammar. Background gradients may change to reflect the ambient hue. Preserve readable contrast, comparable overall scale, margins, connected composition, and standard SVG construction. Use paths, gradients, alpha, and Gaussian blur without external images, fonts, scripts, or textures.
 
 Use a direct SVG rasterizer when PNG display is necessary; retain the same drawing rather than introducing generative restyling. The renderer remains the shared reference for the control meanings. The manual route may approximate its curves and extend them through bounded gestures. SVG metadata stores drawing controls and context coverage only. A host theme must not recolor the art palette.
@@ -74,4 +82,4 @@ Use a still image by default. If motion is explicitly requested, let it express 
 
 ## Review
 
-Check central identity, shared hue semantics, adequate contrast at phone size, one integrated environment, and no visible text. Check that the expression uses the whole available thread and that its variations correspond to meaningful grammar properties. Also check for unnecessary timidity: if every substantive conversation becomes nearly the same thin ring, revisit the drawing controls. Do not add arbitrary drama to repair that failure; give the actual accumulated qualities more visible expression.
+Check central identity, shared hue semantics, adequate contrast at phone size, one integrated environment, and no visible text. At about 320 pixels wide, the dominant color, aperture, posture, and any meaningful tension or gesture should still read. At full size, check curvature, transitions in light, and the economy of secondary marks. Remove rendering artifacts without suppressing intended structural cues. Check that the expression uses the whole available thread and that its variations correspond to meaningful grammar properties. Also check for unnecessary timidity: if every substantive conversation becomes nearly the same thin ring, revisit the drawing controls. Do not add arbitrary drama to repair that failure; give the actual accumulated qualities more visible expression.

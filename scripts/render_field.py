@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render Field grammar v4 from drawing controls. Python standard library only."""
+"""Render Field grammar v4, rendering revision 4.1. Python standard library only."""
 import argparse
 import json
 import math
@@ -51,7 +51,15 @@ def validate(spec):
 
 
 def points_path(points, close=False):
-    return "M" + " L".join(f"{x:.2f},{y:.2f}" for x, y in points) + (" Z" if close else "")
+    """Interpolate a sampled contour without visible polygon corners."""
+    result = [f"M{points[0][0]:.2f},{points[0][1]:.2f}"]
+    for i in range(len(points) - 1):
+        before, here = points[max(0, i - 1)], points[i]
+        after, beyond = points[i + 1], points[min(len(points) - 1, i + 2)]
+        c1 = tuple(here[k] + (after[k] - before[k]) / 6 for k in (0, 1))
+        c2 = tuple(after[k] - (beyond[k] - here[k]) / 6 for k in (0, 1))
+        result.append(f"C{c1[0]:.2f},{c1[1]:.2f} {c2[0]:.2f},{c2[1]:.2f} {after[0]:.2f},{after[1]:.2f}")
+    return " ".join(result) + (" Z" if close else "")
 
 
 def render(spec):
@@ -68,6 +76,11 @@ def render(spec):
 
     def mix(a, b, amount):
         return hexcolor(tuple(x*(1-amount)+y*amount for x, y in zip(rgb(a), rgb(b))))
+
+    def light(color, amount):
+        # Model light within the chosen hue; do not introduce a pearl stance.
+        h, luminance, sat = colorsys.rgb_to_hls(*rgb(color))
+        return hexcolor(colorsys.hls_to_rgb(h, min(.82, luminance * amount), sat))
 
     c1 = pigment(p["primary"])
     c2 = pigment(p["secondary"] or p["primary"])
@@ -108,7 +121,7 @@ def render(spec):
         x, y = raw_point(u, inset, ripple)
         return (500 + fit*x, 500 + fit*y)
 
-    n = 200
+    n = 96
     us = [i / n for i in range(n + 1)]
 
     def thickness(u):
@@ -118,51 +131,92 @@ def render(spec):
         width *= taper * (.78 + .22*math.sin(theta+fold))
         return min(width, min(a,b)*.48)
 
+    def surface_point(u, fraction):
+        # Small changes of surface direction reveal the existing folds. The two
+        # boundaries, aperture, scale and negative space are unchanged.
+        drift = .075 * fold * math.sin(3 * math.pi * u + fraction * 2)
+        drift *= math.sin(math.pi * fraction)
+        return point(u, thickness(u) * (fraction + drift))
+
     def ribbon(outside, inside):
-        upper = [point(u, thickness(u) * outside) for u in us]
-        lower = [point(u, thickness(u) * inside) for u in reversed(us)]
-        return points_path(upper + lower, True)
+        upper = [surface_point(u, outside) for u in us]
+        lower = [surface_point(u, inside) for u in reversed(us)]
+        # Separate contours preserve the deliberate cusp at each tapered end.
+        return points_path(upper) + " " + points_path(lower).replace("M", "L", 1) + " Z"
 
     outline = ribbon(0, 1)
-    centre = points_path([point(u, thickness(u) * 0.44) for u in us])
     soft = 1.5 + 18 * (1 - d)
     metadata = escape(json.dumps(p, sort_keys=True, separators=(",", ":")))
-    svg = [f'''<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000" viewBox="0 0 1000 1000" role="img" aria-label="A central titanium capsule surrounded by a unified expressive field" data-field-version="4">
+    svg = [f'''<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000" viewBox="0 0 1000 1000" role="img" aria-label="A central titanium capsule surrounded by a unified expressive field" data-field-version="4" data-field-renderer="4.1">
 <metadata id="field-spec">{metadata}</metadata>
 <defs>
   <radialGradient id="background"><stop stop-color="{bg_centre}"/><stop offset="1" stop-color="{bg_edge}"/></radialGradient>
   <linearGradient id="field-ink" x1="18%" y1="72%" x2="82%" y2="27%"><stop stop-color="{c1}"/><stop offset=".38" stop-color="{c2}"/><stop offset=".69" stop-color="{mix(c1,ca,p['accent_strength']*.85) if p['accent'] else c1}"/><stop offset="1" stop-color="{c1}"/></linearGradient>
   <radialGradient id="field-atmosphere"><stop stop-color="{c1}" stop-opacity="{.07+.18*breadth:.3f}"/><stop offset=".6" stop-color="{c2}" stop-opacity="{.02+.08*breadth:.3f}"/><stop offset="1" stop-color="{c1}" stop-opacity="0"/></radialGradient>
   <linearGradient id="field-accent-ink"><stop stop-color="{ca}" stop-opacity="0"/><stop offset=".5" stop-color="{ca}" stop-opacity=".72"/><stop offset="1" stop-color="{ca}" stop-opacity="0"/></linearGradient>
+  <linearGradient id="field-edge-ink" gradientUnits="userSpaceOnUse" x1="180" y1="720" x2="820" y2="270"><stop stop-color="{c1}" stop-opacity=".1"/><stop offset=".32" stop-color="{c2}" stop-opacity=".75"/><stop offset=".58" stop-color="{c1}" stop-opacity=".15"/><stop offset="1" stop-color="{c1}" stop-opacity=".6"/></linearGradient>
   <linearGradient id="drone-metal" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#34414D"/><stop offset=".5" stop-color="#202B35"/><stop offset="1" stop-color="#101922"/></linearGradient>
   <linearGradient id="drone-rim" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#DDE5EA" stop-opacity=".68"/><stop offset=".6" stop-color="#8C9BA9" stop-opacity=".21"/><stop offset="1" stop-color="#DDE5EA" stop-opacity=".30"/></linearGradient>
   <filter id="field-soft" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="{soft:.2f}"/></filter>
-</defs>
+  <filter id="field-diffuse" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="{1.2+5*(1-d)**2:.2f}"/></filter>''']
+    # Continuous translucent surface, with light gathered into a broad shoulder
+    # and released toward the inner edge. Complexity never controls brightness.
+    lanes = 28
+    for j in range(lanes):
+        f = (j + .5) / lanes
+        illumination = .46 + .66 * math.exp(-((f - .27) / .3) ** 2)
+        illumination += .16 * math.exp(-((f - .91) / .13) ** 2)
+        shades = [light(color, illumination) for color in
+                  (c1, c2, mix(c1, ca, p['accent_strength']*.85) if p['accent'] else c1, c1)]
+        svg.append(f'<linearGradient id="field-skin-{j}" gradientUnits="userSpaceOnUse" x1="180" y1="720" x2="820" y2="270"><stop stop-color="{shades[0]}"/><stop offset=".38" stop-color="{shades[1]}"/><stop offset=".69" stop-color="{shades[2]}"/><stop offset="1" stop-color="{shades[3]}"/></linearGradient>')
+    svg.append(f'''</defs>
 <rect id="field-background" width="1000" height="1000" fill="url(#background)"/>
 <g id="field-envelope">
   <ellipse cx="500" cy="500" rx="{min(435,a*fit+45):.2f}" ry="{min(420,b*fit+65):.2f}" fill="url(#field-atmosphere)" transform="rotate({-18+38*p['flow']:.2f} 500 500)"/>
-  <path d="{outline}" fill="url(#field-ink)" opacity="{strength*.44:.3f}" filter="url(#field-soft)"/>
-  <path d="{outline}" fill="url(#field-ink)" opacity="{strength*(.22+.56*d):.3f}"/>
-  <path d="{ribbon(.25,.68)}" fill="url(#field-ink)" opacity="{strength*.22:.3f}"/>
-  <path d="{centre}" fill="none" stroke="url(#field-ink)" stroke-width="1.8" opacity="{.13+.38*d:.3f}"/>
+  <path d="{outline}" fill="url(#field-ink)" opacity="{strength*.28:.3f}" filter="url(#field-soft)"/>
+  <path d="{outline}" fill="url(#field-ink)" opacity="{strength*(.18+.23*d):.3f}" filter="url(#field-diffuse)"/>
+  <g id="field-surface" opacity="{strength*(.45+.25*d):.3f}" filter="url(#field-diffuse)">''')
+    for j in range(lanes):
+        svg.append(f'<path d="{ribbon(j/lanes, min(1,(j+1.65)/lanes))}" fill="url(#field-skin-{j})"/>')
+    svg.append('  </g>')
+    # A folded sheet catches light along changing curves inside its envelope.
+    # The presence of this relief follows folding, never a separate art setting.
+    if fold:
+        svg.append(f'<g id="field-fold-light" fill="url(#field-edge-ink)" opacity="{strength*fold*(.1+.3*d):.3f}" filter="url(#field-diffuse)">')
+        for phase in (0, math.pi):
+            def seam(u):
+                return .48 + .22*math.sin(2*math.pi*u+phase)*math.sin(math.pi*u)
+            front = [surface_point(u, seam(u)) for u in us]
+            back = [surface_point(u, seam(u)+.12*math.sin(math.pi*u)) for u in reversed(us)]
+            svg.append(f'<path d="{points_path(front)} {points_path(back).replace("M", "L", 1)} Z"/>')
+        svg.append('</g>')
+    svg.append(f'''  <path d="{points_path([surface_point(u, .06) for u in us])}" fill="none" stroke="url(#field-edge-ink)" stroke-width="{.65+.75*d:.2f}" opacity="{strength*d*.68:.3f}"/>
 </g>
-<g id="field-filaments" fill="none" stroke="url(#field-ink)">''']
-    for j in range(2 + round(c * 11)):
-        f = (j + 1) / (3 + round(c * 11))
-        path = points_path([point(u, thickness(u) * f,
-                          (0.025*t+.045*fold) * (f - .5)) for u in us])
-        svg.append(f'<path d="{path}" stroke-width="{.55 + .35*d:.2f}" opacity="{.10+.17*d:.3f}"/>')
+<g id="field-filaments" fill="none" stroke="url(#field-edge-ink)" stroke-linecap="round" opacity="{strength*(.12+.88*d):.3f}">''')
+    count = 1 + round(c * 10)
+    for j in range(count):
+        # Uneven intervals and lost edges give a few lines compositional weight.
+        f = .12 + .79 * ((j + 1) / (count + 1)) ** 1.45
+        lo = .015 + .045 * (j % 3)
+        hi = .985 - .04 * ((j + 1) % 4)
+        samples = [u for u in us if lo <= u <= hi]
+        pts = []
+        for u in samples:
+            crossing = (.012*t + .045*fold) * math.sin(5*math.pi*u + j*.9)
+            pts.append(surface_point(u, f + crossing * math.sin(math.pi*u)))
+        weight = 1 if j % 3 == 0 else .55
+        svg.append(f'<path d="{points_path(pts)}" stroke-width="{(.6+.65*d)*weight:.2f}" opacity="{(.22+.23*d)*weight:.3f}"/>')
     svg.append('</g>')
     svg.append('<g id="field-accent" fill="none">')
     if p["accent"]:
         # Accent lives within the same envelope; its location is not a topic axis.
-        seg = [point(u, thickness(u) * .57) for u in us if .37 <= u <= .69]
+        seg = [surface_point(u, .57) for u in us if .37 <= u <= .69]
         svg.append(f'<path d="{points_path(seg)}" stroke="url(#field-accent-ink)" stroke-width="{6+25*p["accent_strength"]:.2f}" opacity="{.25+.45*p["accent_strength"]:.2f}" filter="url(#field-soft)"/>')
         svg.append(f'<path d="{points_path(seg)}" stroke="url(#field-accent-ink)" stroke-width="{1+2*p["accent_strength"]:.2f}" opacity=".58"/>')
-    # A short pearl glint is only a definition cue, not a truth/confidence score.
+    # A short highlight articulates definition within the selected hue family.
     if d > .55:
         glint = [point(u, thickness(u)*.45) for u in us if .17 <= u <= .21]
-        svg.append(f'<path d="{points_path(glint)}" stroke="#DDE5EA" stroke-width="1.2" opacity="{(d-.55)*.7:.3f}"/>')
+        svg.append(f'<path d="{points_path(glint)}" stroke="{light(c1,1.18)}" stroke-width="1.2" opacity="{strength*(d-.55)*.7:.3f}"/>')
     svg.append('</g><g id="field-gesture" fill="none" stroke-linecap="round">')
     g, gs = p["gesture"], p["gesture_strength"]
     if g != "none" and gs:
