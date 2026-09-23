@@ -66,7 +66,7 @@ A folded lip, a curling thread, a split-and-rejoined contour, or a local interfe
 
 ## Rendering and manual portability
 
-Rendering revision 4.1 refines the finish within grammar v4. All control names, defaults, ranges, palette meanings, and the fixed body remain compatible. The SVG root records `data-field-renderer="4.1"`; `field-spec` continues to record the original v4 drawing controls. Earlier v4 fields remain comparable in meaning, although surface light and linework differ.
+Rendering revision 4.2 refines the finish within grammar v4. Grazing light and attached shade describe the same curved surface; its width responds locally to existing folding and tension controls. All control names, defaults, ranges, palette meanings, and the fixed body remain compatible. The SVG root records `data-field-renderer="4.2"`; `field-spec` continues to record the original v4 drawing controls. Earlier v4 fields remain comparable in meaning, although surface light and linework differ.
 
 Make the silhouette, aperture, and space around the capsule read first. Let secondary detail support that expression on closer inspection. Preserve generous breathing room and the selected posture; do not fill empty areas just because they are available. Use smooth, deliberate curves and tapered ends. Avoid accidental corners, repetitive outlines of equal weight, and abrupt seams between surface layers.
 

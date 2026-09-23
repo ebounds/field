@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render Field grammar v4, rendering revision 4.1. Python standard library only."""
+"""Render Field grammar v4, rendering revision 4.2. Python standard library only."""
 import argparse
 import json
 import math
@@ -11,6 +11,7 @@ PALETTE = {
     "teal": "#42BDB0", "blue": "#648DE5", "violet": "#9B7BE8",
     "amber": "#E8B86A", "coral": "#D97979", "pearl": "#DDE5EA",
 }
+RENDERER_REVISION = "4.2"
 DEFAULTS = {
     "version": 4, "primary": "teal", "secondary": "blue", "accent": None,
     "openness": 0.5, "tension": 0.15, "definition": 0.65,
@@ -129,6 +130,9 @@ def render(spec):
         taper = max(0, math.sin(math.pi * u)) ** 0.42
         width = (16 + 91*breadth + 17*power + 15*(1-d))
         width *= taper * (.78 + .22*math.sin(theta+fold))
+        pinch_phase = math.atan2(math.sin(theta-2.65), math.cos(theta-2.65))
+        pinch = math.exp(-(pinch_phase/.45)**2)
+        width *= (1-.18*t*pinch) * (1+.17*fold*math.sin(3*theta+.8))
         return min(width, min(a,b)*.48)
 
     def surface_point(u, fraction):
@@ -144,10 +148,23 @@ def render(spec):
         # Separate contours preserve the deliberate cusp at each tapered end.
         return points_path(upper) + " " + points_path(lower).replace("M", "L", 1) + " Z"
 
+    def tapered_strip(u0, u1, centre, spread, bend=0):
+        """A lens of light or shade attached to the same curved surface."""
+        section = [u0 + (u1-u0)*i/64 for i in range(65)]
+        def margins(u):
+            v = (u-u0)/(u1-u0)
+            taper = max(0, math.sin(math.pi*v)) ** 1.4
+            middle = centre + bend*fold*math.sin(4*math.pi*u+.4)
+            half = spread*taper*(.86+.14*math.cos(6*math.pi*u))
+            return middle-half, middle+half
+        outside = [surface_point(u, margins(u)[0]) for u in section]
+        inside = [surface_point(u, margins(u)[1]) for u in reversed(section)]
+        return points_path(outside) + " " + points_path(inside).replace("M", "L", 1) + " Z"
+
     outline = ribbon(0, 1)
     soft = 1.5 + 18 * (1 - d)
     metadata = escape(json.dumps(p, sort_keys=True, separators=(",", ":")))
-    svg = [f'''<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000" viewBox="0 0 1000 1000" role="img" aria-label="A central titanium capsule surrounded by a unified expressive field" data-field-version="4" data-field-renderer="4.1">
+    svg = [f'''<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000" viewBox="0 0 1000 1000" role="img" aria-label="A central titanium capsule surrounded by a unified expressive field" data-field-version="4" data-field-renderer="{RENDERER_REVISION}">
 <metadata id="field-spec">{metadata}</metadata>
 <defs>
   <radialGradient id="background"><stop stop-color="{bg_centre}"/><stop offset="1" stop-color="{bg_edge}"/></radialGradient>
@@ -155,6 +172,8 @@ def render(spec):
   <radialGradient id="field-atmosphere"><stop stop-color="{c1}" stop-opacity="{.07+.18*breadth:.3f}"/><stop offset=".6" stop-color="{c2}" stop-opacity="{.02+.08*breadth:.3f}"/><stop offset="1" stop-color="{c1}" stop-opacity="0"/></radialGradient>
   <linearGradient id="field-accent-ink"><stop stop-color="{ca}" stop-opacity="0"/><stop offset=".5" stop-color="{ca}" stop-opacity=".72"/><stop offset="1" stop-color="{ca}" stop-opacity="0"/></linearGradient>
   <linearGradient id="field-edge-ink" gradientUnits="userSpaceOnUse" x1="180" y1="720" x2="820" y2="270"><stop stop-color="{c1}" stop-opacity=".1"/><stop offset=".32" stop-color="{c2}" stop-opacity=".75"/><stop offset=".58" stop-color="{c1}" stop-opacity=".15"/><stop offset="1" stop-color="{c1}" stop-opacity=".6"/></linearGradient>
+  <linearGradient id="field-crest" gradientUnits="userSpaceOnUse" x1="170" y1="690" x2="790" y2="280"><stop stop-color="{light(c1,1.28)}" stop-opacity=".25"/><stop offset=".36" stop-color="{light(c2,1.45)}" stop-opacity=".9"/><stop offset=".68" stop-color="{light(c1,1.3)}" stop-opacity=".35"/><stop offset="1" stop-color="{light(c1,1.4)}" stop-opacity=".65"/></linearGradient>
+  <linearGradient id="field-depth" gradientUnits="userSpaceOnUse" x1="230" y1="730" x2="760" y2="300"><stop stop-color="#0B1520" stop-opacity="0"/><stop offset=".35" stop-color="#0B1520" stop-opacity=".48"/><stop offset=".7" stop-color="#0B1520" stop-opacity=".1"/><stop offset="1" stop-color="#0B1520" stop-opacity=".3"/></linearGradient>
   <linearGradient id="drone-metal" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#34414D"/><stop offset=".5" stop-color="#202B35"/><stop offset="1" stop-color="#101922"/></linearGradient>
   <linearGradient id="drone-rim" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#DDE5EA" stop-opacity=".68"/><stop offset=".6" stop-color="#8C9BA9" stop-opacity=".21"/><stop offset="1" stop-color="#DDE5EA" stop-opacity=".30"/></linearGradient>
   <filter id="field-soft" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="{soft:.2f}"/></filter>
@@ -175,10 +194,13 @@ def render(spec):
   <ellipse cx="500" cy="500" rx="{min(435,a*fit+45):.2f}" ry="{min(420,b*fit+65):.2f}" fill="url(#field-atmosphere)" transform="rotate({-18+38*p['flow']:.2f} 500 500)"/>
   <path d="{outline}" fill="url(#field-ink)" opacity="{strength*.28:.3f}" filter="url(#field-soft)"/>
   <path d="{outline}" fill="url(#field-ink)" opacity="{strength*(.18+.23*d):.3f}" filter="url(#field-diffuse)"/>
-  <g id="field-surface" opacity="{strength*(.45+.25*d):.3f}" filter="url(#field-diffuse)">''')
+  <path d="{tapered_strip(.11,.9,.79,.15)}" fill="url(#field-depth)" opacity="{strength*(.08+.16*d):.3f}" filter="url(#field-diffuse)"/>
+  <g id="field-surface" opacity="{strength*(.35+.1*d):.3f}" filter="url(#field-diffuse)">''')
     for j in range(lanes):
         svg.append(f'<path d="{ribbon(j/lanes, min(1,(j+1.65)/lanes))}" fill="url(#field-skin-{j})"/>')
     svg.append('  </g>')
+    svg.append(f'<path id="field-shoulder-light" d="{tapered_strip(.07,.94,.31,.13+.035*breadth,.12)}" fill="url(#field-crest)" opacity="{strength*(.45+.4*d):.3f}" filter="url(#field-diffuse)"/>')
+    svg.append(f'<path id="field-grazing-light" d="{tapered_strip(.21,.75,.2,.045+.03*breadth,.08)}" fill="url(#field-crest)" opacity="{strength*(.35+.35*d):.3f}"/>')
     # A folded sheet catches light along changing curves inside its envelope.
     # The presence of this relief follows folding, never a separate art setting.
     if fold:
@@ -190,7 +212,9 @@ def render(spec):
             back = [surface_point(u, seam(u)+.12*math.sin(math.pi*u)) for u in reversed(us)]
             svg.append(f'<path d="{points_path(front)} {points_path(back).replace("M", "L", 1)} Z"/>')
         svg.append('</g>')
+        svg.append(f'<path id="field-fold-shadow" d="{tapered_strip(.28,.79,.53,.045+.08*fold,.14)}" fill="url(#field-depth)" opacity="{strength*fold*(.24+.24*d):.3f}" filter="url(#field-diffuse)"/>')
     svg.append(f'''  <path d="{points_path([surface_point(u, .06) for u in us])}" fill="none" stroke="url(#field-edge-ink)" stroke-width="{.65+.75*d:.2f}" opacity="{strength*d*.68:.3f}"/>
+  <path d="{points_path([surface_point(u, .9) for u in us if .47 <= u <= .84])}" fill="none" stroke="url(#field-edge-ink)" stroke-width="{1+.8*d:.2f}" opacity="{strength*d*.6:.3f}"/>
 </g>
 <g id="field-filaments" fill="none" stroke="url(#field-edge-ink)" stroke-linecap="round" opacity="{strength*(.12+.88*d):.3f}">''')
     count = 1 + round(c * 10)

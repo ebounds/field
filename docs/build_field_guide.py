@@ -20,7 +20,7 @@ from reportlab.platypus import Paragraph
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
-from render_field import PALETTE, render  # noqa: E402
+from render_field import PALETTE, RENDERER_REVISION, render  # noqa: E402
 
 FONT_DIR = Path('/usr/share/fonts/truetype/liberation')
 INK = colors.HexColor('#0D1521')
@@ -107,7 +107,7 @@ class Guide:
         self.pdf.setFillColor(INK)
         self.pdf.rect(0, 0, W, H, fill=1, stroke=0)
         self.text(MARGIN, H-36, 'FIELD  /  VISUAL READING GUIDE', 8, MUTED, 'FieldSansBold')
-        self.text(W-112, H-36, 'V4  ·  R4.1', 8, MUTED, 'FieldSansBold')
+        self.text(W-112, H-36, f'V4  ·  R{RENDERER_REVISION}', 8, MUTED, 'FieldSansBold')
         self.rule(MARGIN, W-MARGIN, H-46)
         self.text(MARGIN, 31, section.upper(), 8, MUTED)
         self.pdf.setFont('FieldSans', 8)
@@ -270,7 +270,7 @@ def nuance_page(g):
 def finish_page(g):
     g.begin('Art and gestures')
     g.title('An artwork, still legible',
-            'Revision 4.1 refines the surface while preserving Field v4 and synthesis protocol 3.2. The gesture details below are enlarged from real fields.')
+            f'Revision {RENDERER_REVISION} gathers light along the curved surface and deepens its folds while preserving Field v4 and synthesis protocol 3.2. The gesture details below are enlarged from real fields.')
     gestures = [('none','No added inflection'),('fold','A local bend'),
                 ('echo','A continuation'),('braid','Intertwining')]
     base = dict(primary='amber', secondary='violet', ambient='amber', openness=.75,
