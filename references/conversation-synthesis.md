@@ -1,6 +1,6 @@
 # Whole-conversation synthesis 3.2
 
-Apply this procedure before the Field v4 visual grammar. Preserve the shared identity and control meanings. This procedure changes what the expression integrates, not its visual language.
+Apply this procedure before the Field 4.3 composition score and v4 visual grammar. Preserve the shared identity and control meanings. This procedure changes what the expression integrates, not its visual language.
 
 ## 1. Establish the scope actually available
 

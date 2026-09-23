@@ -4,7 +4,7 @@
 
 Use the bundled renderer or adapt a copy of the template. Preserve the square 1000-unit viewBox, frontal viewpoint, and central 128-by-64 titanium capsule at (500,500), with its original material and pearl rim. Preserve readable margins and the same palette meanings. These are the reference points for comparison. The field's silhouette, orientation, fullness, intricacy, and background color are expressive variables.
 
-Create one integrated environment around the body. Let its field become a tightly gathered shell, a broad receptive sweep, an elongated ribbon, a tall folded mantle, a soft diffuse envelope, or an intricate weave as appropriate. These are descriptive possibilities within the same grammar, not six separate preset styles. Keep color and texture continuous through the connected envelope; avoid one object per feeling or topic.
+Create one integrated environment around the body. The renderer offers three underlying forms: an envelope gathering around the center, a sweep carrying an open direction across the frame, and a mantle holding tall space around the center. Each can become spare or full, still or folded, diffuse or articulate. These are ways of holding space within the same grammar, not three mood presets. Keep color and texture continuous through the connected surface; avoid one object per feeling or topic.
 
 Do not equate comparability with sameness. Use visibly different shapes and coloration when the conversation warrants them. Avoid habitually choosing median controls, a blue-teal palette, or barely perceptible accents. Equally, do not maximize contrast or novelty merely to look expressive. Some expressions should be spare; others should be rich and unmistakable.
 
@@ -25,9 +25,9 @@ Color expresses stance; geometry expresses how that stance is held. A warm contr
 
 ## Whole-conversation source
 
-Complete `conversation-synthesis.md` first, including its exclusion of active and prior Field checks from tonal evidence. Let recurring tones across early, middle, and later substantive phases shape the dominant palette, ambient climate, and overall envelope. Give recent turns proportionate influence. A new topic, brief correction, or friendly closing should not erase sustained prior engagement. Historical texture can survive resolution in transformed form, such as a softened fold or greater definition.
+Complete `conversation-synthesis.md` first, including its exclusion of active and prior Field checks from tonal evidence. Let recurring tones across early, middle, and later substantive phases shape the dominant palette, ambient climate, and overall form. Give recent turns proportionate influence. A new topic, brief correction, or friendly closing should not erase sustained prior engagement. Historical texture can survive resolution in transformed form, such as a softened fold or greater definition.
 
-Before rendering, ask whether the same result could have come from the ending alone. If important earlier tones are absent, revise the overall expression. Do not add a token historical dot or dedicate visible regions to phases. A short fact, person, or clue must not become the secret referent of a symbol.
+Before rendering, make the brief `composition-score.md` score, then ask whether the same result could have come from the ending alone. If important earlier tones are absent, revise the overall expression. A retained trace can show a meaningful past influence, but it cannot substitute for a whole-conversation palette and posture. Do not add a token historical dot or dedicate visible regions to phases. A short fact, person, or clue must not become the secret referent of a symbol.
 
 ## Drawing controls
 
@@ -37,22 +37,25 @@ Pass these keys as a JSON object. Unknown keys and invalid ranges are rejected. 
 | --- | --- | --- |
 | version | 4 | Current visual grammar. |
 | primary | palette name / teal | Dominant quality of the whole expression. |
-| secondary | palette name or null / blue | Supporting quality blended through the envelope. |
+| secondary | palette name or null / blue | Supporting quality blended through the connected field. |
 | accent | palette name or null / null | Another interacting nuance, integrated into the same field. |
 | accent_strength | 0..1 / .4 | Subtle to pronounced presence of that nuance. |
 | ambient | palette name or null / null | Hue of the enduring atmospheric background; null follows primary. |
 | ambient_strength | 0..1 / .25 | Restrained dark surround to more permeating chromatic light. |
 | saturation | .25..1.35 / .85 | Muted to vivid expression, retaining hue identities. Select nuance versus vividness, not truth or moral value. |
-| openness | 0..1 / .5 | Small and enclosed to expansive with a wide aperture; reserve/concentration to receptivity/exploration. |
+| form | envelope, sweep, mantle / envelope | The connected surface's base silhouette: gathering, directional, or arching. A compositional choice, not a mood label. |
+| openness | 0..1 / .5 | Small and held to expansive and open; adjusts the envelope aperture or the reach of the other forms. |
 | breadth | 0..1 / .4 | Thin, specifically focused contour to broad, enveloping fullness. |
 | folding | 0..1 / .2 | Smooth continuous stance to distinctly folded, interwoven qualities held together. Complexity or ambivalence, not automatically distress. |
-| stretch | -1..1 / 0 | Vertical mantle through balanced envelope to horizontal sweep. Direction is expressive posture, with no fixed moral or emotional polarity. |
+| stretch | -1..1 / 0 | Vertically or horizontally elongates the selected form. Direction is expressive posture, with no fixed moral or emotional polarity. |
 | flow | -1..1 / 0 | Rotates the field's orientation coherently around the fixed body. Direction has no fixed topic or emotional label. |
 | tension | 0..1 / .15 | Supple contour to strong local compression and shear; unresolved pressure. |
 | definition | 0..1 / .65 | Diffuse/indeterminate to clearly articulated/coherent. Not a correctness score. |
 | complexity | 0..1 / .35 | Few filaments to rich, interwoven fine structure. Simultaneous considerations, not message count. |
 | intensity | 0..1 / .5 | Quiet presence to strong luminous salience. Not certainty. |
 | imbalance | -1..1 / 0 | Magnitude adds a lateral pull; sign chooses direction only. Live unresolved pulls, not left/right topic buckets. |
+| history | 0..1 / 0 | A restrained, displaced reflection that rejoins the surface. Retained influence of an earlier change, not a timeline. |
+| counterpoint | 0..1 / 0 | An internal current that parts and rejoins. A meaningful quality held alongside another, not automatic conflict. |
 | gesture | none, fold, echo, braid / none | Optional local inflection; bend, continuation, or intertwining. |
 | gesture_strength | 0..1 / 0 | The gesture's visual presence, from delicate to pronounced. |
 
@@ -66,13 +69,13 @@ A folded lip, a curling thread, a split-and-rejoined contour, or a local interfe
 
 ## Rendering and manual portability
 
-Rendering revision 4.2 refines the finish within grammar v4. Grazing light and attached shade describe the same curved surface; its width responds locally to existing folding and tension controls. All control names, defaults, ranges, palette meanings, and the fixed body remain compatible. The SVG root records `data-field-renderer="4.2"`; `field-spec` continues to record the original v4 drawing controls. Earlier v4 fields remain comparable in meaning, although surface light and linework differ.
+Rendering revision 4.3 adds three connected form families, a retained ridge, and a joined countercurrent within grammar v4. Surface lanes and grazing light follow the local curves; colors mix in OKLab and are mapped to portable sRGB. Existing controls keep their meaning and defaults. The SVG root records `data-field-renderer="4.3"`; `field-spec` stores the v4 drawing controls. Earlier v4 fields remain comparable in meaning, although silhouettes and surface color differ.
 
 Make the silhouette, aperture, and space around the capsule read first. Let secondary detail support that expression on closer inspection. Preserve generous breathing room and the selected posture; do not fill empty areas just because they are available. Use smooth, deliberate curves and tapered ends. Avoid accidental corners, repetitive outlines of equal weight, and abrupt seams between surface layers.
 
-Build depth through transparent color, gentle changes of surface light, and selective edge definition. A few articulated edges can carry the form while other edges recede. Let definition govern how much resolves; a diffuse stance must remain diffuse. Keep illumination inside the selected hue families, reserving pearl as an expressive color for clarity or integration. Preserve the capsule's existing pearl rim. Favor light that describes the envelope over an all-over glow or added sparkle.
+Build depth through transparent color, gentle changes of surface light, and selective edge definition. A few articulated edges can carry the form while other edges recede. Let definition govern how much resolves; a diffuse stance must remain diffuse. Keep illumination inside the selected hue families, reserving pearl as an expressive color for clarity or integration. Preserve the capsule's existing pearl rim. Favor light that describes the surface over an all-over glow or added sparkle.
 
-Let folding reveal changes of surface direction and overlapping translucent curves. Let complexity govern the richness of filaments, with varied intervals and emphasis rather than uniformly spaced stripes. Quiet fields need fewer marks, careful curvature, and well-held space. Complex fields need a clear hierarchy that remains legible when details merge at phone size. Avoid extra ornamental layers, dramatic lighting, or heightened controls solely for visual appeal.
+Let folding reveal changes of surface direction and overlapping translucent curves. Let complexity govern the richness of filaments, with varied intervals and emphasis rather than uniformly spaced stripes. Use `history` for an influential turn in the conversation that remains present; its reflection stays attached and fades into the current form. Use `counterpoint` when a substantive second current needs space alongside the first; the currents remain one material and meet again. Quiet fields need fewer marks, careful curvature, and well-held space. Complex fields need a clear hierarchy that remains legible when details merge at phone size. Avoid extra ornamental layers, dramatic lighting, or heightened controls solely for visual appeal.
 
 Use `scripts/render_field.py`. If execution is unavailable, copy `assets/field-template.svg`, retain the viewBox and `drone-body` with its material definitions, and adapt the other groups under this grammar. Background gradients may change to reflect the ambient hue. Preserve readable contrast, comparable overall scale, margins, connected composition, and standard SVG construction. Use paths, gradients, alpha, and Gaussian blur without external images, fonts, scripts, or textures.
 

@@ -112,7 +112,7 @@ class Guide:
         self.text(MARGIN, 31, section.upper(), 8, MUTED)
         self.pdf.setFont('FieldSans', 8)
         self.pdf.setFillColor(MUTED)
-        self.pdf.drawRightString(W-MARGIN, 31, f'{self.page} / 5')
+        self.pdf.drawRightString(W-MARGIN, 31, f'{self.page} / 6')
 
     def end(self):
         self.pdf.showPage()
@@ -159,7 +159,7 @@ def cover(g):
     g.rule(MARGIN, W-MARGIN, 253)
     cells = [
         ('The center', 'The same faceless titanium capsule represents the assistant in every Field. Its position, size, and material stay fixed.'),
-        ('The envelope', 'Dominant color carries the throughline. Supporting hues and an accent blend through one connected form.'),
+        ('The field', 'Dominant color carries the throughline. Supporting hues and an accent blend through one connected form.'),
         ('The background', 'A diffuse, enduring conversational climate. Its colors carry the same meanings as the foreground.'),
     ]
     for i, (heading, body) in enumerate(cells):
@@ -241,6 +241,40 @@ def posture_page(g):
     g.end()
 
 
+def forms_page(g):
+    g.begin('Form and continuity')
+    g.title('How the field holds space',
+            'The same palette can gather, move, or arch. Choose the silhouette from the conversation, then let its surface carry nuance.')
+    base = dict(primary='teal', secondary='violet', ambient='blue', ambient_strength=.42,
+                openness=.7, breadth=.65, folding=.24, tension=.18,
+                definition=.8, complexity=.26, intensity=.75)
+    forms = [
+        ('envelope', 'Gathers around the center; a held opening.'),
+        ('sweep', 'Moves through the frame; room for a direction.'),
+        ('mantle', 'Arches over the center; a tall open space.'),
+    ]
+    for i, (name, meaning) in enumerate(forms):
+        x = MARGIN + i*176
+        g.card(x, 416, 166, 266)
+        g.image(dict(base, form=name), x+8, 518, 150)
+        g.text(x+13, 498, name.capitalize(), 16, TEXT, 'FieldSerif')
+        g.paragraph(x+13, 479, 140, meaning, 9, 12, MUTED)
+    g.text(MARGIN, 393, 'What remains within the form', 19, TEXT, 'FieldSerif')
+    g.rule(MARGIN, W-MARGIN, 381)
+    pair(g, MARGIN, 191, 'Retained trace', 'Unmarked', 'Remembered',
+         'An earlier turn still shapes the present surface.',
+         dict(base, form='envelope', history=0),
+         dict(base, form='envelope', history=.95))
+    pair(g, MARGIN+264, 191, 'Joined current', 'One current', 'Counterpoint',
+         'Two qualities part, stay connected, and rejoin.',
+         dict(base, form='sweep', accent='amber', counterpoint=0),
+         dict(base, form='sweep', accent='amber', counterpoint=.95))
+    g.paragraph(MARGIN, 165, 510,
+                'Neither feature is mandatory. A trace is not a timeline; a countercurrent does not automatically mean conflict.',
+                9.2, 13, MUTED)
+    g.end()
+
+
 def nuance_page(g):
     g.begin('Light and direction')
     g.title('Nuance and inflection',
@@ -252,8 +286,8 @@ def nuance_page(g):
         ('Intensity','Quiet','Luminous','Brightness conveys salience, not certainty.', 'intensity',.12,.94),
         ('Saturation','Muted','Vivid','Color changes in vividness while keeping its meaning.', 'saturation',.32,1.25),
         ('Ambient light','Restrained','Permeating','The climate fills more space; darkness alone has no mood.', 'ambient_strength',.05,.9),
-        ('Stretch','Tall mantle','Wide sweep','A change of posture, without a fixed mood.', 'stretch',-.9,.9),
-        ('Flow','One angle','Another','The envelope turns around the fixed body.', 'flow',-.85,.85),
+        ('Stretch','Tall','Wide','Elongation of the selected form, without a fixed mood.', 'stretch',-.9,.9),
+        ('Flow','One angle','Another','The selected form turns around the fixed body.', 'flow',-.85,.85),
         ('Imbalance','Balanced','Pulled','An unresolved pull; its side has no topic label.', 'imbalance',0,.85),
     ]
     for i, (name, left, right, meaning, key, low, high) in enumerate(entries):
@@ -270,7 +304,7 @@ def nuance_page(g):
 def finish_page(g):
     g.begin('Art and gestures')
     g.title('An artwork, still legible',
-            f'Revision {RENDERER_REVISION} gathers light along the curved surface and deepens its folds while preserving Field v4 and synthesis protocol 3.2. The gesture details below are enlarged from real fields.')
+            f'Revision {RENDERER_REVISION} gives the field three silhouettes, a retained trace, and a joined countercurrent while preserving Field v4 and synthesis protocol 3.2. The gesture details below are enlarged from real fields.')
     gestures = [('none','No added inflection'),('fold','A local bend'),
                 ('echo','A continuation'),('braid','Intertwining')]
     base = dict(primary='amber', secondary='violet', ambient='amber', openness=.75,
@@ -307,6 +341,7 @@ def main():
         cover(g)
         colors_page(g)
         posture_page(g)
+        forms_page(g)
         nuance_page(g)
         finish_page(g)
         g.pdf.save()
