@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /field/
+
+Sitemap: https://ebounds.github.io/field/sitemap.xml
