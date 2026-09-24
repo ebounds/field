@@ -10,7 +10,7 @@ from render_field import render
 
 ROOT = Path(__file__).resolve().parents[1]
 SITE = ROOT/'docs/site'
-PACKAGE_VERSION = '4.4'
+PACKAGE_VERSION = '4.5'
 
 
 def main():
@@ -47,7 +47,12 @@ def main():
     files = [ROOT/'SKILL.md', ROOT/'LICENSE', ROOT/'scripts/render_field.py',
              ROOT/'scripts/build_reference_assets.py', ROOT/'docs/field-guide.pdf',
              ROOT/'docs/field-4.3-design.md', ROOT/'docs/field-4.4-design.md',
-             ROOT/'scripts/render_audio.mjs', SITE/'audio.mjs', SITE/'renderer.mjs']
+             ROOT/'docs/field-4.5-design.md', ROOT/'docs/field-continuity-proposal.md',
+             ROOT/'scripts/render_audio.mjs', ROOT/'scripts/field.mjs',
+             ROOT/'docs/companion.html', ROOT/'docs/continuity.html']
+    files += [SITE/name for name in ('audio.mjs','audio-worker.mjs','listening.mjs',
+              'renderer.mjs','continuity.mjs','movement.mjs','companion.mjs',
+              'companion-studies.mjs','presets.mjs','style.css','companion.css','icon.svg')]
     for folder in ('references','assets','agents'):
         files += sorted((ROOT/folder).glob('*'))
     with zipfile.ZipFile(archive, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=9) as package:

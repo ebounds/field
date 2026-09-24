@@ -1,11 +1,11 @@
 ---
 name: field
-description: "Use for $field, @field, or a request to show or hear Field: render a wordless SVG field around its fixed central drone, expressing the accumulated tone of the whole conversation. Add the optional musical companion only when requested. Requires the bundled renderers or SVG template. Never substitute a topic infographic, dashboard, factual summary, or image-generation output."
+description: "Use for $field, @field, or a request to show, hear, or keep Field present: render a wordless SVG around its fixed capsule, expressing the accumulated tone of the whole conversation. Supports optional music and a continuously available companion with authored updates. Requires the bundled renderers or SVG template. Never substitute a topic infographic or image-generation output."
 ---
 
 # Field
 
-**Package: 4.4. Visual protocol: Field v4. Visual rendering revision: 4.3. Optional audio: Listening 1.0. Synthesis protocol: 3.2 (whole-conversation accumulation, excluding Field checks).** Use the current installed skill and its bundled assets when available. A pasted older version may be stale; do not silently combine incompatible rendering rules. Preserve this protocol when transferring the skill to another model: include this file, `references/conversation-synthesis.md`, `references/composition-score.md`, `references/visual-grammar.md`, `scripts/render_field.py`, and `assets/field-template.svg`. For listening, also include `references/listening-grammar.md`, `scripts/render_audio.mjs`, `docs/site/audio.mjs`, and `docs/site/renderer.mjs`. The reference atlas supplies visual calibration. All resources are local and require no network service.
+**Package: 4.5. Visual protocol: Field v4. Visual rendering revision: 4.3. Optional audio: Listening 1.0. Companion: 1.0. Synthesis protocol: 3.2 (whole-conversation accumulation, excluding Field checks).** Use the current installed skill and its bundled assets when available. A pasted older version may be stale; do not silently combine incompatible rendering rules. Preserve this protocol when transferring the skill to another model: include this file, `references/conversation-synthesis.md`, `references/composition-score.md`, `references/visual-grammar.md`, `scripts/render_field.py`, and `assets/field-template.svg`. For listening, also include `references/listening-grammar.md`, `scripts/render_audio.mjs`, `docs/site/audio.mjs`, and `docs/site/renderer.mjs`. For continuity, keep the complete package together, including `scripts/field.mjs`, `references/continuity-protocol.md`, and `docs/`. The reference atlas supplies visual calibration. All resources run locally without an external service.
 
 Resolve and read the current installed or explicitly supplied package before drawing. A skill name, remembered description, or earlier image is not the package. Use the supplied synthesis and grammar instructions plus the renderer or template; an attached single-file export may supply their complete contents inline. If these resources cannot be accessed, state that Field's required resources are unavailable and request the package. Do not improvise a replacement image. A standalone Field invocation requests only the expression, not a new update on the conversation's subject.
 
@@ -47,6 +47,14 @@ Write a brief private composition score after synthesis and before drawing contr
 **Use authored SVG as the source of truth.** Do not route normal Field invocations to a generative image model or redraw them as cinematic art. Do not ask a different renderer to invent the visual from a transcript. If the host cannot render or expose SVG, convert the SVG to a supported format. If no such route exists, state that limitation briefly; do not deliver a different visual system under the Field name.
 
 ## Fixed identity and delivery
+
+### Continuous presence
+
+When the user asks to keep Field present across a conversation, follow [the continuity protocol](references/continuity-protocol.md). Start or connect to the local companion, choose a stable conversation ID, and publish validated compositions after substantive responses or meaningful work milestones. Revisit the accumulated exchange and its coverage each time. The continuous-use instruction persists for this conversation until disabled; routine tool events need no separate interpretation.
+
+The companion holds the latest expression, restores saved history, and moves between authored compositions. A real prior contour can join the current field. Its small window, still mode, replay, and optional listening are viewer choices. The participating assistant must publish the updates; a running server alone does not interpret a chat. Be clear if the host cannot sustain the instruction or run the publishing command. Use ordinary standalone delivery when continuous use has not been requested.
+
+Companion SVG exports also include source, freshness, coverage, and the controls for the retained contour in nonvisible continuity metadata. The separate optional phase ledger is a high-level context index for the agent and is omitted from browser streams and exports.
 
 ### Optional listening
 

@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0b111b">
+  <title>Field Companion — A conversation, held</title>
+  <meta name="description" content="Field 4.5: a persistent companion with movement, remembered contours, and optional sound. Explore a scripted study or connect your agent locally.">
+  <link rel="canonical" href="https://ebounds.github.io/field/companion.html">
+  <link rel="icon" href="site/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="site/style.css"><link rel="stylesheet" href="site/companion.css">
+  <script type="module" src="site/companion.mjs"></script>
+</head>
+<body class="companion-page">
+  <a class="skip-link" href="#field-stage">Skip to the field</a>
+  <header class="companion-header"><a class="wordmark" href="https://ebounds.github.io/field/">Field <span class="version">4.5</span></a><div class="companion-header-actions"><a href="continuity.html">About continuity</a><button id="small-window" type="button" class="quiet-button">Small window ↗</button></div></header>
+  <main class="companion-wrap">
+    <section class="companion-intro"><p class="eyebrow">A companion for the exchange</p><h1>A conversation,<br><em>held.</em></h1><p>Something opens. Something changes.<br>Something of what came before remains.</p></section>
+    <div id="connection" class="connection" role="status" aria-live="polite">Opening Field…</div>
+    <noscript><p>Enable JavaScript to see the companion's movement and receive updates. The <a href="https://ebounds.github.io/field/">Field gallery</a> also offers still artworks.</p></noscript>
+    <div class="companion-layout">
+      <section class="art-column" aria-label="Current Field expression">
+        <div class="session-heading"><span id="session-title">Field Companion</span><span id="view-kind">Scripted study</span></div>
+        <div id="field-stage" class="companion-art" tabindex="-1" aria-label="The current wordless Field artwork"><img src="site/icon.svg" alt="Field's fixed capsule" width="128" height="128"></div>
+        <p id="empty-note" hidden>No expression has been published yet. Your agent can give this conversation its first field.</p>
+        <div class="companion-actions"><button id="movement" type="button" class="button" aria-pressed="true">Movement on</button><button id="save-field" type="button" class="text-link" disabled>Save SVG ↓</button><button id="focus-view" type="button" class="text-link" aria-pressed="false">Focus view</button></div>
+        <p id="current-moment" class="current-moment" role="status" aria-live="polite"></p>
+        <details id="listening" class="listening">
+          <summary><span class="listening-title">Listen to this field</span><span class="listening-tag">Optional · 24 seconds</span></summary>
+          <div class="listening-body">
+            <p class="listening-intro">The same field, given time.</p><p id="audio-description" class="audio-description"></p>
+            <div class="listening-wave" aria-hidden="true"><svg id="audio-wave" viewBox="0 0 400 40" preserveAspectRatio="none"></svg></div>
+            <div class="listening-transport"><button id="listen" class="button" type="button" aria-pressed="false">Listen</button><button id="save-audio" class="text-link" type="button">Save WAV ↓</button><span id="audio-time">0:00 / 0:24</span></div>
+            <progress id="audio-progress" max="24" value="0" aria-label="Listening progress"></progress>
+            <div class="listening-volume"><label for="audio-volume">Volume</label><input id="audio-volume" type="range" min="0" max="1" step=".01" value=".55"><output id="audio-volume-value" for="audio-volume">55%</output></div>
+            <p id="audio-status" class="audio-status" role="status" aria-live="polite">Sound begins only when you press Listen.</p>
+            <p class="listening-note">Listen to the expression you are viewing. New developments are heard on your next listen.</p>
+          </div>
+        </details>
+      </section>
+      <aside class="companion-rail" aria-label="Conversation and history">
+        <section id="demo-panel" class="rail-section" hidden><p class="eyebrow">A composed demonstration</p><h2>Follow a change.</h2><p>This study is scripted. It shows how expressions can develop; no live conversation is connected.</p><div class="rail-actions"><button id="play-study" class="button" type="button">Play the study</button><button id="next-study" class="text-link" type="button">Next moment →</button></div><button id="restart-study" class="quiet-button" type="button">Start again</button></section>
+        <section id="live-panel" class="rail-section" hidden><label for="conversation">Your conversation</label><select id="conversation"><option value="">Waiting for an expression</option></select><p id="live-note">The participating agent publishes an interpretation after substantive developments.</p><button id="refresh-conversations" class="text-link" type="button">Refresh conversations ↻</button></section>
+        <section class="rail-section"><div class="history-heading"><h2>What remains.</h2><span id="history-count">0 moments</span></div><ol id="history-list" class="history-list"></ol><div class="rail-actions"><button id="replay" class="text-link" type="button" disabled>Replay history ↺</button><button id="return-current" class="text-link" type="button" hidden>Return to current →</button></div><p id="history-note">A trace can carry an earlier contour into the present expression.</p></section>
+        <details class="inspection"><summary>Source &amp; context</summary><dl id="inspection-values"></dl><p>The host's rules set the informational boundaries. Within them, Field seeks the fullest expressive scope available to its author.</p><button id="save-history" class="text-link" type="button" disabled>Save history JSON ↓</button></details>
+        <section class="rail-section connect-invitation"><h2>Let it stay with you.</h2><p>Run the local companion and ask your agent to keep Field present during a conversation.</p><a href="continuity.html#connect" class="text-link">Connect your agent ↗</a></section>
+      </aside>
+    </div>
+    <p id="companion-status" class="status" role="status" aria-live="polite"></p>
+  </main>
+  <footer class="companion-footer"><span>An open experiment in continuity.</span><a href="https://github.com/ebounds/field">Source ↗</a></footer>
+</body>
+</html>

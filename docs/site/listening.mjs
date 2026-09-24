@@ -157,6 +157,7 @@ export function createListening({getSpec,getName,download}) {
     status.textContent='Listening needs a browser with Web Audio and module workers.';
   }
   return {
+    stop,
     update() {
       const p=getSpec();
       $('#audio-description').textContent=`${VOICES[p.primary].name}. ${p.form==='envelope'?'A phrase that gathers and returns.':p.form==='sweep'?'A phrase that reaches across open space.':'A high canopy of slowly unfolding tones.'}`;

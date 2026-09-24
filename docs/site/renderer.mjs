@@ -40,7 +40,7 @@ export function validate(spec = {}) {
   return p;
 }
 
-function toOklab(color) {
+export function toOklab(color) {
   const [r, g, b] = [1, 3, 5].map(i => {
     const v = parseInt(color.slice(i, i + 2), 16) / 255;
     return v <= .04045 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4;
@@ -63,7 +63,7 @@ function fromOklab([lightness, a, b]) {
     .map(v => v <= .0031308 ? 12.92*v : 1.055*v ** (1/2.4) - .055);
 }
 
-function oklabHex(lab) {
+export function oklabHex(lab) {
   const [lightness, a, b] = lab;
   let channels = fromOklab(lab);
   if (min(...channels) < 0 || max(...channels) > 1) {
@@ -79,7 +79,7 @@ function oklabHex(lab) {
   return '#' + channels.map(v => roundEven(max(0, min(1, v))*255).toString(16).padStart(2, '0')).join('').toUpperCase();
 }
 
-function pointsPath(points) {
+export function pointsPath(points) {
   const xy = p => p.map(v => fixed(v, 2)).join(',');
   let result = 'M' + xy(points[0]);
   for (let i = 0; i < points.length - 1; i++) {
@@ -92,19 +92,13 @@ function pointsPath(points) {
   return result;
 }
 
-export function render(spec = {}) {
+export function geometry(spec = {}) {
   const p = validate(spec);
-  const pigment = name => { const [l, a, b] = toOklab(PALETTE[name]); return oklabHex([l, a*p.saturation, b*p.saturation]); };
-  const mix = (a, b, amount) => { const second = toOklab(b); return oklabHex(toOklab(a).map((x, i) => x*(1-amount) + second[i]*amount)); };
-  const light = (color, amount) => { const [l, a, b] = toOklab(color); return oklabHex([min(.91, l*amount), a, b]); };
-  const c1 = pigment(p.primary), c2 = pigment(p.secondary || p.primary), ca = pigment(p.accent || p.primary);
-  const ambient = pigment(p.ambient || p.primary), climate = p.ambient_strength;
-  const bgCentre = mix('#101A25', ambient, .03+.38*climate), bgEdge = mix('#080D16', ambient, .02+.12*climate);
-  const {openness:o, tension:t, definition:d, complexity:c, intensity:power, imbalance:skew, breadth, folding:fold, stretch, form} = p;
+  const {openness:o, tension:t, definition:d, intensity:power, imbalance:skew, breadth, folding:fold, stretch, form} = p;
   const a = (218+157*o)*(1+.32*max(0,stretch)-.28*max(0,-stretch));
   const b = (153+131*o)*(1+.50*max(0,-stretch)-.25*max(0,stretch));
   const gap = (6+112*o)*PI/180, start = -.42+gap/2, end = 2*PI-.42-gap/2;
-  const turn = (-18+38*p.flow)*PI/180, strength = .26+.65*power;
+  const turn = (-18+38*p.flow)*PI/180;
   const bezier = (u, p0, p1, p2, p3) => [0,1].map(k => (1-u)**3*p0[k] + 3*(1-u)**2*u*p1[k] + 3*(1-u)*u*u*p2[k] + u**3*p3[k]);
   const rotate = (x, y) => [x*cos(turn)-y*sin(turn), x*sin(turn)+y*cos(turn)];
   function rawPoint(u, inset = 0) {
@@ -155,6 +149,20 @@ export function render(spec = {}) {
     };
     return closed(section.map(u=>surface(u,margins(u)[0])),reverse(section).map(u=>surface(u,margins(u)[1])));
   }
+  return {a,b,fit,point,surface,us,ribbon,strip,thickness};
+}
+
+export function render(spec = {}) {
+  const p = validate(spec);
+  const pigment = name => { const [l, a, b] = toOklab(PALETTE[name]); return oklabHex([l, a*p.saturation, b*p.saturation]); };
+  const mix = (a, b, amount) => { const second = toOklab(b); return oklabHex(toOklab(a).map((x, i) => x*(1-amount) + second[i]*amount)); };
+  const light = (color, amount) => { const [l, a, b] = toOklab(color); return oklabHex([min(.91, l*amount), a, b]); };
+  const c1 = pigment(p.primary), c2 = pigment(p.secondary || p.primary), ca = pigment(p.accent || p.primary);
+  const ambient = pigment(p.ambient || p.primary), climate = p.ambient_strength;
+  const bgCentre = mix('#101A25', ambient, .03+.38*climate), bgEdge = mix('#080D16', ambient, .02+.12*climate);
+  const {openness:o, tension:t, definition:d, complexity:c, intensity:power, imbalance:skew, breadth, folding:fold, stretch, form} = p;
+  const strength = .26+.65*power;
+  const {a,b,fit,point,surface,us,ribbon,strip,thickness} = geometry(p);
   const outline = ribbon(0,1), accentMix = p.accent ? mix(c1,ca,p.accent_strength*.85) : c1;
   const svg = [];
   const add = value => svg.push(value);

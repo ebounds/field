@@ -4,7 +4,7 @@
 
 A visual language for the accumulated tone of an AI conversation: attention, imagination, care, uncertainty, and tension, held in a wordless work of art.
 
-[**Try the live playground →**](https://ebounds.github.io/field/) · [Download the skill](https://ebounds.github.io/field/downloads/field-4.4.zip) · [Illustrated reading guide](https://ebounds.github.io/field/field-guide.pdf)
+[**Try the companion →**](https://ebounds.github.io/field/companion.html) · [Visual playground](https://ebounds.github.io/field/) · [Download Field 4.5](https://ebounds.github.io/field/downloads/field-4.5.zip) · [Illustrated reading guide](https://ebounds.github.io/field/field-guide.pdf)
 
 [![Field: a luminous membrane around a titanium capsule. The shape of thinking together.](docs/site/social-card.png)](https://ebounds.github.io/field/)
 
@@ -12,11 +12,29 @@ Field asks an assistant: **“What has it been like to think with me through thi
 
 The assistant reads the available exchange, forms a brief composition score, and chooses drawing controls under a shared visual grammar. A fixed titanium capsule anchors the image. Around it, a translucent field gathers, sweeps, folds, and rejoins.
 
-Field offers an interpretation of the conversation and the assistant's way of engaging with it. It makes no claim to read hidden model state or measure answer quality. Its usefulness is open to experimentation.
+Field offers an interpretation of the conversation and the assistant's way of engaging with it, using the fullest context and reflective understanding its host permits. It makes no claim to directly measure internal state or answer quality. Its usefulness is open to experimentation.
 
 ## Try it now
 
 The [browser playground](https://ebounds.github.io/field/) has six starting studies, live controls, SVG and PNG downloads, and links that recreate a composition. Open **Listen to this field** for its optional musical companion, with volume, stop, and stereo WAV export. It runs in your browser with no account or API key. You can also paste Field v4 JSON controls chosen by an assistant. Shared links stay silent until the recipient presses Listen.
+
+## New in 4.5: a conversation, held
+
+[Field Companion](https://ebounds.github.io/field/companion.html) gives the expression somewhere to stay. It moves between authored compositions, carries an actual earlier contour into the present field, and restores a selected conversation after a pause. Open **Small window** for a companion beside your chat. Still view, reduced motion, recent-history replay, source and coverage inspection, SVG/history export, and optional listening are included.
+
+The public companion presents a clearly labeled scripted study. For your own conversation, unzip the package and start the local service with **Node.js 18+**, without extra dependencies:
+
+```bash
+node scripts/field.mjs serve
+```
+
+Open the local address it prints, then ask your assistant:
+
+> Read the Field skill and its continuity protocol. Keep Field present for this conversation. After substantive responses or meaningful work milestones, publish an updated expression using the fullest context and reflective understanding your host permits. Preserve the whole-conversation scope and describe any material gaps.
+
+The participating agent composes and publishes updates through the bundled command. Starting the service alone does not monitor a chat or call a model. Your host must support running that command and carrying the instruction across turns. Expressions and an optional phase index stay in a local `.field` directory; restart with the same directory to resume. The interface shows when its expression was last published, including during disconnection.
+
+Read [how to connect](https://ebounds.github.io/field/continuity.html), the [agent protocol](references/continuity-protocol.md), or the [4.5 design note](docs/field-4.5-design.md). Listening remains an optional 24-second portrait; ongoing ambient music is a future experiment.
 
 ## Listening: the same field, given time
 
@@ -36,7 +54,7 @@ The output is stereo, 44.1 kHz, 16-bit WAV with the public Field controls embedd
 
 ## Use Field in a conversation
 
-1. [Download Field 4.4](https://ebounds.github.io/field/downloads/field-4.4.zip) and unzip it, or clone this repository.
+1. [Download Field 4.5](https://ebounds.github.io/field/downloads/field-4.5.zip) and unzip it, or clone this repository.
 2. Give the package to an assistant that can read files and run Python.
 3. In an existing conversation, ask:
 
@@ -76,6 +94,8 @@ python3 scripts/build_public_assets.py
 ```
 
 Check the audio instrument with `node scripts/check_audio.mjs`. Run real browser checks (including opt-in playback, cancellation, WAV export, and phone layouts) with `CHROME_BIN=/path/to/chromium node scripts/check_public_site.mjs http://127.0.0.1:8080/` after starting the local server below. Audio correctness checks cover samples and playback behavior; artistic judgment still needs listening.
+
+Check the companion's contract, local service, persistence, and conversation isolation with `node scripts/check_continuity.mjs`. Run its browser checks with `CHROME_BIN=/path/to/chromium node scripts/check_companion_browser.mjs http://127.0.0.1:8080/`. That test also starts an isolated temporary companion to exercise live publication and reconnection.
 
 Serve the demo locally with `python3 -m http.server 8080 --directory docs`. The site is static HTML, CSS, and JavaScript. GitHub Pages publishes `docs/` from `main`.
 

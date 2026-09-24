@@ -1,4 +1,4 @@
-# Try Field 4.4
+# Try Field 4.5
 
 Field turns an assistant's interpretation of a conversation into a wordless SVG artwork.
 
@@ -38,6 +38,22 @@ For example, `controls.json` could contain:
 
 The illustrated guide is in `docs/field-guide.pdf`. The grammar and composition guidance are in `references/`.
 
+## Keep Field present
+
+Explore the scripted demonstration at **https://ebounds.github.io/field/companion.html**. To connect your own conversation, run this from the unzipped Field folder with Node.js 18 or later:
+
+```bash
+node scripts/field.mjs serve
+```
+
+Open the local URL it prints. Give your assistant the complete package and ask:
+
+> Read the Field skill and its continuity protocol. Keep Field present for this conversation. After substantive responses or meaningful work milestones, publish an updated expression using the fullest context and reflective understanding your host permits. Preserve the whole-conversation scope and describe any material gaps.
+
+The assistant needs to run the local command and retain this instruction across turns. The service alone does not monitor a chat or compose interpretations. Keep the `.field` directory to resume after a pause; use `--data <directory>` to choose where expressions are saved. A **Small window** can stay beside the conversation. Movement, still view, history replay, and optional listening are available there.
+
+Keep `scripts/` and `docs/` together. The agent's command and update format are in `references/continuity-protocol.md`. No account, model credential, or external service is required by the companion.
+
 ## Optional listening
 
 Ask your assistant to **include Field's listening companion**, or request an audio-only Field. It uses the same interpretation and controls as the image, expressed as a 24-second musical phrase. Sound is always optional.
@@ -52,7 +68,7 @@ Keep `docs/site/audio.mjs` and `docs/site/renderer.mjs` in the package: the comm
 
 In the browser playground, open **Listen to this field**, then press **Listen**. You can stop, adjust the volume, or save a WAV. Edits affect the next listen. The musical conventions are in `references/listening-grammar.md`; the illustrated PDF covers the visual instrument.
 
-Field is an interpretation of the available exchange, not a reading of hidden model state or an answer-quality measure.
+Field uses the fullest context and reflective understanding its host permits. It offers an interpretation of the exchange without claiming direct measurement of internal state or answer quality.
 
 Created by Edgar Bounds. MIT licensed; see `LICENSE`.
 
