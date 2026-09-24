@@ -65,12 +65,30 @@ async function navigate(target) {
   await command('Page.navigate',{url:target});
   await waitFor("document.readyState==='complete' && document.querySelector('#field-image')?.src.startsWith('blob:')");
 }
+async function click(selector) {
+  const box=await evaluate(`(()=>{const el=document.querySelector(${JSON.stringify(selector)});el.scrollIntoView({block:'center',behavior:'instant'});const r=el.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};})()`);
+  await command('Input.dispatchMouseEvent',{type:'mousePressed',...box,button:'left',clickCount:1});
+  await command('Input.dispatchMouseEvent',{type:'mouseReleased',...box,button:'left',clickCount:1});
+}
 
 try {
   const target=await command('Target.createTarget',{url:'about:blank'},false);
   const attached=await command('Target.attachToTarget',{targetId:target.targetId,flatten:true},false);
   session=attached.sessionId;
   await command('Page.enable'); await command('Runtime.enable'); await command('Network.enable');
+  await command('Page.addScriptToEvaluateOnNewDocument',{source:`
+    window.audioAudit={contexts:[],starts:0,stops:0};
+    const NativeAudioContext=window.AudioContext;
+    window.AudioContext=class extends NativeAudioContext {
+      constructor(...args){super(...args);window.audioAudit.contexts.push(this);}
+      createBufferSource(){
+        const source=super.createBufferSource(),start=source.start.bind(source),stop=source.stop.bind(source);
+        source.start=(...args)=>{window.audioAudit.starts++;window.audioAudit.source=source;return start(...args);};
+        source.stop=(...args)=>{window.audioAudit.stops++;return stop(...args);};
+        return source;
+      }
+    };
+  `});
   await command('Browser.setDownloadBehavior',{behavior:'allow',downloadPath:downloads},false);
   await command('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
   await navigate(url);
@@ -106,12 +124,72 @@ try {
   assert(svg.includes('"primary":"coral"')&&!svg.includes('NaN'));
   await evaluate("Object.defineProperty(navigator,'clipboard',{value:{writeText:async text=>{window.copiedText=text}},configurable:true});document.querySelector('#copy-prompt').click()");
   assert((await evaluate('window.copiedText')).includes('whole available conversation'));
+  // Real Web Audio playback under trusted gestures, with no sound on load or export.
+  assert.equal(await evaluate('window.audioAudit.contexts.length'),0);
+  await click('#listening summary');
+  assert.equal(await evaluate('window.audioAudit.contexts.length'),0);
+  await click('#save-audio');
+  await waitFor("document.querySelector('#audio-status').textContent.startsWith('Saved')");
+  assert.equal(await evaluate('window.audioAudit.contexts.length'),0);
+  for(let i=0;i<80;i++){if((await readdir(downloads)).includes('field-listening.wav')) break;await pause(100);}
+  const wav=await readFile(join(downloads,'field-listening.wav'));
+  assert.equal(wav.readUInt32LE(24),44100);assert.equal(wav.readUInt16LE(22),2);
+  assert.equal(wav.readUInt32LE(40),24*44100*4);
+  const info=44+24*44100*4;
+  const metadata=JSON.parse(wav.toString('utf8',info+20,info+20+wav.readUInt32LE(info+16)-1));
+  assert.deepEqual(metadata.spec,await spec());
+  await click('#listen');
+  await waitFor("document.querySelector('#listen').textContent==='Stop listening'");
+  assert.equal(await evaluate('window.audioAudit.starts'),1);
+  assert.equal(await evaluate('window.audioAudit.contexts[0].state'),'running');
+  await evaluate("document.querySelector('#audio-volume').value='0';document.querySelector('#audio-volume').dispatchEvent(new Event('input',{bubbles:true}))");
+  assert.equal(await evaluate("document.querySelector('#audio-volume-value').textContent"),'0%');
+  await evaluate("document.querySelector('input[name=form][value=sweep]').click()");
+  assert((await evaluate("document.querySelector('#audio-status').textContent")).includes('next listen'));
+  assert.equal(await evaluate('window.audioAudit.starts'),1);
+  await screenshot('field-listening-desktop');
+  await click('#listening summary');
+  await waitFor("document.querySelector('#listen').textContent==='Listen'");
+  assert.equal(await evaluate('window.audioAudit.stops'),1);
+  await pause(180);
+  assert.equal(await evaluate('window.audioAudit.contexts[0].state'),'suspended');
+  await click('#listening summary');
+  // Cancel while a new render is still running; stale work must never start sound.
+  await click('#listen');
+  await click('#listen');
+  await pause(1300);
+  assert.equal(await evaluate('window.audioAudit.starts'),1);
+  assert.equal(await evaluate("document.querySelector('#listen').textContent"),'Listen');
+  await click('#listen');
+  await waitFor("document.querySelector('#listen').textContent==='Stop listening'");
+  assert.equal(await evaluate('window.audioAudit.starts'),2);
+  await evaluate('window.audioAudit.source.playbackRate.value=32');
+  await waitFor("document.querySelector('#audio-status').textContent.startsWith('Returned to silence')");
+  assert.equal(await evaluate("document.querySelector('#audio-progress').value"),24);
+  assert.equal(await evaluate('window.audioAudit.contexts[0].state'),'suspended');
+  // Reusing a cached render restores its waveform; device suspension requires a new gesture.
+  await evaluate("document.querySelector('#reset').click()");
+  await settle();
+  await click('#listen');
+  await waitFor("document.querySelector('#listen').textContent==='Stop listening'");
+  await click('#listen');
+  await evaluate("document.querySelector('#reset').click()");
+  await settle();
+  await click('#listen');
+  await waitFor("document.querySelector('#listen').textContent==='Stop listening'");
+  assert.equal(await evaluate("document.querySelector('#audio-wave').children.length"),80);
+  await evaluate('window.audioAudit.contexts[0].suspend()');
+  await waitFor("document.querySelector('#audio-status').textContent.startsWith('Audio was interrupted')");
+  assert.equal(await evaluate("document.querySelector('#listen').textContent"),'Listen');
   await command('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:true});
   await navigate(url);
   await screenshot('field-site-phone');
   assert.equal(await evaluate('document.documentElement.scrollWidth<=innerWidth'),true);
   await evaluate("document.querySelector('#playground').scrollIntoView({behavior:'instant'})");
   await screenshot('field-site-phone-playground');
+  await click('#listening summary');
+  await screenshot('field-listening-phone');
+  assert.equal(await evaluate('document.documentElement.scrollWidth<=innerWidth'),true);
   await evaluate("document.querySelector('#controls').scrollIntoView({behavior:'instant'})");
   await screenshot('field-site-phone-controls');
   assert.equal(await evaluate("getComputedStyle(document.querySelector('.control-preview')).display"),'flex');
@@ -128,7 +206,7 @@ try {
   const local=await evaluate("Array.from(document.querySelectorAll('a[href],img[src],script[src],link[href]')).map(el=>el.href||el.src).filter(value=>value&&value.startsWith(location.origin)&&!value.includes('#'))");
   for(const link of new Set(local)) {const response=await fetch(link,{method:'HEAD'});assert(response.ok,link+': '+response.status);}
   assert.deepEqual(errors,[]);
-  console.log('Passed: desktop/mobile layout, controls, keyboard input, exact share round trip, import/error handling, SVG/2000px PNG downloads, copy prompt, local links, and no browser errors.');
+  console.log('Passed: desktop/mobile layout, visual controls, share round trip, imports, SVG/PNG/WAV exports, opt-in audio, real playback, volume, cancellation, snapshot semantics, natural ending, cleanup, keyboard, links, and no browser errors.');
 } finally {
   await command('Browser.close',{},false).catch(()=>{});
   browser.kill();

@@ -1,4 +1,4 @@
-# Try Field 4.3
+# Try Field 4.4
 
 Field turns an assistant's interpretation of a conversation into a wordless SVG artwork.
 
@@ -37,6 +37,20 @@ For example, `controls.json` could contain:
 ```
 
 The illustrated guide is in `docs/field-guide.pdf`. The grammar and composition guidance are in `references/`.
+
+## Optional listening
+
+Ask your assistant to **include Field's listening companion**, or request an audio-only Field. It uses the same interpretation and controls as the image, expressed as a 24-second musical phrase. Sound is always optional.
+
+The command-line audio renderer needs Node.js 18 or later, without dependencies:
+
+```bash
+node scripts/render_audio.mjs --spec controls.json --output field.wav
+```
+
+Keep `docs/site/audio.mjs` and `docs/site/renderer.mjs` in the package: the command-line renderer uses them. The output is a stereo 44.1 kHz WAV. Open it in your preferred player when you want to listen.
+
+In the browser playground, open **Listen to this field**, then press **Listen**. You can stop, adjust the volume, or save a WAV. Edits affect the next listen. The musical conventions are in `references/listening-grammar.md`; the illustrated PDF covers the visual instrument.
 
 Field is an interpretation of the available exchange, not a reading of hidden model state or an answer-quality measure.
 

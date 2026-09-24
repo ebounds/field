@@ -4,7 +4,7 @@
 
 A visual language for the accumulated tone of an AI conversation: attention, imagination, care, uncertainty, and tension, held in a wordless work of art.
 
-[**Try the live playground →**](https://ebounds.github.io/field/) · [Download the skill](https://ebounds.github.io/field/downloads/field-4.3.zip) · [Illustrated reading guide](https://ebounds.github.io/field/field-guide.pdf)
+[**Try the live playground →**](https://ebounds.github.io/field/) · [Download the skill](https://ebounds.github.io/field/downloads/field-4.4.zip) · [Illustrated reading guide](https://ebounds.github.io/field/field-guide.pdf)
 
 [![Field: a luminous membrane around a titanium capsule. The shape of thinking together.](docs/site/social-card.png)](https://ebounds.github.io/field/)
 
@@ -16,17 +16,33 @@ Field offers an interpretation of the conversation and the assistant's way of en
 
 ## Try it now
 
-The [browser playground](https://ebounds.github.io/field/) has six starting studies, live controls, SVG and PNG downloads, and links that recreate a composition. It runs in your browser with no account or API key. You can also paste Field v4 JSON controls chosen by an assistant.
+The [browser playground](https://ebounds.github.io/field/) has six starting studies, live controls, SVG and PNG downloads, and links that recreate a composition. Open **Listen to this field** for its optional musical companion, with volume, stop, and stereo WAV export. It runs in your browser with no account or API key. You can also paste Field v4 JSON controls chosen by an assistant. Shared links stay silent until the recipient presses Listen.
+
+## Listening: the same field, given time
+
+Field 4.4 adds a 24-second musical expression around a steady tonal center. The palette becomes a family of related sound materials: wood, clear tones, suspended glass, felt, bowed tension, and open harmonics. Voices gather, reach, answer, and leave a softened trace. Each phrase ends in silence.
+
+Image and sound use the same whole-conversation interpretation and controls. The audio is synthesized locally, without samples or a music service. It can accompany a visual or be requested on its own. An ordinary Field invocation remains visual.
+
+> Make a Field of our whole available conversation, and include its listening companion.
+
+The portable audio renderer needs **Node.js 18+**, with no dependencies:
+
+```bash
+node scripts/render_audio.mjs --spec controls.json --output field.wav
+```
+
+The output is stereo, 44.1 kHz, 16-bit WAV with the public Field controls embedded. The browser and command line use one audio implementation. The [listening grammar](references/listening-grammar.md) explains the musical conventions; the [4.4 design note](docs/field-4.4-design.md) describes the intent and open questions.
 
 ## Use Field in a conversation
 
-1. [Download Field 4.3](https://ebounds.github.io/field/downloads/field-4.3.zip) and unzip it, or clone this repository.
+1. [Download Field 4.4](https://ebounds.github.io/field/downloads/field-4.4.zip) and unzip it, or clone this repository.
 2. Give the package to an assistant that can read files and run Python.
 3. In an existing conversation, ask:
 
 > Read the Field skill in the attached package, including its references. Use the supplied renderer to express the accumulated tone of our whole available conversation as one wordless Field visual.
 
-Keep `SKILL.md`, `references/`, `scripts/`, and `assets/` together. The renderer uses Python's standard library. See the [quick start](docs/quickstart.md) for other ways to use the package.
+Keep the complete package together, including `docs/site/` for optional audio. The visual renderer uses Python's standard library. See the [quick start](docs/quickstart.md) for other ways to use the package.
 
 ```bash
 python3 scripts/render_field.py --spec controls.json --output field.svg
@@ -58,6 +74,8 @@ That check requires Node.js. To rebuild reference art and public downloads:
 python3 scripts/build_reference_assets.py
 python3 scripts/build_public_assets.py
 ```
+
+Check the audio instrument with `node scripts/check_audio.mjs`. Run real browser checks (including opt-in playback, cancellation, WAV export, and phone layouts) with `CHROME_BIN=/path/to/chromium node scripts/check_public_site.mjs http://127.0.0.1:8080/` after starting the local server below. Audio correctness checks cover samples and playback behavior; artistic judgment still needs listening.
 
 Serve the demo locally with `python3 -m http.server 8080 --directory docs`. The site is static HTML, CSS, and JavaScript. GitHub Pages publishes `docs/` from `main`.
 

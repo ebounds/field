@@ -1,4 +1,4 @@
-# Composition score for Field 4.3
+# Composition score for Field
 
 Use this short, private art-direction step after whole-conversation synthesis and before choosing renderer controls. The score is an interpretation of the available exchange, not a measurement of private emotion, hidden state, or answer reliability. Do not put the score, transcript excerpts, or inferred facts about the user in SVG metadata. The delivered artwork remains wordless.
 
@@ -25,3 +25,5 @@ Translate the score into drawing controls:
 The three forms are available across color families. **Envelope** gathers around the center. **Sweep** carries an open direction through the frame. **Mantle** holds a tall space around the center. None is a fixed synonym for happiness, anxiety, confidence, or agreement. Try the same score in more than one form when the choice is ambiguous, then compare the actual silhouettes at 320 pixels. Choose the one that expresses the score with the least unnecessary detail.
 
 The final SVG stores only renderer controls in `field-spec` and scope facts in `field-coverage`. Its visual choices are an invitation to read and respond, not a claim that the renderer discovered a secret code of model thought.
+
+When listening is requested, follow [the listening grammar](listening-grammar.md) and pass these same controls to the audio instrument. The composition score is shared; no second interpretation or emotional scoring step is needed. A musical phrase unfolds the accumulated stance in time without assigning notes to individual conversational turns.

@@ -6,10 +6,11 @@ import shutil
 import zipfile
 from pathlib import Path
 
-from render_field import RENDERER_REVISION, render
+from render_field import render
 
 ROOT = Path(__file__).resolve().parents[1]
 SITE = ROOT/'docs/site'
+PACKAGE_VERSION = '4.4'
 
 
 def main():
@@ -42,10 +43,11 @@ def main():
     (SITE/'social-card.svg').write_text(card+'\n', encoding='utf-8')
     downloads = ROOT/'docs/downloads'
     downloads.mkdir(exist_ok=True)
-    archive = downloads/f'field-{RENDERER_REVISION}.zip'
+    archive = downloads/f'field-{PACKAGE_VERSION}.zip'
     files = [ROOT/'SKILL.md', ROOT/'LICENSE', ROOT/'scripts/render_field.py',
              ROOT/'scripts/build_reference_assets.py', ROOT/'docs/field-guide.pdf',
-             ROOT/'docs/field-4.3-design.md']
+             ROOT/'docs/field-4.3-design.md', ROOT/'docs/field-4.4-design.md',
+             ROOT/'scripts/render_audio.mjs', SITE/'audio.mjs', SITE/'renderer.mjs']
     for folder in ('references','assets','agents'):
         files += sorted((ROOT/folder).glob('*'))
     with zipfile.ZipFile(archive, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=9) as package:
@@ -60,8 +62,9 @@ def main():
         entry.compress_type = zipfile.ZIP_DEFLATED
         entry.external_attr = 0o644 << 16
         package.writestr(entry, (ROOT/'docs/quickstart.md').read_bytes())
-    digest = hashlib.sha256(archive.read_bytes()).hexdigest()
-    (downloads/'SHA256SUMS').write_text(f'{digest}  {archive.name}\n', encoding='utf-8')
+    checksums = [f'{hashlib.sha256(item.read_bytes()).hexdigest()}  {item.name}\n'
+                 for item in sorted(downloads.glob('field-*.zip'))]
+    (downloads/'SHA256SUMS').write_text(''.join(checksums), encoding='utf-8')
     print(f'Built {len(presets)} studies, hero, social SVG, and {archive.name} ({archive.stat().st_size:,} bytes).')
 
 

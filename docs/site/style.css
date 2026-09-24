@@ -322,6 +322,72 @@ nav a:hover {
   color:var(--muted);
   margin:14px 0 0
 }
+.listening {
+  margin-top:26px;
+  border-block:1px solid var(--line);
+  text-align:left;
+}
+.art-column:has(.listening[open]) .art-frame {
+  height:clamp(210px,32vh,360px);
+  aspect-ratio:auto;
+}
+.listening summary {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:20px 2px;
+  cursor:pointer;
+  list-style:none;
+}
+.listening summary::-webkit-details-marker { display:none; }
+.listening-title {
+  font-family:var(--serif);
+  font-size:22px;
+  color:var(--warm);
+}
+.listening-title::before { content:'+'; margin-right:13px; color:var(--teal); }
+.listening[open] .listening-title::before { content:'−'; }
+.listening-tag { color:var(--muted); font-size:10px; letter-spacing:.06em; }
+.listening-body { padding:0 2px 18px; }
+.listening-intro { font-family:var(--serif); font-size:25px; margin:6px 0; }
+.audio-description { color:var(--muted); font-size:13px; margin-bottom:12px; }
+.audio-description::first-letter { text-transform:uppercase; }
+.listening-wave {
+  height:48px;
+  display:flex;
+  align-items:center;
+  position:relative;
+  margin:12px 0;
+}
+.listening-wave::before {
+  content:'';
+  position:absolute;
+  width:100%;
+  height:1px;
+  background:var(--line);
+}
+#audio-wave { width:100%; height:40px; stroke:#819f9e; stroke-width:1.6; stroke-linecap:round; position:relative; }
+.listening[data-playing=true] #audio-wave { stroke:var(--teal); }
+.listening-transport { display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
+#listen { min-width:132px; justify-content:center; }
+#audio-time { margin-left:auto; font-size:11px; font-variant-numeric:tabular-nums; color:var(--muted); }
+#audio-progress { display:block; width:100%; height:2px; margin:18px 0; border:0; background:var(--line); color:var(--teal); appearance:none; }
+#audio-progress::-webkit-progress-bar { background:var(--line); }
+#audio-progress::-webkit-progress-value { background:var(--teal); }
+#audio-progress::-moz-progress-bar { background:var(--teal); }
+.listening-volume { display:flex; align-items:center; gap:16px; font-size:11px; color:var(--muted); }
+.listening-volume input { width:min(170px,50%); margin:0; accent-color:var(--teal); }
+.listening-volume output { font-variant-numeric:tabular-nums; }
+.audio-status { font-size:12px; min-height:2em; margin:18px 0 8px; color:#b7caca; }
+.listening-note { color:var(--muted); font-size:11px; line-height:1.8; margin:0; }
+.listening-note a { color:var(--warm); text-decoration:underline; text-underline-offset:3px; }
+@media(max-width:420px) {
+  .listening summary { gap:10px; flex-wrap:wrap; }
+  .listening-title { font-size:21px; }
+  .listening-transport { gap:14px; }
+  #audio-time { flex-basis:100%; margin-left:0; }
+}
 .control-panel {
   padding-top:0
 }

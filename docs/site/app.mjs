@@ -1,5 +1,6 @@
 import {render, validate, PALETTE} from './renderer.mjs';
 import {PRESETS} from './presets.mjs';
+import {createListening} from './listening.mjs';
 
 const $ = selector => document.querySelector(selector);
 const title = s => s.charAt(0).toUpperCase() + s.slice(1);
@@ -27,6 +28,7 @@ const controls = $('#controls');
 let state = validate(PRESETS.exploring), startingPoint = 'exploring';
 let currentSvg = '', imageUrl = '', frame = 0;
 let name = 'Exploring';
+const listening=createListening({getSpec:()=>state,getName:()=>name,download});
 
 function message(text) { $('#status').textContent = text; }
 function slider([key,label,lowLabel,highLabel,low=0,high=1]) {
@@ -102,6 +104,7 @@ function paint() {
 
 function schedule() {
   sync();
+  listening.update();
   if (!frame) frame = requestAnimationFrame(paint);
 }
 

@@ -26,7 +26,7 @@
 <body>
   <a class="skip-link" href="#playground">Skip to the playground</a>
   <header class="site-header wrap">
-    <a class="wordmark" href="./" aria-label="Field home"><span class="capsule" aria-hidden="true"></span>Field<span class="version">4.3</span></a>
+    <a class="wordmark" href="./" aria-label="Field home"><span class="capsule" aria-hidden="true"></span>Field<span class="version">4.4</span></a>
     <nav aria-label="Main navigation">
       <a href="#playground">Try it</a><a href="#about">The idea</a><a href="#use">Get Field</a><a class="source-link" href="https://github.com/ebounds/field">GitHub <span aria-hidden="true">↗</span></a>
     </nav>
@@ -39,7 +39,7 @@
         <p class="intro">Attention. Possibility. A little tension held with care.<br class="desktop-break"> Some of a conversation lives between its words.</p>
         <p class="hero-description">Field gives an assistant a way to express the accumulated tone of an exchange as a wordless work of art.</p>
         <div class="hero-actions"><a class="button primary" href="#playground">Make a field <span aria-hidden="true">↓</span></a><a class="text-link" href="#use">Bring it to a conversation <span aria-hidden="true">↗</span></a></div>
-        <p class="hero-note">An open experiment in expression. Free to explore.</p>
+        <p class="hero-note">An open experiment in expression. Now with an optional <a href="listening.html">listening companion ↗</a>.</p>
       </div>
       <figure class="hero-art">
         <img src="site/hero.svg" width="1000" height="1000" fetchpriority="high" alt="A translucent violet and teal mantle arcs around a small titanium capsule, with a faint retained trace.">
@@ -63,6 +63,19 @@
             <button id="share" class="text-link" type="button" disabled>Copy a link <span aria-hidden="true">↗</span></button>
           </div>
           <p class="instrument-note">Made in your browser. No account or API key needed.</p>
+          <details id="listening" class="listening">
+            <summary><span class="listening-title">Listen to this field</span><span class="listening-tag">Optional · 24 seconds</span></summary>
+            <div class="listening-body">
+              <p class="listening-intro">The same field, given time.</p>
+              <p id="audio-description" class="audio-description">Suspended glass. A phrase that reaches across open space.</p>
+              <div class="listening-wave" aria-hidden="true"><svg id="audio-wave" viewBox="0 0 400 40" preserveAspectRatio="none"></svg></div>
+              <div class="listening-transport"><button id="listen" class="button" type="button" aria-pressed="false">Listen</button><button id="save-audio" class="text-link" type="button">Save WAV <span aria-hidden="true">↓</span></button><span id="audio-time">0:00 / 0:24</span></div>
+              <progress id="audio-progress" max="24" value="0" aria-label="Listening progress"></progress>
+              <div class="listening-volume"><label for="audio-volume">Volume</label><input id="audio-volume" type="range" min="0" max="1" step=".01" value=".55"><output id="audio-volume-value" for="audio-volume">55%</output></div>
+              <p id="audio-status" class="audio-status" role="status" aria-live="polite">Sound begins only when you press Listen.</p>
+              <p class="listening-note">A steady center, unfolding voices, a trace that lingers. Changes to the field are heard on your next listen. <a href="listening.html">About the sound ↗</a></p>
+            </div>
+          </details>
         </div>
         <form id="controls" class="control-panel">
           <div class="control-preview" aria-hidden="true"><img id="field-mini" src="site/studies/exploring.svg" width="1000" height="1000" alt=""></div>
@@ -108,14 +121,14 @@
     </section>
 
     <section id="use" class="get-field wrap" aria-labelledby="use-title">
-      <div class="section-heading"><div><p class="eyebrow">04 / Bring it with you</p><h2 id="use-title">Give your conversation a field.</h2></div><a class="button primary" href="downloads/field-4.3.zip" download>Download Field 4.3 <span aria-hidden="true">↓</span></a></div>
+      <div class="section-heading"><div><p class="eyebrow">04 / Bring it with you</p><h2 id="use-title">Give your conversation a field.</h2></div><a class="button primary" href="downloads/field-4.4.zip" download>Download Field 4.4 <span aria-hidden="true">↓</span></a></div>
       <div class="steps">
         <div><span class="step-number">01</span><h3>Get the skill.</h3><p>Download the complete package. It contains the instructions, shared visual grammar, reference art, and renderer.</p></div>
         <div><span class="step-number">02</span><h3>Bring it to your assistant.</h3><p>Open the package with an assistant that can read files and run Python. A coding assistant can use the unzipped folder directly.</p></div>
         <div><span class="step-number">03</span><h3>Ask within a conversation.</h3><p>Use the prompt below in a substantive thread. The assistant interprets the exchange and renders one wordless visual.</p></div>
       </div>
       <div class="prompt"><p id="field-prompt">Read the Field skill in the attached package, including its references. Use the supplied renderer to express the accumulated tone of our whole available conversation as one wordless Field visual.</p><button id="copy-prompt" class="button" type="button">Copy prompt</button></div>
-      <p class="use-note">The playground above also renders JSON drawing controls. The portable renderer uses Python’s standard library; it needs no external API. <a href="https://github.com/ebounds/field#use-field-in-a-conversation">See the quick start ↗</a></p>
+      <p class="use-note">The playground above also renders JSON drawing controls. The portable visual renderer uses Python’s standard library; optional audio uses Node.js 18+. Both work without an external API. Ask for a listening companion when you want sound. <a href="https://github.com/ebounds/field#use-field-in-a-conversation">See the quick start ↗</a></p>
     </section>
     <section class="invitation wrap"><p class="eyebrow">An experiment worth sharing</p><h2>What do you see in it?</h2><p>Make something. Sit with it. Tell us what comes across.</p><a class="text-link" href="https://github.com/ebounds/field/issues/new?title=Reading%20a%20Field">Share a field or an observation <span aria-hidden="true">↗</span></a></section>
   </main>
