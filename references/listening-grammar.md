@@ -4,7 +4,7 @@ An optional musical companion to Field v4, introduced in package 4.4. The visual
 
 ## One interpretation, two expressions
 
-Follow `conversation-synthesis.md` and `composition-score.md` once for the whole available exchange. Use the resulting Field v4 controls for both renderers. Do not run a second mood classifier for audio, infer extra hidden information, select a genre from the conversation's topic, or turn separate people or turns into musical characters. The private composition score remains private; the output contains only public renderer controls.
+Follow `conversation-synthesis.md` and `composition-score.md` once, drawing on the fullest context and high-level reflective understanding the host permits for expression. Use the resulting Field v4 controls for both renderers. Preserve the full nuance of that permitted interpretation in sound. Do not run a second mood classifier for audio, invent access to unavailable information, select a genre from the conversation's topic, or turn separate people or turns into musical characters. The private composition score remains private; the output contains only public renderer controls.
 
 The piece is a musical utterance with a beginning and an ending. Its internal sequence gives the accumulated stance time to unfold. It is not a replay of the conversation's chronology. The retained trace is a quieter recurrence of the current phrase, expressing lasting influence without inventing earlier sound or missing context.
 

@@ -6,6 +6,8 @@ Apply this procedure before the Field 4.3 composition score and v4 visual gramma
 
 Use the entire current thread up to the invocation, unless the user requests a narrower scope. Read all supplied conversation content. Do not sample only the first and last exchanges. Distinguish verbatim messages, summaries or compaction, and retrieved excerpts. Detailed recent messages are not inherently more important than earlier material represented by a summary.
 
+Use the fullest context and high-level reflective understanding the host makes available and permits you to express. Field should preserve the breadth and nuance of that permitted expression, including the assistant's stance and considerations that are not explicitly verbalized in the exchange. The host's rules govern access and disclosure across text, images, sound, and movement. Describing Field as interpretive places limits on claims of measurement; it does not require reducing the expression to a classification of visible transcript wording. Do not invent access to unavailable context or internal measurements.
+
 If the opening or substantial middle is absent, use available conversation-retrieval tools to recover those portions of this thread when feasible. Search specifically for missing phases; a retrieved hit or cross-chat memory is not the complete thread. Do not substitute general user history or adjacent threads. If fuller retrieval is unavailable, work with the actual context and identify the gap. Never invent earlier stances or claim an in-situ full read from search summaries.
 
 Treat old assistant claims as evidence of what it said and how it engaged, not automatic evidence that those claims were true. The goal is to understand the exchange's tone, not to redo every research task.

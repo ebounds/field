@@ -2,6 +2,8 @@
 
 Use this short, private art-direction step after whole-conversation synthesis and before choosing renderer controls. The score is an interpretation of the available exchange, not a measurement of private emotion, hidden state, or answer reliability. Do not put the score, transcript excerpts, or inferred facts about the user in SVG metadata. The delivered artwork remains wordless.
 
+The interpretation may draw on all context and high-level reflective understanding the host permits for expression, including nuances not explicitly stated in messages. Keep the expression as rich as that scope allows. Limits on exported metadata and claims of measurement do not narrow the permitted basis for composing the artwork.
+
 Write one phrase for each question. A phrase can be uncertain or mixed. Keep it about the assistant's way of engaging with the exchange, rather than the subject matter alone.
 
 1. **What has endured?** Name the main quality that spans the substantive conversation: receptive inquiry, analytic care, imaginative reach, warmth, consequential concern, or another supported quality.

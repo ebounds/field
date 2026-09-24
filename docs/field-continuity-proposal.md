@@ -8,6 +8,8 @@ A small Field sits beside a conversation. Its identity persists across turns and
 
 The next artistic question is: **What does a change in understanding look and sound like while retaining its history?**
 
+**Expressive scope:** incorporate the fullest conversation context and high-level reflective understanding that each hosting agent makes available and permits for expression. This includes nuanced stance and considerations that have not been explicitly verbalized. The host's policy and design establish the informational boundaries across every medium. Within them, maximize Field's expressive scope and power. Our modest claims about interpreting internal state concern what we can establish about the expression's accuracy; they should not become an additional restriction to visible transcript wording. An observer with less context has a narrower available basis and must identify that difference.
+
 Availability can be continuous while interpretation updates at meaningful boundaries. The artwork holds the last grounded expression between updates. Its presentation can move locally without another model call. The interface makes its source, last update, and context coverage available on inspection.
 
 ## Movement as a vocabulary
