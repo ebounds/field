@@ -2,6 +2,8 @@
 
 Prepared 24 September 2026 for Edgar Bounds and an independent review by Opus 5.5 or another collaborator.
 
+> **Superseded in part by 4.6.0 (25 September 2026).** An independent review acted on several of the questions in section 8. Rendering revision 4.4 repaired the controls that carried meaning but drew almost nothing, `grounding` was added for epistemic texture, the continuity study was rebuilt on the repaired channels, and Listening moved to 1.1. Read the [4.6 design note](field-4.6-design.md) and [handback](field-4.6-handback.md) alongside this document. The intent, decisions, and open questions below still stand; the implementation details describe 4.5.1.
+
 **Implementation baseline:** release **4.5.1**, commit **`005dbae`** (`005dbaef1b03e7ad24429f84b909925b1e9e0f07`). This document records the project's intent, decisions, implementation, and open questions at that point. It draws on the development conversation and checked-in sources; it is not a complete conversation transcript. Later user direction takes precedence.
 
 - [Repository](https://github.com/ebounds/field)
