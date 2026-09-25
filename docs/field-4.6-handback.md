@@ -125,9 +125,8 @@ control will be rejected on the one path that matters for real use.
 - No local service is left running, no `.field/` data was created, and no new
   dependency was added. Python and Node standard libraries only.
 - The published 4.5.1 site is unaffected until this branch is merged.
-- `continuity.html` points its download at `downloads/field-4.6.0.zip` rather
-  than a `v4.6.0` release tag, since no such tag exists yet. Point it back at a
-  tag when you cut one.
+- Released as `v4.6.0` with `field-4.6.0.zip` and `SHA256SUMS` attached,
+  matching the pattern of earlier versions; `continuity.html` links to it.
 - `docs/field-guide.pdf` still contains revision 4.3 renders and has no account
   of `grounding`. It has separate optional build dependencies and was left
   alone; it will need rebuilding before the next release.
