@@ -53,7 +53,9 @@ asserts the result still reads at 320 pixels.
 | --- | --- |
 | `python3 scripts/check_browser_renderer.py` | 26 cases pass (4 new, incl. randomized `grounding`) |
 | `node scripts/check_audio.mjs` | passes; closest study pair 0.268 against a floor of 0.20; grounding distance 0.784 |
-| `node scripts/check_continuity.mjs` | passes, unchanged |
+| `node scripts/check_continuity.mjs` | passes; now asserts `grounding` survives publication and the public stream |
+| `CHROME_BIN=… node scripts/check_public_site.mjs` | passes (needed the renamed `field-4.4.svg`/`.png` downloads) |
+| `CHROME_BIN=… node scripts/check_companion_browser.mjs` | passes, including movement with the new elements |
 | `CHROME_BIN=… node scripts/check_expression.mjs` | passes; every channel reads at 320px |
 | `python3 scripts/build_public_assets.py` | 7 studies, hero, social card, `field-4.6.0.zip` |
 | By eye | six existing studies re-rendered and compared; grounding range; playground and companion in Chrome |
@@ -67,17 +69,14 @@ notice a channel that has gone silent, and 4.3 passed every check it had.
 - **I could not hear any of the audio.** Every audio claim here comes from
   numeric analysis of rendered PCM plus reading `compose()`. Listening 1.1 needs
   your ears before it is trusted; 4.5.1 audio is on `field-4.5` for A/B.
-- **I could not run `check_companion_browser.mjs`.** It uses Chrome's
-  `--remote-debugging-pipe`, which does not survive this WSL-to-Windows
-  boundary. Not a regression, but it has not run against these changes — please
-  run it on Linux before any release.
-- **I could not watch a live transition.** I compared the five endpoint
-  compositions rendered through the real `compositionSVG`, not the interpolation
-  between them. `movement.mjs` tweens by matching element structure, and
-  revision 4.4 adds elements (`#field-reticulation`, `#field-strain`, paired
-  filaments) — they carry ids or stable positions and should tween or fade
-  correctly, but **this is the one thing most worth watching first.**
-- **I could not test native publishing** from a real conversation.
+- **I did not watch a transition with my own eyes.** Both browser suites now
+  pass under a real Linux Chrome, including `check_companion_browser.mjs`'s
+  movement and retained-contour assertions with the new elements
+  (`#field-reticulation`, `#field-strain`, paired filaments). That is machine
+  verification of the tweening, not a judgment that a 3–6 second transition
+  into a reticulated field *looks* good. Watch one.
+- **I could not test native publishing** from a real conversation, only the
+  local CLI and server path.
 
 ## Open questions
 
@@ -107,6 +106,15 @@ notice a channel that has gone silent, and 4.3 passed every check it had.
    all; and the same conversation given to two models, to test whether this is a
    language or one model's idiolect.
 
+## One thing to do before you use this
+
+**You have a 4.5.1 companion server still running on port 8767** (it was up
+throughout this session; I left it alone). It rejects `grounding` as an unknown
+control, because it is running the old code. My first smoke-test publish went
+there by accident — `field.mjs publish` defaults to 8767 — and was correctly
+refused. Restart that server from this branch before publishing, or the new
+control will be rejected on the one path that matters for real use.
+
 ## Housekeeping
 
 - `PACKAGE_VERSION` is now `4.6.0`; `field-4.6.0.zip` is built and checksummed.
@@ -117,3 +125,12 @@ notice a channel that has gone silent, and 4.3 passed every check it had.
 - No local service is left running, no `.field/` data was created, and no new
   dependency was added. Python and Node standard libraries only.
 - The published 4.5.1 site is unaffected until this branch is merged.
+- `continuity.html` points its download at `downloads/field-4.6.0.zip` rather
+  than a `v4.6.0` release tag, since no such tag exists yet. Point it back at a
+  tag when you cut one.
+- `docs/field-guide.pdf` still contains revision 4.3 renders and has no account
+  of `grounding`. It has separate optional build dependencies and was left
+  alone; it will need rebuilding before the next release.
+- Development-only: the two browser suites were run against a Chrome for
+  Testing binary fetched into a scratch directory, not into this repository.
+  No dependency was added to the project.

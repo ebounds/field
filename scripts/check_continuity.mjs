@@ -10,7 +10,9 @@ import {numericTween} from '../docs/site/movement.mjs';
 const make=(conversation,sequence)=>({version:1,conversation,sequence,title:'Shared inquiry',
   source:{kind:'participant',producer:'Test participant',turn:'turn-'+sequence},
   coverage:{early:'summarized',middle:'available',late:'available',basis:['summary','verbatim'],gaps:'Opening available as a summary.'},
-  spec:{primary:'violet',secondary:'teal',form:sequence%2?'mantle':'sweep',history:.6},transition:'settle'});
+  spec:{primary:'violet',secondary:'teal',form:sequence%2?'mantle':'sweep',history:.6,
+    // Epistemic texture must survive the live publish path, not only the browser.
+    grounding:sequence%2?.4:1},transition:'settle'});
 const ledger={phases:[{name:'Opening',references:['turn-1'],note:'An open, careful inquiry.'}],open_questions:['How should continuity unfold?'],direction:'Explore the next expression.'};
 const storage=await mkdtemp(join(tmpdir(),'field-continuity-'));
 let app=await startCompanion({port:0,data:storage});
@@ -20,6 +22,7 @@ try {
   const blank=await (await fetch(app.url+'/api/status')).json();assert.deepEqual(blank.conversations,[]);
   assert.equal((await publish(make('a',1),ledger)).status,201);
   const first=await (await fetch(app.url+'/api/state?conversation=a')).json();
+  assert.equal(first.updates[0].spec.grounding,.4,'grounding must survive publication');
   assert.equal(first.updates.length,1);assert.equal(first.ledger,undefined);
   assert.deepEqual((await (await fetch(app.url+'/api/context?conversation=a')).json()).ledger,ledger);
   assert.equal((await publish(make('a',1))).status,409);

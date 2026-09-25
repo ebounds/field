@@ -117,10 +117,10 @@ try {
   await evaluate("document.querySelector('#spec-input').value=JSON.stringify({form:'mantle',primary:'coral',counterpoint:.8});document.querySelector('#import-spec').click()");
   assert.equal((await settle()).primary,'coral');
   await evaluate("document.querySelector('#save-svg').click();document.querySelector('#save-png').click()");
-  for(let i=0;i<80;i++){if((await readdir(downloads)).includes('field-4.3.png')) break;await pause(100);}
-  const png=await readFile(join(downloads,'field-4.3.png'));
+  for(let i=0;i<80;i++){if((await readdir(downloads)).includes('field-4.4.png')) break;await pause(100);}
+  const png=await readFile(join(downloads,'field-4.4.png'));
   assert.equal(png.readUInt32BE(16),2000);assert.equal(png.readUInt32BE(20),2000);
-  const svg=await readFile(join(downloads,'field-4.3.svg'),'utf8');
+  const svg=await readFile(join(downloads,'field-4.4.svg'),'utf8');
   assert(svg.includes('"primary":"coral"')&&!svg.includes('NaN'));
   await evaluate("Object.defineProperty(navigator,'clipboard',{value:{writeText:async text=>{window.copiedText=text}},configurable:true});document.querySelector('#copy-prompt').click()");
   assert((await evaluate('window.copiedText')).includes('whole available conversation'));
