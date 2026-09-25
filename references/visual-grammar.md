@@ -58,8 +58,22 @@ Pass these keys as a JSON object. Unknown keys and invalid ranges are rejected. 
 | counterpoint | 0..1 / 0 | An internal current that parts and rejoins. A meaningful quality held alongside another, not automatic conflict. |
 | gesture | none, fold, echo, braid / none | Optional local inflection; bend, continuation, or intertwining. |
 | gesture_strength | 0..1 / 0 | The gesture's visual presence, from delicate to pronounced. |
+| grounding | 0..1 / 1 | How much of this reading rests on material actually present, rather than reconstructed or inferred. Below 1 the outer depth opens into reticulation: the section ribs that describe the form stay visible where its material does not. Epistemic texture, not confidence in a claim. |
 
 The renderer fits extreme postures within the same frame, keeping the central identity legible. Use the full ranges selectively; any one strong property can lead the expression while others remain quiet. Examples in `reference-controls.json` and the atlas show range, not expected settings for a user or subject. No gesture is mandatory.
+
+## Epistemic texture
+
+`grounding` expresses something an assistant's engagement almost always contains and prose renders badly: the difference between what it met directly and what it reconstructed. A summarized opening, a compacted middle, a retrieved excerpt, a stance inferred from very little — these are not the same as a passage read in full, and the expression should be able to say so without a caption.
+
+Keep it distinct from `definition`. They are independent and can take any combination.
+
+- **Low `definition`** means the conversation's own shape is unresolved: the surface blurs, edges dissolve, nothing is exact. *I am not sure what shape this is.*
+- **Low `grounding`** means the reading is exact but secondhand: the material thins, light withdraws to where substance remains, and the transverse ribs and held contour stay sharp. *I can describe this shape precisely; I did not touch it.*
+
+A confident reconstruction is high definition and low grounding. A vivid but unresolved firsthand impression is the reverse. Do not use one to stand in for the other, and do not lower `grounding` to express doubt about whether a factual claim is true; it concerns the basis of the expression, not the truth of anything discussed.
+
+Keep `grounding` consistent with the `field-coverage` record described in the synthesis procedure. A whole thread read verbatim ends near 1. Summarized or partial phases, retrieved excerpts, or a stance resting largely on inference should lower it in proportion. Do not lower it as a decorative gesture of humility, and do not hold it at 1 when a substantial part of the thread was never available. Reticulation is honest description, not an apology.
 
 ## Distinctive gestures and new vocabulary
 
@@ -69,7 +83,13 @@ A folded lip, a curling thread, a split-and-rejoined contour, or a local interfe
 
 ## Rendering and manual portability
 
-Rendering revision 4.3 adds three connected form families, a retained ridge, and a joined countercurrent within grammar v4. Surface lanes and grazing light follow the local curves; colors mix in OKLab and are mapped to portable sRGB. Existing controls keep their meaning and defaults. The SVG root records `data-field-renderer="4.3"`; `field-spec` stores the v4 drawing controls. Earlier v4 fields remain comparable in meaning, although silhouettes and surface color differ.
+Rendering revision 4.3 added three connected form families, a retained ridge, and a joined countercurrent within grammar v4. Surface lanes and grazing light follow the local curves; colors mix in OKLab and are mapped to portable sRGB.
+
+Rendering revision 4.4 keeps every control's meaning, range, and default, and changes how several of them are drawn. In 4.3 the retained ridge, the countercurrent, fine structure, strain, and gestures were all drawn as low-contrast variations of the surface's own color, inside the surface, and softened by the same blur. Measured at 320 pixels, `complexity` and `gesture_strength` changed almost nothing, and `counterpoint` and `history` changed very little, while the silhouette controls changed a great deal. The meanings were in the grammar but not on the screen.
+
+In 4.4 those marks are modelled rather than tinted. The countercurrent carries its own light and a contact shadow, so it parts from the surface whatever hue it shares with it. Fine structure is drawn as crest and trough pairs whose relief scales with the surface that carries them, so it reads as a change of surface direction. The retained ridge is displaced further and rendered in withdrawn, desaturated material with a lit edge, so it reads as older. Tension gains a visible seat of compression at the point the geometry is already bending. `grounding` is new. Run `scripts/check_expression.mjs` to confirm each channel still reads; structural parity checks cannot detect a channel that has gone quiet.
+
+The SVG root records `data-field-renderer="4.4"`; `field-spec` stores the v4 drawing controls. Fields drawn by 4.3 remain comparable in meaning and their controls need no translation, although surface detail is more legible in 4.4.
 
 Make the silhouette, aperture, and space around the capsule read first. Let secondary detail support that expression on closer inspection. Preserve generous breathing room and the selected posture; do not fill empty areas just because they are available. Use smooth, deliberate curves and tapered ends. Avoid accidental corners, repetitive outlines of equal weight, and abrupt seams between surface layers.
 

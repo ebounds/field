@@ -4,7 +4,7 @@
 
 A visual language for the accumulated tone of an AI conversation: attention, imagination, care, uncertainty, and tension, held in a wordless work of art.
 
-[**Try the companion →**](https://ebounds.github.io/field/companion.html) · [Visual playground](https://ebounds.github.io/field/) · [Download Field 4.5.1](https://ebounds.github.io/field/downloads/field-4.5.1.zip) · [Illustrated reading guide](https://ebounds.github.io/field/field-guide.pdf)
+[**Try the companion →**](https://ebounds.github.io/field/companion.html) · [Visual playground](https://ebounds.github.io/field/) · [Download Field 4.6.0](https://ebounds.github.io/field/downloads/field-4.6.0.zip) · [Illustrated reading guide](https://ebounds.github.io/field/field-guide.pdf)
 
 [![Field: a luminous membrane around a titanium capsule. The shape of thinking together.](docs/site/social-card.png)](https://ebounds.github.io/field/)
 
@@ -16,7 +16,7 @@ Field offers an interpretation of the conversation and the assistant's way of en
 
 ## Try it now
 
-The [browser playground](https://ebounds.github.io/field/) has six starting studies, live controls, SVG and PNG downloads, and links that recreate a composition. Open **Listen to this field** for its optional musical companion, with volume, stop, and stereo WAV export. It runs in your browser with no account or API key. You can also paste Field v4 JSON controls chosen by an assistant. Shared links stay silent until the recipient presses Listen.
+The [browser playground](https://ebounds.github.io/field/) has seven starting studies, live controls, SVG and PNG downloads, and links that recreate a composition. Open **Listen to this field** for its optional musical companion, with volume, stop, and stereo WAV export. It runs in your browser with no account or API key. You can also paste Field v4 JSON controls chosen by an assistant. Shared links stay silent until the recipient presses Listen.
 
 ## New in 4.5: a conversation, held
 
@@ -54,7 +54,7 @@ The output is stereo, 44.1 kHz, 16-bit WAV with the public Field controls embedd
 
 ## Use Field in a conversation
 
-1. [Download Field 4.5.1](https://ebounds.github.io/field/downloads/field-4.5.1.zip) and unzip it, or clone this repository.
+1. [Download Field 4.6.0](https://ebounds.github.io/field/downloads/field-4.6.0.zip) and unzip it, or clone this repository.
 2. Give the package to an assistant that can read files and run Python.
 3. In an existing conversation, ask:
 
@@ -70,13 +70,15 @@ Omit `--spec` to draw the default field. Open the SVG in a browser or any SVG vi
 
 ## The visual language
 
-Revision 4.3 offers three connected forms: an **envelope** gathers around the center, a **sweep** carries an open direction, and a **mantle** holds tall space. A retained trace can carry an earlier influence; a joined countercurrent can hold a second quality alongside the first.
+Revision 4.4 offers three connected forms: an **envelope** gathers around the center, a **sweep** carries an open direction, and a **mantle** holds tall space. A retained trace can carry an earlier influence; a joined countercurrent can hold a second quality alongside the first.
+
+**Grounding** expresses how much of a reading was met directly rather than reconstructed. Where it is low, the material thins and the section ribs that describe the form stay visible: the shape is exact, its substance was not touched. It is independent of **definition**, which says whether the shape was clear at all.
 
 Color has a shared convention. Teal suggests attention; blue, analytical composure; violet, imagination; amber, care; coral, live tension; pearl, integration. Geometry expresses how those qualities are held. A private composition score connects the whole-conversation reading to the drawing choices.
 
-[![Six Field studies](assets/reference-atlas.svg)](https://ebounds.github.io/field/#playground)
+[![Seven Field studies](assets/reference-atlas.svg)](https://ebounds.github.io/field/#playground)
 
-Read the [visual grammar](references/visual-grammar.md), [composition score](references/composition-score.md), [whole-conversation synthesis](references/conversation-synthesis.md), or [4.3 design note and research](docs/field-4.3-design.md).
+Read the [visual grammar](references/visual-grammar.md), [composition score](references/composition-score.md), [whole-conversation synthesis](references/conversation-synthesis.md), [4.3 design note and research](docs/field-4.3-design.md), or the [4.6 expression note](docs/field-4.6-design.md).
 
 ## Develop or contribute
 

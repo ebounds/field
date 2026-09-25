@@ -1,4 +1,4 @@
-# Field Companion 1.0.1 / package 4.5.1
+# Field Companion 1.0.1 / package 4.6.0
 
 Field can remain present across a conversation when the user asks for continuous use. The participating assistant composes each update using the full host-permitted scope described in `SKILL.md` and `conversation-synthesis.md`. The local companion stores and displays those expressions. It does not read conversations or call a model independently.
 

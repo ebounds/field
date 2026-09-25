@@ -30,14 +30,17 @@ def equivalent(first, second):
 def main():
     cases = list(json.loads((ROOT/'references/reference-controls.json').read_text()).values())
     cases += [{}, {'form': 'sweep', 'gesture': 'fold', 'gesture_strength': 1},
-              {'form': 'mantle', 'history': 1, 'counterpoint': 1, 'complexity': .45}]
+              {'form': 'mantle', 'history': 1, 'counterpoint': 1, 'complexity': .45},
+              {'grounding': 0}, {'grounding': 1}, {'form': 'sweep', 'grounding': .5, 'tension': .8},
+              {'form': 'mantle', 'grounding': .23, 'history': .7, 'counterpoint': .6, 'complexity': 1}]
     rng = random.Random(43)
     for form in ('envelope', 'sweep', 'mantle'):
         for _ in range(4):
             cases.append(dict(form=form, history=rng.random(), counterpoint=rng.random(),
                               openness=rng.random(), folding=rng.random(), breadth=rng.random(),
                               stretch=rng.uniform(-1, 1), flow=rng.uniform(-1, 1),
-                              tension=rng.random(), intensity=rng.random(), definition=rng.random()))
+                              tension=rng.random(), intensity=rng.random(), definition=rng.random(),
+                              grounding=rng.random(), complexity=rng.random()))
     module = (ROOT/'docs/site/renderer.mjs').as_uri()
     program = "import {render} from " + json.dumps(module) + "; let input=''; for await (const c of process.stdin) input+=c; console.log(JSON.stringify(JSON.parse(input).map(render)));"
     result = subprocess.run(['node', '--input-type=module', '-e', program],

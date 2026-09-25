@@ -1,16 +1,31 @@
 import {validateUpdate} from './continuity.mjs';
 
 // One inquiry develops within a recognizable silhouette and enduring palette.
-// These are authored examples, explicitly labeled as scripted.
-const inquiry={form:'mantle',primary:'violet',secondary:'teal',accent:'amber',accent_strength:.2,
+// Posture and palette are held almost still on purpose: the change is carried by
+// what the field is made of, not by how much room it takes. These are authored
+// examples, explicitly labeled as scripted.
+const inquiry={form:'mantle',primary:'violet',secondary:'teal',
   ambient:'violet',ambient_strength:.42,flow:.12,stretch:.12,breadth:.7,
-  intensity:.64,saturation:.95,tension:.14,complexity:.35,counterpoint:.2};
+  intensity:.66,saturation:.95};
 const scenes=[
-  ['An opening question','A violet opening, with room for something not yet clear.','hold',{...inquiry,openness:.58,definition:.3,folding:.2,complexity:.25,history:0}],
-  ['Possibilities unfold','The same opening widens; its earlier edge stays within reach.','reach',{...inquiry,openness:.82,definition:.62,folding:.28,history:.6}],
-  ['A reservation remains','A warm crease draws inward through the continuing inquiry.','gather',{...inquiry,openness:.66,stretch:-.32,flow:-.02,definition:.72,folding:.68,tension:.58,accent:'coral',accent_strength:.42,counterpoint:.48,imbalance:.15,history:.72}],
-  ['A clarification takes hold','The crease relaxes, leaving a visible ridge in the opening.','settle',{...inquiry,openness:.73,stretch:-.08,flow:.06,definition:.78,folding:.3,tension:.2,accent_strength:.3,counterpoint:.24,history:.78}],
-  ['Something carries forward','The opening returns with more room, carrying its changed edge.','return',{...inquiry,openness:.86,definition:.83,folding:.22,tension:.13,accent_strength:.26,history:.82}]
+  ['An opening question','A violet opening. Much of it is still inferred rather than met.','hold',
+    {...inquiry,openness:.62,definition:.34,folding:.2,complexity:.22,tension:.1,
+     grounding:.45,history:0}],
+  ['Possibilities unfold','The same opening, now met more directly, keeping its earlier edge.','reach',
+    {...inquiry,openness:.7,definition:.62,folding:.26,complexity:.4,tension:.12,
+     grounding:.82,history:.6}],
+  ['A reservation remains','A second current parts through the inquiry and stays there.','gather',
+    {...inquiry,openness:.68,definition:.72,folding:.42,complexity:.5,tension:.62,
+     accent:'coral',accent_strength:.6,counterpoint:.78,imbalance:.12,
+     grounding:.88,history:.72}],
+  ['A clarification takes hold','The pressure relaxes; the second current narrows but does not close.','settle',
+    {...inquiry,openness:.72,definition:.84,folding:.3,complexity:.52,tension:.2,
+     accent:'coral',accent_strength:.32,counterpoint:.34,
+     grounding:.96,history:.78}],
+  ['Something carries forward','The opening returns, holding a ridge and a thread of what was resisted.','return',
+    {...inquiry,openness:.78,definition:.88,folding:.24,complexity:.6,tension:.14,
+     accent:'coral',accent_strength:.24,counterpoint:.22,
+     grounding:1,history:.85}]
 ];
 export const STUDY=scenes.map(([label,description,transition,spec],i)=>({label,description,
   update:validateUpdate({version:1,conversation:'scripted-study',sequence:i+1,title:'A question takes shape',

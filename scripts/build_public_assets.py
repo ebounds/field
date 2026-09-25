@@ -10,7 +10,7 @@ from render_field import render
 
 ROOT = Path(__file__).resolve().parents[1]
 SITE = ROOT/'docs/site'
-PACKAGE_VERSION = '4.5.1'
+PACKAGE_VERSION = '4.6.0'
 
 
 def main():
@@ -47,7 +47,8 @@ def main():
     files = [ROOT/'SKILL.md', ROOT/'LICENSE', ROOT/'scripts/render_field.py',
              ROOT/'scripts/build_reference_assets.py', ROOT/'docs/field-guide.pdf',
              ROOT/'docs/field-4.3-design.md', ROOT/'docs/field-4.4-design.md',
-             ROOT/'docs/field-4.5-design.md', ROOT/'docs/field-continuity-proposal.md',
+             ROOT/'docs/field-4.5-design.md', ROOT/'docs/field-4.6-design.md',
+             ROOT/'docs/field-continuity-proposal.md',
              ROOT/'scripts/render_audio.mjs', ROOT/'scripts/field.mjs',
              ROOT/'docs/companion.html', ROOT/'docs/continuity.html']
     files += [SITE/name for name in ('audio.mjs','audio-worker.mjs','listening.mjs',

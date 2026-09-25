@@ -75,7 +75,7 @@ export async function startCompanion({port=8767,data=resolve('.field'),docs=DOCS
         return;
       }
       if(url.pathname==='/api/status') {
-        send(response,200,{version:'4.5.1',conversations:[...states.values()].map(s=>({id:s.conversation,title:s.title,
+        send(response,200,{version:'4.6.0',conversations:[...states.values()].map(s=>({id:s.conversation,title:s.title,
           sequence:s.updates.at(-1).sequence,at:s.updates.at(-1).at})).sort((a,b)=>b.at.localeCompare(a.at))});return;
       }
       if(url.pathname==='/api/state'||url.pathname==='/api/context') {
@@ -112,7 +112,7 @@ export async function startCompanion({port=8767,data=resolve('.field'),docs=DOCS
     close:async()=>{for(const stream of streams) stream.response.end();server.closeIdleConnections?.();await new Promise(resolve=>server.close(resolve));}};
 }
 
-const help=`Field 4.5.1 — a companion for a continuing conversation
+const help=`Field 4.6.0 — a companion for a continuing conversation
 
   node scripts/field.mjs serve [--port 8767] [--data .field]
   node scripts/field.mjs publish --file update.json [--ledger context.json] [--url http://127.0.0.1:8767]

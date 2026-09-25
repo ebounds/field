@@ -1,4 +1,4 @@
-# Try Field 4.5.1
+# Try Field 4.6.0
 
 Field turns an assistant's interpretation of a conversation into a wordless SVG artwork.
 

@@ -1,8 +1,8 @@
-// Field Listening 1.0. One deterministic instrument for the browser and Node.
+// Field Listening 1.1. One deterministic instrument for the browser and Node.
 // No samples, network, transcript, or model inference. Input is the Field v4 spec.
 import {validate} from './renderer.mjs';
 
-export const AUDIO_REVISION = '1.0';
+export const AUDIO_REVISION = '1.1';
 export const DURATION = 24;
 export const SAMPLE_RATE = 44100;
 const TAU = 2 * Math.PI;
@@ -43,47 +43,50 @@ export function compose(spec = {}) {
     const arc = Math.sin(i/6*Math.PI);
     const pan = p.form === 'sweep' ? (i/6*2-1)*air : Math.sin(i*2.4)*air*.65;
     const register = p.form === 'mantle' ? 2 : (i===4 && p.openness>.7 ? 2 : 1);
-    const duration = (p.form === 'mantle' ? 6.8 : 5.0) + 2.1*p.breadth;
+    // Voices release well before the next entry, so entries stay audible as
+    // entries and the room is allowed to empty. Breadth lengthens, it does not
+    // fill: a broad field sustains, a spare one leaves air between its voices.
+    const duration = (p.form === 'mantle' ? 4.2 : 3.2) + 2.0*p.breadth;
     const onset = onsets[i] + Math.sin(i*1.9)*p.folding*.5;
     add(onset,duration,main.ratios[order[i]]*register,p.primary,
       .115*(.82+.18*arc),pan,'voice',{articulation:p.definition});
 
     // Breadth is weight and voicing, rather than an increase in master volume.
-    if (i%2===0 && p.breadth>.15) add(onset+.45,duration+1,
+    if (i%2===0 && p.breadth>.15) add(onset+.45,duration+.8,
       main.ratios[order[i]]*.5,p.primary,.043*p.breadth,-pan*.55,'body');
 
     // A remembered contour grows from an existing voice; never a separate timeline.
-    if (p.history>0 && i<5) add(onset+2.1,4.5+p.history*2,
+    if (p.history>0 && i<5) add(onset+2.1,3.0+p.history*1.5,
       main.ratios[order[i]],p.primary,.049*p.history,-pan*.8,'trace',{soft:true});
   }
 
   // A second color lives in the same room, sharing the root and phrase boundaries.
   if (p.secondary) {
     const secondary = VOICES[p.secondary];
-    for (let i=0; i<4; i++) add(2.6+i*4.6,6.3,
+    for (let i=0; i<4; i++) add(2.9+i*4.7,3.8,
       secondary.ratios[[2,1,3,0][i]],p.secondary,.042,
       Math.cos(i*2.2)*air*.55,'companion',{soft:true});
   }
   if (p.counterpoint>0) {
     const color = p.secondary || p.accent || p.primary;
     const ratios = VOICES[color].ratios;
-    for (let i=0; i<4; i++) add(5.1+i*3.7,4.2,
+    for (let i=0; i<4; i++) add(5.3+i*3.9,2.9,
       ratios[[1,3,2,0][i]]*(i===1?2:1),color,.062*p.counterpoint,
       (i%2===0?-.7:.7)*air,'counterpoint',{articulation:p.definition});
   }
   // Folding and complexity make a sparse filigree; there is no mechanical beat.
   const detail = Math.round(p.complexity*6);
-  for (let i=0; i<detail; i++) add(4.4+i*2.6+Math.sin(i*2)*p.folding*.65,2.7,
+  for (let i=0; i<detail; i++) add(4.4+i*2.6+Math.sin(i*2)*p.folding*.65,1.8,
     main.ratios[[2,4,1,3,2,0][i]]*2,p.primary,.027,
     Math.sin(i*2.1)*air,'filament',{articulation:1});
   if (p.accent && p.accent_strength>0) {
-    for (let i=0; i<2; i++) add(7.6+i*7.1,4.8,
+    for (let i=0; i<2; i++) add(7.8+i*7.0,3.2,
       VOICES[p.accent].ratios[i===0?2:1]*2,p.accent,.048*p.accent_strength,
       (i===0?-.45:.45)*air,'accent',{articulation:.85});
   }
   if (p.gesture!=='none' && p.gesture_strength>0) {
     const sequence = p.gesture==='fold' ? [3,1,2] : p.gesture==='braid' ? [1,3,2] : [2,2,2];
-    sequence.forEach((index,i)=>add(10.5+i*(p.gesture==='echo'?1.6:1.1),3.3,
+    sequence.forEach((index,i)=>add(10.5+i*(p.gesture==='echo'?1.6:1.1),2.2,
       main.ratios[index]*(p.gesture==='braid'&&i===1?2:1),p.primary,
       .034*p.gesture_strength*(p.gesture==='echo'?1-i*.23:1),
       Math.sin(i*2+1)*air,'gesture',{articulation:.8}));
@@ -106,32 +109,40 @@ function synthVoice(left, right, sampleRate, event, p) {
   const travel = event.anchor?0:p.flow*.2;
   const beating = event.anchor?0:p.tension*(event.role==='counterpoint'?1.9:.75);
   const partials = event.anchor ? [1,.12,.025] : voice.partials;
+  // Epistemic texture. The capsule is always present, so it is never described.
+  // Elsewhere, an inferred reading keeps a voice's outline and loses its body:
+  // the fundamental withdraws while the rim and air that describe it remain.
+  const described = event.anchor ? 0 : 1-p.grounding;
   const presence = .82+.78*p.intensity;
   let noiseState=(Math.round(frequency*1000)+Math.round(event.start*10000))|0,breath=0;
   for (let j=0; j<length; j++) {
     const t = j/sampleRate;
     const envelope = ease(t/attack)*ease((event.duration-t)/release);
     const decay = event.anchor?1:(.48+.52*Math.exp(-t/(2.1+3.5*p.breadth)));
+    // The capsule's tone is continuous, not motionless: it opens with the phrase
+    // and withdraws at either end, leaving the room to the voices and to silence.
+    const carry = event.anchor ? .30+.70*Math.sin(Math.PI*Math.min(1,t/event.duration))**.75 : 1;
     // Slow phase drift is shallow enough to retain a stable musical pitch.
     const drift = event.anchor?0:.12*Math.sin(TAU*.21*t+event.start);
     const phase = TAU*frequency*t + drift;
     let value = 0;
     for (let k=0;k<partials.length;k++) {
       if (frequency*(k+1)>sampleRate*.43) break;
-      value += partials[k]*(k===0?1:brightness)*Math.sin(phase*(k+1)) *
+      value += partials[k]*(k===0?1-.74*described:brightness)*Math.sin(phase*(k+1)) *
         (k===0?1:Math.exp(-t*k*(.045+.025*definition)));
     }
     if (!event.anchor) {
       // A muted non-harmonic rim, like a fingertip around glass.
-      value += voice.glass*brightness*Math.exp(-t*.75)*Math.sin(phase*2.756);
+      value += (voice.glass+.26*described)*brightness*Math.exp(-t*.75)*Math.sin(phase*2.756);
       // Pressure produces a restrained beating neighbor, never a volume alarm.
       value = value*(1-p.tension*.13) + p.tension*.13*Math.sin(phase+TAU*beating*t);
       // A little air within wood and bow, generated deterministically per voice.
       noiseState^=noiseState<<13;noiseState^=noiseState>>>17;noiseState^=noiseState<<5;
       breath+=.18*((noiseState>>>0)/2147483648-1-breath);
-      if(event.color==='teal'||event.color==='coral') value+=breath*(.018+.02*(1-definition));
+      if(event.color==='teal'||event.color==='coral'||described>0)
+        value+=breath*(.018+.02*(1-definition)+.055*described);
     }
-    value *= envelope*decay*event.level*presence;
+    value *= envelope*decay*carry*event.level*presence;
     const pan = clamp(event.pan+travel*Math.sin(t*.28),-.9,.9);
     left[first+j] += value*Math.cos((pan+1)*Math.PI/4);
     right[first+j] += value*Math.sin((pan+1)*Math.PI/4);
@@ -145,8 +156,8 @@ function reverberate(left, right, sampleRate, p) {
   const delays = lengths.map((seconds,i)=>new Float32Array(Math.round(
     seconds*(1+.65*p.openness+i*.01)*sampleRate)));
   const positions = [0,0,0,0], low = [0,0,0,0];
-  const feedback = .70+.10*p.ambient_strength;
-  const damping = .12+.18*p.definition;
+  const feedback = .60+.10*p.ambient_strength;
+  const damping = .17+.20*p.definition;
   for(let i=0;i<left.length;i++) {
     const dryL=left[i], dryR=right[i];
     let roomL=0,roomR=0;

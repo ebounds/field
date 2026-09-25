@@ -1,6 +1,6 @@
-// Browser implementation of scripts/render_field.py, rendering revision 4.3.
+// Browser implementation of scripts/render_field.py, rendering revision 4.4.
 // Keep geometry and material in step with the Python reference renderer.
-export const REVISION = '4.3';
+export const REVISION = '4.4';
 export const PALETTE = {
   teal: '#42BDB0', blue: '#648DE5', violet: '#9B7BE8',
   amber: '#E8B86A', coral: '#D97979', pearl: '#DDE5EA'
@@ -11,7 +11,7 @@ export const DEFAULTS = {
   intensity: .5, imbalance: 0, gesture: 'none', gesture_strength: 0,
   breadth: .4, folding: .2, stretch: 0, flow: 0, saturation: .85,
   ambient: null, ambient_strength: .25, accent_strength: .4,
-  form: 'envelope', history: 0, counterpoint: 0
+  form: 'envelope', history: 0, counterpoint: 0, grounding: 1
 };
 const {sin, cos, exp, atan2, hypot, min, max, abs, PI} = Math;
 const fixed = (n, digits = 3) => n.toFixed(digits);
@@ -157,6 +157,8 @@ export function render(spec = {}) {
   const pigment = name => { const [l, a, b] = toOklab(PALETTE[name]); return oklabHex([l, a*p.saturation, b*p.saturation]); };
   const mix = (a, b, amount) => { const second = toOklab(b); return oklabHex(toOklab(a).map((x, i) => x*(1-amount) + second[i]*amount)); };
   const light = (color, amount) => { const [l, a, b] = toOklab(color); return oklabHex([min(.91, l*amount), a, b]); };
+  // Lit but withdrawn material, for surfaces that are remembered or inferred.
+  const pale = (color, amount, chroma) => { const [l, a, b] = toOklab(color); return oklabHex([min(.91, l*amount), a*chroma, b*chroma]); };
   const c1 = pigment(p.primary), c2 = pigment(p.secondary || p.primary), ca = pigment(p.accent || p.primary);
   const ambient = pigment(p.ambient || p.primary), climate = p.ambient_strength;
   const bgCentre = mix('#101A25', ambient, .03+.38*climate), bgEdge = mix('#080D16', ambient, .02+.12*climate);
@@ -164,6 +166,13 @@ export function render(spec = {}) {
   const strength = .26+.65*power;
   const {a,b,fit,point,surface,us,ribbon,strip,thickness} = geometry(p);
   const outline = ribbon(0,1), accentMix = p.accent ? mix(c1,ca,p.accent_strength*.85) : c1;
+  // Epistemic texture: how much of this reading rests on material actually
+  // present. What is not grounded is described rather than filled.
+  const weave = 1-p.grounding;
+  const aperture = (6+112*o)*PI/180, first = -.42+aperture/2, last = 2*PI-.42-aperture/2;
+  // The visible seat of compression, following the geometry that tension bends.
+  const strainU = form === 'envelope' ? min(.86,max(.14,(2.65-first)/(last-first))) : .48;
+  const counterHue = p.accent ? ca : c2;
   const svg = [];
   const add = value => svg.push(value);
   const path = (shape, attrs) => '<path d="' + shape + '" ' + attrs + '/>';
@@ -180,7 +189,8 @@ export function render(spec = {}) {
   add(linear('field-edge-ink',pageGradient,[c1,c2,c1,c1],[0,.32,.58,1],[.1,.75,.15,.6]));
   add(linear('field-crest','gradientUnits="userSpaceOnUse" x1="170" y1="690" x2="790" y2="280"',[light(c1,1.28),light(c2,1.45),light(c1,1.3),light(c1,1.4)],[0,.36,.68,1],[.25,.9,.35,.65]));
   add(linear('field-depth','gradientUnits="userSpaceOnUse" x1="230" y1="730" x2="760" y2="300"',Array(4).fill('#0B1520'),[0,.35,.7,1],[0,.48,.1,.3]));
-  add(linear('field-history-ink','gradientUnits="userSpaceOnUse" x1="190" y1="730" x2="810" y2="270"',[c2,light(c1,1.12),c2],[0,.47,1],[.22,.65,.2]));
+  add(linear('field-history-ink','gradientUnits="userSpaceOnUse" x1="190" y1="730" x2="810" y2="270"',[pale(c2,.74,.5),pale(c1,1.24,.44),pale(c2,.72,.5)],[0,.47,1],[.5,.92,.45]));
+  add(linear('field-counter-ink',pageGradient,[light(counterHue,.5),light(counterHue,1.34),light(counterHue,.6)],[0,.42,1]));
   add(linear('drone-metal','x1="0" y1="0" x2="0" y2="1"',['#34414D','#202B35','#101922'],[0,.5,1]));
   add(linear('drone-rim','x1="0" y1="0" x2="1" y2="1"',['#DDE5EA','#8C9BA9','#DDE5EA'],[0,.6,1],[.68,.21,.30]));
   for (const [id,blur] of [['field-soft',1.5+18*(1-d)],['field-diffuse',1.2+5*(1-d)**2]]) add('<filter id="'+id+'" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="'+fixed(blur,2)+'"/></filter>');
@@ -198,27 +208,59 @@ export function render(spec = {}) {
       const dx=inner[0]-outer[0],dy=inner[1]-outer[1],length=max(1e-6,hypot(dx,dy));
       return [x-displacement*dx/length,y-displacement*dy/length];
     };
-    const offset = u=>p.history*(22+26*breadth)*sin(PI*u)**1.6*(.84+.16*cos(3*PI*u));
+    const offset = u=>p.history*(30+34*breadth)*sin(PI*u)**1.6*(.84+.16*cos(3*PI*u));
     const ridge=closed(us.map(u=>location(u,.07,offset(u))),reverse(us).map(u=>location(u,.34,offset(u)*.17)));
     const edge=pointsPath(us.filter(u=>u>=.16&&u<=.84).map(u=>location(u,.07,offset(u))));
-    add('<g id="field-history" opacity="'+fixed(strength*p.history*(.54+.18*d))+'">'+path(ridge,'fill="url(#field-history-ink)" filter="url(#field-diffuse)"')+path(edge,'fill="none" stroke="'+light(c2,1.16)+'" stroke-width="'+fixed(.7+1.1*p.history,2)+'" opacity=".42"')+'</g>');
+    add('<g id="field-history" opacity="'+fixed(strength*p.history*(.86+.14*d))+'">'+path(ridge,'fill="url(#field-history-ink)" filter="url(#field-diffuse)"')+path(edge,'fill="none" stroke="'+pale(c2,1.36,.5)+'" stroke-width="'+fixed(1+1.9*p.history,2)+'" opacity=".82"')+'</g>');
   }
-  add(path(outline,'fill="url(#field-ink)" opacity="'+fixed(strength*.28)+'" filter="url(#field-soft)"'));
-  add(path(outline,'fill="url(#field-ink)" opacity="'+fixed(strength*(.18+.23*d))+'" filter="url(#field-diffuse)"'));
+  add(path(outline,'fill="url(#field-ink)" opacity="'+fixed(strength*.28*(1-.72*weave))+'" filter="url(#field-soft)"'));
+  add(path(outline,'fill="url(#field-ink)" opacity="'+fixed(strength*(.18+.23*d)*(1-.78*weave))+'" filter="url(#field-diffuse)"'));
   add(path(strip(.11,.9,.79,.15),'fill="url(#field-depth)" opacity="'+fixed(strength*(.08+.16*d))+'" filter="url(#field-diffuse)"'));
   add('<g id="field-surface" opacity="'+fixed(strength*(.35+.1*d))+'" filter="url(#field-diffuse)">');
-  for(let j=0;j<lanes;j++) add(path(ribbon(j/lanes,min(1,(j+1.65)/lanes)),'fill="url(#field-skin-'+j+')"'));
-  add('</g>');
-  if(p.counterpoint) {
-    const section=[.14,...us.filter(u=>u>.14&&u<.86),.86];
-    const parting=u=>.37*p.counterpoint*max(0,sin(PI*((u-.14)/.72)))**1.4;
-    const lens=closed(section.map(u=>surface(u,.40)),reverse(section).map(u=>surface(u,.40+parting(u))));
-    const seam=pointsPath(section.map(u=>surface(u,.40+parting(u))));
-    const ink=p.accent?ca:c2;
-    add('<g id="field-countercurrent" opacity="'+fixed(strength*p.counterpoint*(.47+.23*d))+'">'+path(lens,'fill="'+ink+'" filter="url(#field-diffuse)"')+path(seam,'fill="none" stroke="'+light(ink,1.3)+'" stroke-width="'+fixed(.8+2.2*p.counterpoint,2)+'" opacity=".65"')+'</g>');
+  for(let j=0;j<lanes;j++) {
+    const f=(j+.5)/lanes;
+    // Where the reading is inferred, the skin thins; the ribs below carry it.
+    const presence=f>=weave?1:.08+.92*(f/max(1e-6,weave))**.7;
+    add(path(ribbon(j/lanes,min(1,(j+1.65)/lanes)),'fill="url(#field-skin-'+j+')" opacity="'+fixed(presence)+'"'));
   }
-  add(path(strip(.07,.94,.31,.13+.035*breadth,.12),'id="field-shoulder-light" fill="url(#field-crest)" opacity="'+fixed(strength*(.45+.4*d))+'" filter="url(#field-diffuse)"'));
-  add(path(strip(.21,.75,.2,.045+.03*breadth,.08),'id="field-grazing-light" fill="url(#field-crest)" opacity="'+fixed(strength*(.35+.35*d))+'"'));
+  add('</g>');
+  if(weave) {
+    // Inference is drawn, not filled: the section ribs that define the form
+    // stay visible where its material does not. This is not low definition,
+    // which blurs everything equally; here the structure stays exact.
+    const ribs=7+roundEven(13*weave);
+    add('<g id="field-reticulation" fill="none" stroke-linecap="round" opacity="'+fixed(strength*(.62+.38*d))+'">');
+    for(let j=0;j<ribs;j++) {
+      const u=.06+.88*(j+.5)/ribs, span=weave*(.52+.48*sin(PI*u));
+      add(path(pointsPath(seq(13,k=>surface(u,span*k/12))),'stroke="'+pale(c1,1.38,.6)+'" stroke-width="'+fixed(.9+1.3*weave,2)+'" opacity="'+fixed(.4+.5*sin(PI*u))+'"'));
+    }
+    // A held outer edge keeps the described form exact where it is not filled.
+    add(path(pointsPath(us.map(u=>surface(u,.02))),'stroke="'+pale(c1,1.3,.55)+'" stroke-width="'+fixed(.7+1.1*weave,2)+'" opacity="'+fixed(.3+.4*weave)+'"'));
+    add('</g>');
+  }
+  // Light falls only where there is material to catch it, so it moves inward.
+  add(path(strip(.07,.94,.31+.5*weave,(.13+.035*breadth)*(1-.45*weave),.12),'id="field-shoulder-light" fill="url(#field-crest)" opacity="'+fixed(strength*(.45+.4*d))+'" filter="url(#field-diffuse)"'));
+  if(p.counterpoint) {
+    // A second current lives in the same material, so it is modelled by the
+    // same light. It parts above the shoulder, where the surface can be read.
+    const section=[.14,...us.filter(u=>u>.14&&u<.86),.86];
+    const parting=u=>.52*p.counterpoint*max(0,sin(PI*((u-.14)/.72)))**1.4;
+    const near=section.map(u=>surface(u,.40));
+    const lens=closed(near,reverse(section).map(u=>surface(u,.40+parting(u))));
+    const seam=pointsPath(section.map(u=>surface(u,.40+parting(u))));
+    add('<g id="field-countercurrent" opacity="'+fixed(strength*p.counterpoint*(.74+.26*d))+'">'
+      +path(lens,'fill="url(#field-counter-ink)" filter="url(#field-diffuse)"')
+      +path(pointsPath(near),'fill="none" stroke="#0B1520" stroke-width="'+fixed(1.1+2.4*p.counterpoint,2)+'" opacity=".5"')
+      +path(seam,'fill="none" stroke="'+light(counterHue,1.44)+'" stroke-width="'+fixed(1+3*p.counterpoint,2)+'" opacity=".88"')+'</g>');
+  }
+  add(path(strip(.21,.75,.2+.58*weave,.045+.03*breadth,.08),'id="field-grazing-light" fill="url(#field-crest)" opacity="'+fixed(strength*(.35+.35*d))+'"'));
+  if(t) {
+    // Compression gathers shadow behind the strained contour and concentrates
+    // light along it. Unresolved pressure, not alarm.
+    const lo=max(.02,strainU-.18), hi=min(.98,strainU+.18);
+    add(path(strip(lo,hi,.46,.07+.17*t,.1),'id="field-strain" fill="url(#field-depth)" opacity="'+fixed(strength*t*(.5+.3*d))+'" filter="url(#field-diffuse)"'));
+    add(path(strip(max(.02,strainU-.13),min(.98,strainU+.13),.2,.028+.05*t),'id="field-strain-light" fill="url(#field-crest)" opacity="'+fixed(strength*t*(.55+.3*d))+'"'));
+  }
   if(fold) {
     add('<g id="field-fold-light" fill="url(#field-edge-ink)" opacity="'+fixed(strength*fold*(.1+.3*d))+'" filter="url(#field-diffuse)">');
     for(const phase of [0,PI]) {
@@ -228,21 +270,27 @@ export function render(spec = {}) {
     add('</g>');
     add(path(strip(.28,.79,.53,.045+.08*fold,.14),'id="field-fold-shadow" fill="url(#field-depth)" opacity="'+fixed(strength*fold*(.24+.24*d))+'" filter="url(#field-diffuse)"'));
   }
-  add(path(pointsPath(us.map(u=>surface(u,.06))),'fill="none" stroke="url(#field-edge-ink)" stroke-width="'+fixed(.65+.75*d,2)+'" opacity="'+fixed(strength*d*.68)+'"'));
+  add(path(pointsPath(us.map(u=>surface(u,.06))),'fill="none" stroke="url(#field-edge-ink)" stroke-width="'+fixed(.65+.75*d+.9*weave,2)+'" opacity="'+fixed(strength*(d*.68+.3*weave))+'"'));
   add(path(pointsPath(us.filter(u=>u>=.47&&u<=.84).map(u=>surface(u,.9))),'fill="none" stroke="url(#field-edge-ink)" stroke-width="'+fixed(1+.8*d,2)+'" opacity="'+fixed(strength*d*.6)+'"'));
-  add('</g><g id="field-filaments" fill="none" stroke="url(#field-edge-ink)" stroke-linecap="round" opacity="'+fixed(strength*(.12+.88*d))+'">');
+  add('</g><g id="field-filaments" fill="none" stroke-linecap="round" opacity="'+fixed(strength*(.42+.58*d))+'">');
   const count=1+roundEven(c*10);
   for(let j=0;j<count;j++) {
     const f=.12+.79*((j+1)/(count+1))**1.45,lo=.015+.045*(j%3),hi=.985-.04*((j+1)%4);
-    const pts=us.filter(u=>u>=lo&&u<=hi).map(u=>surface(u,f+(.012*t+.045*fold)*sin(5*PI*u+j*.9)*sin(PI*u)));
-    const weight=j%3===0?1:.55;
-    add(path(pointsPath(pts),'stroke-width="'+fixed((.6+.65*d)*weight,2)+'" opacity="'+fixed((.22+.23*d)*weight)+'"'));
+    const samples=us.filter(u=>u>=lo&&u<=hi);
+    const shift=u=>(.012*t+.045*fold)*sin(5*PI*u+j*.9)*sin(PI*u);
+    const pts=samples.map(u=>surface(u,f+shift(u)));
+    const trough=samples.map(u=>surface(u,f+shift(u)+.028*sin(PI*u)));
+    const weight=j%3===0?1:.55, relief=.72+1.15*breadth;
+    // Each filament is a crest with its own shadow, so fine structure reads
+    // as a change of surface direction rather than a drawn line.
+    add(path(pointsPath(trough),'stroke="#0B1520" stroke-width="'+fixed((1+1.05*d)*relief*weight,2)+'" opacity="'+fixed((.19+.19*d)*weight)+'"'));
+    add(path(pointsPath(pts),'stroke="'+light(c1,1.32)+'" stroke-width="'+fixed((.85+.95*d)*relief*weight,2)+'" opacity="'+fixed((.3+.33*d)*weight)+'"'));
   }
   add('</g><g id="field-accent" fill="none">');
   if(p.accent) {
     const seg=pointsPath(us.filter(u=>u>=.37&&u<=.69).map(u=>surface(u,.57)));
     add(path(seg,'stroke="url(#field-accent-ink)" stroke-width="'+fixed(6+25*p.accent_strength,2)+'" opacity="'+fixed(.25+.45*p.accent_strength,2)+'" filter="url(#field-soft)"'));
-    add(path(seg,'stroke="url(#field-accent-ink)" stroke-width="'+fixed(1+2*p.accent_strength,2)+'" opacity=".58"'));
+    add(path(seg,'stroke="url(#field-accent-ink)" stroke-width="'+fixed(1.6+4*p.accent_strength,2)+'" opacity=".76"'));
   }
   if(d>.55) add(path(pointsPath(us.filter(u=>u>=.17&&u<=.21).map(u=>point(u,thickness(u)*.45))),'stroke="'+light(c1,1.18)+'" stroke-width="1.2" opacity="'+fixed(strength*(d-.55)*.7)+'"'));
   add('</g><g id="field-gesture" fill="none" stroke-linecap="round">');
@@ -252,7 +300,8 @@ export function render(spec = {}) {
       const v=(u-.28)/.36,bow=sin(PI*v),wave=g==='braid'?sin(v*PI*3+j*PI):bow;
       return point(u,thickness(u)*.5+(g==='echo'?42:-38)*gs*wave*bow);
     });
-    add(path(pointsPath(pts),'stroke="'+c2+'" stroke-width="'+fixed(1.2+1.3*gs,2)+'" opacity="'+fixed(.20+.40*gs)+'"'));
+    add(path(pointsPath(pts),'stroke="#0B1520" stroke-width="'+fixed(2.6+5*gs,2)+'" opacity="'+fixed(.16+.26*gs)+'"'));
+    add(path(pointsPath(pts),'stroke="'+light(c2,1.3)+'" stroke-width="'+fixed(1.4+3.2*gs,2)+'" opacity="'+fixed(.34+.5*gs)+'"'));
   }
   add('</g><g id="drone-body"><rect x="436" y="468" width="128" height="64" rx="32" fill="url(#drone-metal)" stroke="url(#drone-rim)" stroke-width="1.5"/></g></svg>');
   return svg.join('\n')+'\n';

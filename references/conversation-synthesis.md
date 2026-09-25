@@ -56,6 +56,8 @@ Keep normal delivery wordless. After rendering, append one small `<metadata id="
 
 Keep this record limited to the listed context-coverage facts. XML-escape JSON when inserting it. This record makes later answers to "how much of the conversation?" accountable; it does not magically restore unavailable history.
 
+The `grounding` drawing control expresses the same fact inside the artwork, where the coverage record is invisible. Keep the two consistent: a thread available verbatim throughout ends near 1; summarized or partial phases, a basis of retrieved excerpts, or a stance resting largely on inference should lower it in proportion. This is a statement about the basis of the expression, not about the truth of anything discussed, and not a substitute for disclosing a material gap in words when one exists.
+
 Record coverage of the retained substantive conversation. Intentionally excluded Field checks are not missing history; under this protocol, `whole_available_conversation` includes this default sampling exclusion.
 
 If a substantial phase cannot be recovered, briefly state the actual limitation outside the visual, for example "Earlier turns are unavailable; this field covers the middle and ending I can see." If only a summary is available, say so when that materially limits the requested whole-thread interpretation. Do not silently label a tail-only depiction as a whole-conversation field. Avoid repeating a limitation already disclosed unless the scope has changed.

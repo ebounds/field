@@ -1,6 +1,6 @@
-# Field Listening 1.0
+# Field Listening 1.1
 
-An optional musical companion to Field v4, introduced in package 4.4. The visual renderer remains revision 4.3. Ordinary Field invocations remain visual. Invoke listening only when the user asks for sound, music, listening, or an audio companion; an explicitly requested audio-only Field is also supported.
+An optional musical companion to Field v4, introduced in package 4.4 and revised in 4.6. The visual renderer is revision 4.4. Ordinary Field invocations remain visual. Invoke listening only when the user asks for sound, music, listening, or an audio companion; an explicitly requested audio-only Field is also supported.
 
 ## One interpretation, two expressions
 
@@ -41,6 +41,11 @@ These mappings are authored conventions to explore and learn, not research-valid
 | Saturation / stretch | Harmonic brightness and spectral weight. |
 | Flow / imbalance | Slow lateral movement and placement around the centered anchor. |
 | Accent / gesture | Brief supporting material or a folded, echoed, or braided phrase. |
+| Grounding | An inferred reading keeps a voice's outline and loses its body: the fundamental withdraws while the rim and air that describe it remain. The centre is never described this way. |
+
+Revision 1.1 changes the voicing rather than the conventions. In 1.0 every voice sustained five to nine seconds against entries two to three seconds apart, so eight to thirteen voices sounded continuously from the sixth second to the twenty-second and no entry could be heard as an entry. Voices now release well before the next one arrives, the centre breathes across the phrase instead of holding flat, and the room is drier, so the piece can thin and recover. The material is the same; there is more air between it.
+
+Two measured cautions for anyone developing this further. First, the instrument still has no silence: the centre and the atmosphere sound throughout, so the piece remains a continuous utterance rather than one with rests. Giving it real rests means letting the centre fall silent, which is a decision about the capsule's audible identity and should be made by ear. Second, on a coarse loudness-and-brightness fingerprint, `form` separates two compositions three to six times more than the palette does, and `complexity`, `history` and `counterpoint` barely separate them at all — the same imbalance the visual renderer had before revision 4.4, with the meaning-bearing axis the quietest. That fingerprint under-weights timbre, so a listener may well distinguish palettes more easily than it suggests. Confirm by ear before changing the synthesis.
 
 The mappings intentionally overlap: listening to the whole piece matters more than decoding every control separately. Controls do not become extra psychological scores. Stereo contributes space, but the voices remain audible when mixed to mono. The low center's harmonics help its presence survive small speakers.
 

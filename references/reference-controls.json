@@ -104,5 +104,21 @@
     "gesture": "braid",
     "gesture_strength": 0.85,
     "counterpoint": 0.45
+  },
+  "described": {
+    "form": "mantle",
+    "primary": "blue",
+    "secondary": "violet",
+    "ambient": "blue",
+    "ambient_strength": 0.4,
+    "openness": 0.7,
+    "breadth": 0.72,
+    "folding": 0.2,
+    "intensity": 0.7,
+    "definition": 0.86,
+    "stretch": 0.1,
+    "complexity": 0.35,
+    "grounding": 0.3,
+    "history": 0.3
   }
 }
