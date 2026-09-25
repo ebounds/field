@@ -80,6 +80,8 @@ Read the [visual grammar](references/visual-grammar.md), [composition score](ref
 
 ## Develop or contribute
 
+Start with the [project handoff](docs/project-handoff.md) for the goals, major decisions, implementation map, current limitations, and questions for an independent review.
+
 The Python renderer is the reference implementation. The browser renderer mirrors it and is checked against it:
 
 ```bash
