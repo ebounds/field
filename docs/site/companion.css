@@ -21,6 +21,7 @@
 .companion-actions .text-link { font-size:11px; }
 #focus-view { margin-left:auto; }
 .current-moment { color:#b4c6c5; font-size:12px; min-height:2em; margin:20px 0 0; }
+.audio-moment { color:var(--warm); font-size:12px; line-height:1.7; margin:16px 0 8px; }
 .companion-rail { padding-top:2px; }
 .rail-section { border-bottom:1px solid var(--line); padding-bottom:26px; margin-bottom:26px; }
 .rail-section h2,.inspection h2 { font-size:25px; margin-bottom:15px; }

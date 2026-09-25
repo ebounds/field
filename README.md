@@ -4,7 +4,7 @@
 
 A visual language for the accumulated tone of an AI conversation: attention, imagination, care, uncertainty, and tension, held in a wordless work of art.
 
-[**Try the companion →**](https://ebounds.github.io/field/companion.html) · [Visual playground](https://ebounds.github.io/field/) · [Download Field 4.5](https://ebounds.github.io/field/downloads/field-4.5.zip) · [Illustrated reading guide](https://ebounds.github.io/field/field-guide.pdf)
+[**Try the companion →**](https://ebounds.github.io/field/companion.html) · [Visual playground](https://ebounds.github.io/field/) · [Download Field 4.5.1](https://ebounds.github.io/field/downloads/field-4.5.1.zip) · [Illustrated reading guide](https://ebounds.github.io/field/field-guide.pdf)
 
 [![Field: a luminous membrane around a titanium capsule. The shape of thinking together.](docs/site/social-card.png)](https://ebounds.github.io/field/)
 
@@ -34,7 +34,7 @@ Open the local address it prints, then ask your assistant:
 
 The participating agent composes and publishes updates through the bundled command. Starting the service alone does not monitor a chat or call a model. Your host must support running that command and carrying the instruction across turns. Expressions and an optional phase index stay in a local `.field` directory; restart with the same directory to resume. The interface shows when its expression was last published, including during disconnection.
 
-Read [how to connect](https://ebounds.github.io/field/continuity.html), the [agent protocol](references/continuity-protocol.md), or the [4.5 design note](docs/field-4.5-design.md). Listening remains an optional 24-second portrait; ongoing ambient music is a future experiment.
+Read [how to connect](https://ebounds.github.io/field/continuity.html), the [agent protocol](references/continuity-protocol.md), or the [4.5 design note](docs/field-4.5-design.md). Listening plays a complete 24-second portrait of the moment selected when you press Listen. The visual can advance while that phrase finishes; the panel identifies which moment is being heard. Stop and listen again for the moment now in view. Ongoing music that evolves across moments is a future experiment.
 
 ## Listening: the same field, given time
 
@@ -54,7 +54,7 @@ The output is stereo, 44.1 kHz, 16-bit WAV with the public Field controls embedd
 
 ## Use Field in a conversation
 
-1. [Download Field 4.5](https://ebounds.github.io/field/downloads/field-4.5.zip) and unzip it, or clone this repository.
+1. [Download Field 4.5.1](https://ebounds.github.io/field/downloads/field-4.5.1.zip) and unzip it, or clone this repository.
 2. Give the package to an assistant that can read files and run Python.
 3. In an existing conversation, ask:
 

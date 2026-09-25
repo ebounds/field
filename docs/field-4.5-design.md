@@ -42,6 +42,12 @@ Field seeks the fullest expressive scope its host permits: available conversatio
 
 Freshness and coverage are explicit facts. Color, shape, motion, and sound are authored interpretations. The project leaves their usefulness open to experience and comparison.
 
+## 4.5.1 refinement
+
+The first study moved between distinct preset silhouettes and palettes, making its continuity difficult to recognize. The revised study preserves a violet opening and an enduring palette through widening, gathering, and release. The retained contour now sits on the visible surface beneath its grazing light, with greater geometric retention and a clearer edge. Live interpretations remain free to change form and palette when the conversation warrants it.
+
+The listening panel explicitly identifies the selected moment and, during playback, the moment being heard. If the picture advances, it names both. The timbre description stays attached to the playing phrase. Playback remains a complete portrait of one authored moment; sound that evolves across moments still requires a future instrument.
+
 ## Verification
 
 The renderer parity suite checks 21 browser/Python compositions. Audio checks cover deterministic output, palette differences, the shared center, numerical bounds, and WAV metadata. Companion tests exercise strict validation, stale and concurrent publication, atomic persistence, restart, bounded history, source separation, origin restrictions, and conversation-specific streams.

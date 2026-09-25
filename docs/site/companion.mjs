@@ -10,7 +10,8 @@ let state=null,viewed=null,selected='',stream=null,generation=0,connected=false;
 let demoTimer=0,replayTimer=0,demoIndex=0,viewingHistory=false;
 const scene=new FieldMovement($('#field-stage'));
 const listening=createListening({getSpec:()=>viewed?.spec||STUDY[0].update.spec,
-  getName:()=>viewed?.title||'this field',download});
+  getName:()=>viewed?(live?'Expression '+viewed.sequence:'Moment '+viewed.sequence+' — '+viewed.source.turn):'this field',
+  getIdentity:()=>viewed?viewed.conversation+':'+viewed.sequence:'',download});
 const cachePrefix='field-companion-v1:';
 function storageGet(key) {try{return localStorage.getItem(key);}catch{return null;}}
 function storageSet(key,value) {try{localStorage.setItem(key,value);}catch{$('#companion-status').textContent='Browser storage is unavailable. The local server still keeps your conversation history.';}}
@@ -77,7 +78,7 @@ function show(update,{immediate=false}={}) {
   $('#listen').disabled=!audioSupported;$('#save-audio').disabled=!audioSupported;
   inspect(update,previous);timeline();freshness();
 }
-function current() {stopReplay();viewingHistory=false;if(state)show(state.updates.at(-1));}
+function current() {stopReplay();viewingHistory=false;message('');if(state)show(state.updates.at(-1));}
 function stopReplay() {clearInterval(replayTimer);replayTimer=0;$('#replay').textContent='Replay history ↺';}
 function stopDemo() {clearInterval(demoTimer);demoTimer=0;$('#play-study').textContent='Play the study';}
 function advanceDemo() {

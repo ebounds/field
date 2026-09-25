@@ -37,7 +37,7 @@ export function compositionSVG(update,previous) {
     const us=Array.from({length:97},(_,i)=>i/96);
     const location=(u,f)=>{
       const target=current.surface(u,f),old=past.surface(u,f);
-      const influence=.62*h*Math.sin(Math.PI*u)**1.7;
+      const influence=.82*h*Math.sin(Math.PI*u)**1.7;
       return target.map((x,i)=>x*(1-influence)+old[i]*influence);
     };
     const outer=us.map(u=>location(u,.08));
@@ -49,14 +49,17 @@ export function compositionSVG(update,previous) {
     svg.querySelector('defs').append(ink);
     const group=svg.querySelector('#field-history');
     group.setAttribute('data-trace-source',String(previous.sequence));
-    group.replaceChildren(element('path',{d:path,fill:'url(#retained-ink)',filter:'url(#field-diffuse)'}),
-      element('path',{d:pointsPath(outer),fill:'none',stroke:PALETTE[previous.spec.primary],'stroke-width':'.9',opacity:'.32'}));
+    group.replaceChildren(element('path',{d:path,fill:'url(#retained-ink)',opacity:'.7',filter:'url(#field-diffuse)'}),
+      element('path',{d:pointsPath(outer),fill:'none',stroke:PALETTE[previous.spec.primary],'stroke-width':String(1.2+.6*h),opacity:'.6'}));
+    // Let the remembered ridge read on the surface, beneath its grazing light.
+    const shoulder=svg.querySelector('#field-shoulder-light');
+    shoulder.parentNode.insertBefore(group,shoulder);
   }
   const coverage=element('metadata',{id:'field-coverage'});
   coverage.textContent=JSON.stringify({synthesis_version:'3.2',scope:'whole_available_conversation',
     source_basis:update.coverage.basis,phase_coverage:Object.fromEntries(['early','middle','late'].map(k=>[k,update.coverage[k]])),material_gaps:update.coverage.gaps});
   const provenance=element('metadata',{id:'field-continuity'});
-  provenance.textContent=JSON.stringify({version:1,conversation:update.conversation,sequence:update.sequence,
+  provenance.textContent=JSON.stringify({version:1,renderer:'1.0.1',conversation:update.conversation,sequence:update.sequence,
     source:update.source,at:update.at,transition:update.transition,
     previous:previous&&update.spec.history>0?{sequence:previous.sequence,spec:previous.spec}:null});
   svg.append(coverage,provenance);

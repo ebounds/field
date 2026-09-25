@@ -1,20 +1,30 @@
 import {encodeWav, VOICES, DURATION} from './audio.mjs';
 
 // Listening is opt-in. No AudioContext, worker, or sound before a button press.
-export function createListening({getSpec,getName,download}) {
+export function createListening({getSpec,getName,getIdentity=()=>JSON.stringify(getSpec()),download}) {
   const $=selector=>document.querySelector(selector);
   const panel=$('#listening'),play=$('#listen'),save=$('#save-audio');
   const status=$('#audio-status'),progress=$('#audio-progress'),volume=$('#audio-volume');
   let context,source,gain,worker,pending,cached,cacheKey;
   let request=0,started=0,animation=0,playing=false,rendering=false,exporting=false;
-  let snapshotName='',snapshotKey='',changed=false,disposed=false;
+  let snapshotName='',snapshotKey='',snapshotIdentity='',snapshotSpec,changed=false,disposed=false;
   const key=()=>JSON.stringify(getSpec());
 
+  function describe() {
+    const locked=playing||(rendering&&!exporting);
+    const p=locked&&snapshotSpec?snapshotSpec:getSpec();
+    $('#audio-description').textContent=`${VOICES[p.primary].name}. ${p.form==='envelope'?'A phrase that gathers and returns.':p.form==='sweep'?'A phrase that reaches across open space.':'A high canopy of slowly unfolding tones.'}`;
+    const moment=$('#audio-moment');
+    if(moment) moment.textContent=locked?
+      `${playing?'Hearing':'Preparing'}: ${snapshotName}${changed?' · In view: '+getName():''}`:
+      'Selected for listening: '+getName();
+  }
   function buttons() {
     play.textContent=rendering?'Cancel':playing?'Stop listening':'Listen';
     play.setAttribute('aria-pressed',String(playing));
     save.disabled=rendering||exporting;
     panel.dataset.playing=String(playing);
+    describe();
   }
   function drawWave(audio) {
     const svg=$('#audio-wave'),ns='http://www.w3.org/2000/svg';
@@ -90,7 +100,7 @@ export function createListening({getSpec,getName,download}) {
   play.addEventListener('click',async()=>{
     if(playing||rendering) {stop();return;}
     const token=++request,spec={...getSpec()};
-    snapshotName=getName();snapshotKey=JSON.stringify(spec);changed=false;
+    snapshotName=getName();snapshotKey=JSON.stringify(spec);snapshotIdentity=getIdentity();snapshotSpec=spec;changed=false;
     status.textContent='Preparing a listening field…';
     try {
       // Resume synchronously within the gesture, before waiting for the worker.
@@ -159,12 +169,11 @@ export function createListening({getSpec,getName,download}) {
   return {
     stop,
     update() {
-      const p=getSpec();
-      $('#audio-description').textContent=`${VOICES[p.primary].name}. ${p.form==='envelope'?'A phrase that gathers and returns.':p.form==='sweep'?'A phrase that reaches across open space.':'A high canopy of slowly unfolding tones.'}`;
-      if((playing||rendering)&&snapshotKey!==key()) {
-        changed=true;
-        if(playing) status.textContent=`Listening to ${snapshotName.toLowerCase()}. Changes will sound on the next listen.`;
+      if(playing||(rendering&&!exporting)) {
+        changed=snapshotKey!==key()||snapshotIdentity!==getIdentity();
+        if(playing) status.textContent=`Listening to ${snapshotName.toLowerCase()}.${changed?' Changes will sound on the next listen.':''}`;
       }
+      describe();
       if(!playing&&!rendering) {
         $('#audio-wave').replaceChildren();progress.value=0;
         $('#audio-time').textContent='0:00 / 0:24';

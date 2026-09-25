@@ -10,7 +10,7 @@ from render_field import render
 
 ROOT = Path(__file__).resolve().parents[1]
 SITE = ROOT/'docs/site'
-PACKAGE_VERSION = '4.5'
+PACKAGE_VERSION = '4.5.1'
 
 
 def main():
