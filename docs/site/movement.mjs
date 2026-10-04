@@ -56,7 +56,7 @@ export function compositionSVG(update,previous) {
     shoulder.parentNode.insertBefore(group,shoulder);
   }
   const coverage=element('metadata',{id:'field-coverage'});
-  coverage.textContent=JSON.stringify({synthesis_version:'3.2',scope:'whole_available_conversation',
+  coverage.textContent=JSON.stringify({synthesis_version:'3.3',scope:'whole_available_conversation',
     source_basis:update.coverage.basis,phase_coverage:Object.fromEntries(['early','middle','late'].map(k=>[k,update.coverage[k]])),material_gaps:update.coverage.gaps});
   const provenance=element('metadata',{id:'field-continuity'});
   provenance.textContent=JSON.stringify({version:1,renderer:'1.0.1',conversation:update.conversation,sequence:update.sequence,

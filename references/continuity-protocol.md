@@ -1,6 +1,6 @@
 # Field Companion 1.0.1 / package 4.6.0
 
-Field can remain present across a conversation when the user asks for continuous use. The participating assistant composes each update using the full host-permitted scope described in `SKILL.md` and `conversation-synthesis.md`. The local companion stores and displays those expressions. It does not read conversations or call a model independently.
+Field can remain present across a conversation when the user asks for continuous use. The participating assistant composes each update as described in `SKILL.md` and `conversation-synthesis.md`. The local companion stores and displays those expressions. It does not read conversations or call a model independently.
 
 ## Enable for a selected conversation
 
@@ -62,7 +62,7 @@ Write a JSON file containing:
 
 The values above demonstrate syntax; choose the actual controls and coverage from the conversation. `source.turn` identifies the source boundary. Use a real turn reference if exposed by the host, or an honest local boundary label. `producer` names the actual author. Use `observer` when a separate model interprets supplied material. `scripted` is reserved for the public demonstration and is rejected by the live publisher.
 
-Coverage values are `available`, `summarized`, `partial`, or `missing`. The basis lists `verbatim`, `summary`, and/or `retrieved_excerpts`. Explain material gaps briefly. These describe accessible conversation evidence; they do not limit the permitted reflective basis of expression. Never claim direct access to missing messages or measurements the host does not supply.
+Coverage values are `available`, `summarized`, `partial`, or `missing`. The basis lists `verbatim`, `summary`, and/or `retrieved_excerpts`. Explain material gaps briefly. Never claim direct access to missing messages or measurements the host does not supply.
 
 Choose a transition by how the change should unfold: `gather`, `reach`, `hold`, `settle`, `return`, or `reorient`. These set restrained timing and easing. The target remains ordinary Field v4 controls. On first publication the artwork appears as a still; subsequent updates can move into it. The capsule stays fixed. With nonzero `history`, the companion joins an actual earlier contour to the current surface when a prior expression is available.
 

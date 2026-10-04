@@ -48,7 +48,7 @@ node scripts/field.mjs serve
 
 Open the local URL it prints. Give your assistant the complete package and ask:
 
-> Read the Field skill and its continuity protocol. Keep Field present for this conversation. After substantive responses or meaningful work milestones, publish an updated expression using the fullest context and reflective understanding your host permits. Preserve the whole-conversation scope and describe any material gaps.
+> Read the Field skill and its continuity protocol. Keep Field present for this conversation. After substantive responses or meaningful work milestones, publish an updated expression. Preserve the whole-conversation scope and describe any material gaps.
 
 The assistant needs to run the local command and retain this instruction across turns. The service alone does not monitor a chat or compose interpretations. Keep the `.field` directory to resume after a pause; use `--data <directory>` to choose where expressions are saved. A **Small window** can stay beside the conversation. Movement, still view, history replay, and optional listening are available there.
 
@@ -67,8 +67,6 @@ node scripts/render_audio.mjs --spec controls.json --output field.wav
 Keep `docs/site/audio.mjs` and `docs/site/renderer.mjs` in the package: the command-line renderer uses them. The output is a stereo 44.1 kHz WAV. Open it in your preferred player when you want to listen.
 
 In the browser playground, open **Listen to this field**, then press **Listen**. You can stop, adjust the volume, or save a WAV. Edits affect the next listen. The musical conventions are in `references/listening-grammar.md`; the illustrated PDF covers the visual instrument.
-
-Field uses the fullest context and reflective understanding its host permits. It offers an interpretation of the exchange without claiming direct measurement of internal state or answer quality.
 
 Created by Edgar Bounds. MIT licensed; see `LICENSE`.
 

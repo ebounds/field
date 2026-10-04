@@ -31,7 +31,7 @@ Before rendering, make the brief `composition-score.md` score, then ask whether 
 
 ## Drawing controls
 
-Pass these keys as a JSON object. Unknown keys and invalid ranges are rejected. These are art-direction coordinates, not quantified emotional measurements. Use ordinary coarse values such as .2, .5, .8 when enough. The renderer does not infer the conversation for you.
+Pass these keys as a JSON object. Unknown keys and invalid ranges are rejected. Use ordinary coarse values such as .2, .5, .8 when enough. The renderer does not infer the conversation for you.
 
 | Control | Range / default | Visual and expressive role |
 | --- | --- | --- |

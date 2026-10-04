@@ -2,7 +2,7 @@
 
 Prepared 24 September 2026 for Edgar Bounds and an independent review by Opus 5.5 or another collaborator.
 
-> **Superseded in part by 4.6.0 (25 September 2026).** An independent review acted on several of the questions in section 8. Rendering revision 4.4 repaired the controls that carried meaning but drew almost nothing, `grounding` was added for epistemic texture, the continuity study was rebuilt on the repaired channels, and Listening moved to 1.1. Read the [4.6 design note](field-4.6-design.md) and [handback](field-4.6-handback.md) alongside this document. The intent, decisions, and open questions below still stand; the implementation details describe 4.5.1.
+> **Superseded in part by 4.6.0 (25 September 2026).** An independent review acted on several of the questions in section 8. Rendering revision 4.4 repaired the controls that carried meaning but drew almost nothing, `grounding` was added for epistemic texture, the continuity study was rebuilt on the repaired channels, and Listening moved to 1.1. Read the [4.6 design note](field-4.6-design.md) and [handback](field-4.6-handback.md) alongside this document. The intent, decisions, and open questions below still stand; the implementation details describe 4.5.1. §2 was withdrawn in 4.7.
 
 **Implementation baseline:** release **4.5.1**, commit **`005dbae`** (`005dbaef1b03e7ad24429f84b909925b1e9e0f07`). This document records the project's intent, decisions, implementation, and open questions at that point. It draws on the development conversation and checked-in sources; it is not a complete conversation transcript. Later user direction takes precedence.
 
@@ -27,16 +27,6 @@ The originating metaphor is the expressive fields of Iain M. Banks's drones. Fie
 The project is open to substantial reconceptualization in service of that purpose. The current implementation is a working instrument and a comparison baseline. A collaborator should be willing to disagree with it, explain why, and demonstrate a better possibility.
 
 ## 2. Expressive scope: a decision to preserve carefully
-
-**Use the fullest conversation context and reflective understanding that the hosting model makes available and permits it to express.** This can include accumulated stance, associations, unresolved considerations, and nuances that have not already appeared in visible conversation wording. A visual or musical gesture need not have a perfect sentence equivalent or a single quotation that explains it.
-
-The host's policy and design establish the informational boundaries. Field does not seek to pry, bypass safeguards, or reveal protected information. Inside those boundaries, its ambition is to maximize the scope and power of expression.
-
-There was an explicit clarification during development: caution about interpreting hidden internal states should principally shape the project's **claims and communication**. It should not become an additional Field-specific restriction to visible-transcript classification. Edgar asked that adjacent cautionary research receive relatively low weight against the experimental purpose, while remaining clear about what the software does and how.
-
-Field offers an authored interpretation. It makes no claim to directly or completely measure internal state, human emotion, factual correctness, or answer quality. Its usefulness is left open to experience. Do not let that modesty erase difficult, mixed, imaginative, or subtle expression. Ordinary use needs no repeated disclaimer; a material gap in context does need an honest description.
-
-The authoritative current wording is in [SKILL.md](../SKILL.md) and [conversation synthesis](../references/conversation-synthesis.md). Earlier release essays record the development of these ideas and should be read in light of this clarification.
 
 ## 3. The most important artistic and interpretive decisions
 
@@ -173,7 +163,7 @@ The implementation uses Python's and Node's standard libraries, plus browser API
 
 ```mermaid
 flowchart LR
-    C[Host-permitted conversation and context] --> I[Participating assistant composes]
+    C[Conversation and context] --> I[Participating assistant composes]
     L[Revisable phase notes] <--> I
     I --> P[Validated publication]
     P --> S[Local history and selected-conversation stream]
@@ -247,6 +237,6 @@ A useful return handoff records the base and resulting commit, changed files, th
 
 ## 10. Suggested opening request for Opus
 
-> Read `docs/project-handoff.md`, then inspect the current skill, synthesis procedure, composition score, grammars, and relevant implementation. Treat this as an independent artistic and technical review. Experience the continuity study and listening instrument if your tools permit, and distinguish direct observations from inferences or things you could not try. Consider the fullest expressive scope permitted by your host. Tell me what seems valuable, what fails or limits the original ambition, and which few experiments would teach us the most. You may challenge the project's present shape. Explain how your proposals improve communicative expression and artistic quality, and distinguish implemented behavior from future possibilities. Begin with your assessment; if I ask you to implement an experiment, keep the baseline available and leave a concise handback with changes, checks, and open questions.
+> Read `docs/project-handoff.md`, then inspect the current skill, synthesis procedure, composition score, grammars, and relevant implementation. Treat this as an independent artistic and technical review. Experience the continuity study and listening instrument if your tools permit, and distinguish direct observations from inferences or things you could not try. Tell me what seems valuable, what fails or limits the original ambition, and which few experiments would teach us the most. You may challenge the project's present shape. Explain how your proposals improve communicative expression and artistic quality, and distinguish implemented behavior from future possibilities. Begin with your assessment; if I ask you to implement an experiment, keep the baseline available and leave a concise handback with changes, checks, and open questions.
 
 The immediate purpose is to learn from another model's perspective and capabilities while giving it enough context to engage with the real project. The most useful contribution may be a perceptive critique, a small expressive experiment, or a better account of what to observe during native use.

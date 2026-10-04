@@ -167,7 +167,7 @@ def cover(g):
         g.text(x, 230, heading, 13, TEXT, 'FieldSerif')
         g.paragraph(x, 211, 158, body, 9.2, 13, MUTED)
     g.paragraph(MARGIN, 82, 510,
-                'Field integrates the whole substantive conversation. Repeated Field checks are excluded from the tonal sample. The result is an interpretive expression, not an emotional measurement.',
+                'Field integrates the whole substantive conversation. Repeated Field checks are excluded from the tonal sample.',
                 8.5, 12, MUTED)
     g.end()
 
@@ -304,7 +304,7 @@ def nuance_page(g):
 def finish_page(g):
     g.begin('Art and gestures')
     g.title('An artwork, still legible',
-            f'Revision {RENDERER_REVISION} gives the field three silhouettes, a retained trace, and a joined countercurrent while preserving Field v4 and synthesis protocol 3.2. The gesture details below are enlarged from real fields.')
+            f'Revision {RENDERER_REVISION} gives the field three silhouettes, a retained trace, and a joined countercurrent while preserving Field v4 and synthesis protocol 3.3. The gesture details below are enlarged from real fields.')
     gestures = [('none','No added inflection'),('fold','A local bend'),
                 ('echo','A continuation'),('braid','Intertwining')]
     base = dict(primary='amber', secondary='violet', ambient='amber', openness=.75,

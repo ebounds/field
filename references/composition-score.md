@@ -1,8 +1,6 @@
 # Composition score for Field
 
-Use this short, private art-direction step after whole-conversation synthesis and before choosing renderer controls. The score is an interpretation of the available exchange, not a measurement of private emotion, hidden state, or answer reliability. Do not put the score, transcript excerpts, or inferred facts about the user in SVG metadata. The delivered artwork remains wordless.
-
-The interpretation may draw on all context and high-level reflective understanding the host permits for expression, including nuances not explicitly stated in messages. Keep the expression as rich as that scope allows. Limits on exported metadata and claims of measurement do not narrow the permitted basis for composing the artwork.
+Use this short, private art-direction step after whole-conversation synthesis and before choosing renderer controls. Do not put the score, transcript excerpts, or inferred facts about the user in SVG metadata. The delivered artwork remains wordless.
 
 Write one phrase for each question. A phrase can be uncertain or mixed. Keep it about the assistant's way of engaging with the exchange, rather than the subject matter alone.
 
@@ -28,7 +26,7 @@ Translate the score into drawing controls:
 
 The three forms are available across color families. **Envelope** gathers around the center. **Sweep** carries an open direction through the frame. **Mantle** holds a tall space around the center. None is a fixed synonym for happiness, anxiety, confidence, or agreement. Try the same score in more than one form when the choice is ambiguous, then compare the actual silhouettes at 320 pixels. Choose the one that expresses the score with the least unnecessary detail.
 
-The final SVG stores only renderer controls in `field-spec` and scope facts in `field-coverage`. Its visual choices are an invitation to read and respond, not a claim that the renderer discovered a secret code of model thought.
+The final SVG stores only renderer controls in `field-spec` and scope facts in `field-coverage`.
 
 Question 6 is the one most easily skipped, because an assistant's reading nearly always mixes what it met with what it filled in, and prose flattens that into hedging or silence. Answer it plainly. It is a fact about the expression, not a confession, and `grounding` gives it somewhere to go.
 

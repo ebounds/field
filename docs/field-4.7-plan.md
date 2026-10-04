@@ -109,6 +109,14 @@ That keeps the information 4.6 added and gives the first look back to the channe
 
 **Check:** `grep -n -i "permit\|host's rules\|boundar\|pry\|safeguard\|adjacent threads"` over the living files leaves only the "keep" items, and `grep -n -i "no claim\|internal state\|hidden state\|inner emotional\|emotion measurement\|emotional measurement\|secret code\|modest claims"` finds only `README.md:15`. Synthesis protocol becomes **3.3**: the procedure is the same, but its text changed.
 
+**Stage 1 results (4 October).** Done as listed. Both greps come out as the check says, and `check_continuity.mjs`, `check_browser_renderer.py`, `check_audio.mjs`, `check_public_site.mjs` and `check_companion_browser.mjs` pass. Four things the table didn't spell out:
+- `docs/build_field_guide.py:170` carried "The result is an interpretive expression, not an emotional measurement." It went too, or Stage 6's rebuilt PDF would have brought a claim back.
+- `references/listening-grammar.md:7` also lost the word "permitted" from the next sentence, which referred back to the removed clause.
+- `docs/continuity.html` lost the heading "The scope of expression" along with its two paragraphs, since nothing was left under it.
+- The package's own `README.md` is built from `docs/quickstart.md`, so once Stage 6 rebuilds the zip, **the downloaded package carries no claim sentence at all**. The one that stays is in the repository's `README.md`.
+
+Synthesis 3.3 is written in `SKILL.md`, `conversation-synthesis.md` (title and `synthesis_version`), the companion's export (`docs/site/movement.mjs`) and the guide's source. The package number, the zip and the PDF wait for Stage 6.
+
 ## Stage 2 — A way to measure "reads at a glance" (before any art changes)
 
 This is the answer to "don't be reactive". Without it, the art change would be judged by the same eye that found 4.6 beautiful. It's also most of the harness Stage 5 needs.

@@ -12,7 +12,7 @@ Field asks an assistant: **“What has it been like to think with me through thi
 
 The assistant reads the available exchange, forms a brief composition score, and chooses drawing controls under a shared visual grammar. A fixed titanium capsule anchors the image. Around it, a translucent field gathers, sweeps, folds, and rejoins.
 
-Field offers an interpretation of the conversation and the assistant's way of engaging with it, using the fullest context and reflective understanding its host permits. It makes no claim to directly measure internal state or answer quality. Its usefulness is open to experimentation.
+Field offers an interpretation of the conversation and the assistant's way of engaging with it. It makes no claim to directly measure internal state or answer quality. Its usefulness is open to experimentation.
 
 ## Try it now
 
@@ -30,7 +30,7 @@ node scripts/field.mjs serve
 
 Open the local address it prints, then ask your assistant:
 
-> Read the Field skill and its continuity protocol. Keep Field present for this conversation. After substantive responses or meaningful work milestones, publish an updated expression using the fullest context and reflective understanding your host permits. Preserve the whole-conversation scope and describe any material gaps.
+> Read the Field skill and its continuity protocol. Keep Field present for this conversation. After substantive responses or meaningful work milestones, publish an updated expression. Preserve the whole-conversation scope and describe any material gaps.
 
 The participating agent composes and publishes updates through the bundled command. Starting the service alone does not monitor a chat or call a model. Your host must support running that command and carrying the instruction across turns. Expressions and an optional phase index stay in a local `.field` directory; restart with the same directory to resume. The interface shows when its expression was last published, including during disconnection.
 

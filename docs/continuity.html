@@ -33,12 +33,9 @@
     <p>From the unzipped Field folder, start it:</p>
     <pre><code>node scripts/field.mjs serve</code></pre>
     <p>Open the local address it prints. Then give the package to your assistant and ask:</p>
-    <blockquote><p>Read the Field skill and its continuity protocol. Keep Field present for this conversation. After substantive responses or meaningful work milestones, publish an updated expression using the fullest context and reflective understanding your host permits. Preserve the whole-conversation scope and describe any material gaps.</p></blockquote>
+    <blockquote><p>Read the Field skill and its continuity protocol. Keep Field present for this conversation. After substantive responses or meaningful work milestones, publish an updated expression. Preserve the whole-conversation scope and describe any material gaps.</p></blockquote>
     <p>The participating agent composes and publishes each update. Starting the companion alone does not monitor your chat or create interpretations. The assistant needs a way to run the local publishing command; its host must support continuing the instruction across turns. The local command and update format are documented in the package's <code>references/continuity-protocol.md</code>.</p>
     <p>The service saves selected conversations in a local <code>.field</code> directory. Restart it with the same directory to resume. It keeps up to 80 recent expressions for replay, with a separate optional phase index for the agent. You can choose another directory with <code>--data</code>. Your conversations are not uploaded to the public Field site.</p>
-    <h2>The scope of expression</h2>
-    <p>Field seeks the fullest expression each host permits: the conversation, its accumulated context, and the assistant's reflective understanding of how it is engaging. Nuance need not already have been stated in a message. The host's rules establish the informational boundaries across every medium.</p>
-    <p>Field makes modest claims about what can be measured or established about its interpretations. Its expressive usefulness remains something to discover through experience.</p>
     <p><a href="https://github.com/ebounds/field">Source and documentation ↗</a></p>
   </main>
   <footer class="site-footer wrap"><a class="wordmark" href="companion.html">Field Companion</a><p>An open experiment in expression.</p></footer>
