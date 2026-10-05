@@ -1,0 +1,172 @@
+{
+ "sheet": "2",
+ "size": 320,
+ "packages": {
+  "4.3": "4.5.1",
+  "4.4": "4.6.0",
+  "4.5": "4.7.0"
+ },
+ "trials": [
+  {
+   "pair": 1,
+   "study": "integrated",
+   "A": "4.4",
+   "B": "4.5"
+  },
+  {
+   "pair": 2,
+   "study": "tentative",
+   "A": "4.4",
+   "B": "4.5"
+  },
+  {
+   "pair": 3,
+   "study": "strained",
+   "A": "4.4",
+   "B": "4.5"
+  },
+  {
+   "pair": 4,
+   "study": "tentative",
+   "A": "4.3",
+   "B": "4.5"
+  },
+  {
+   "pair": 5,
+   "study": "gathered",
+   "A": "4.4",
+   "B": "4.5"
+  },
+  {
+   "pair": 6,
+   "study": "playful",
+   "A": "4.5",
+   "B": "4.4"
+  },
+  {
+   "pair": 7,
+   "study": "described",
+   "A": "4.5",
+   "B": "4.4"
+  },
+  {
+   "pair": 8,
+   "study": "tentative",
+   "A": "4.5",
+   "B": "4.4"
+  },
+  {
+   "pair": 9,
+   "study": "gathered",
+   "A": "4.5",
+   "B": "4.4"
+  },
+  {
+   "pair": 10,
+   "study": "described",
+   "A": "4.4",
+   "B": "4.5"
+  },
+  {
+   "pair": 11,
+   "study": "strained",
+   "A": "4.3",
+   "B": "4.5"
+  },
+  {
+   "pair": 12,
+   "study": "gathered",
+   "A": "4.5",
+   "B": "4.3"
+  },
+  {
+   "pair": 13,
+   "study": "strained",
+   "A": "4.5",
+   "B": "4.4"
+  },
+  {
+   "pair": 14,
+   "study": "integrated",
+   "A": "4.5",
+   "B": "4.4"
+  },
+  {
+   "pair": 15,
+   "study": "exploring",
+   "A": "4.4",
+   "B": "4.5"
+  },
+  {
+   "pair": 16,
+   "study": "strained",
+   "A": "4.5",
+   "B": "4.3"
+  },
+  {
+   "pair": 17,
+   "study": "tentative",
+   "A": "4.5",
+   "B": "4.3"
+  },
+  {
+   "pair": 18,
+   "study": "exploring",
+   "A": "4.5",
+   "B": "4.3"
+  },
+  {
+   "pair": 19,
+   "study": "playful",
+   "A": "4.3",
+   "B": "4.5"
+  },
+  {
+   "pair": 20,
+   "study": "integrated",
+   "A": "4.5",
+   "B": "4.3"
+  },
+  {
+   "pair": 21,
+   "study": "exploring",
+   "A": "4.5",
+   "B": "4.4"
+  },
+  {
+   "pair": 22,
+   "study": "playful",
+   "A": "4.5",
+   "B": "4.3"
+  },
+  {
+   "pair": 23,
+   "study": "gathered",
+   "A": "4.3",
+   "B": "4.5"
+  },
+  {
+   "pair": 24,
+   "study": "exploring",
+   "A": "4.3",
+   "B": "4.5"
+  },
+  {
+   "pair": 25,
+   "study": "integrated",
+   "A": "4.3",
+   "B": "4.5"
+  },
+  {
+   "pair": 26,
+   "study": "playful",
+   "A": "4.4",
+   "B": "4.5"
+  }
+ ],
+ "built": {
+  "4.3": "417e33c923a8",
+  "4.4": "305094f93ec9",
+  "4.5": "603c23d30c32"
+ }
+}

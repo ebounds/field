@@ -190,7 +190,9 @@ def main(sheet_id):
             break
         shuffle.shuffle(trials)
     # The images go in last: base64 can contain any of the other placeholders by chance.
-    page = (PAGE.replace('SHEET_ID', sheet_id).replace('COUNT', str(len(trials))).replace('SIZE', str(SIZE))
+    # Each sheet is its own page in the gallery, so each after the first carries its number in its title.
+    titled = PAGE if sheet_id == '1' else PAGE.replace('<title>Field Blind Sheet</title>', f'<title>Field Blind Sheet {sheet_id}</title>')
+    page = (titled.replace('SHEET_ID', sheet_id).replace('COUNT', str(len(trials))).replace('SIZE', str(SIZE))
             .replace('TRIALS_JSON', json.dumps([[ids[(n, a)], ids[(n, b)]] for n, a, b in trials]))
             .replace('IMAGES_JSON', json.dumps(dict(sorted(images.items())))))
     key.parent.mkdir(exist_ok=True)
