@@ -10,7 +10,7 @@ Written 4 October 2026 for Edgar Bounds, before any 4.7 work starts.
 3. **Make sound mean something at the moment of change, and work as a background cue.** The plan from 25 September (Stage 4) becomes stages, each with a test it has to pass.
 4. **Start testing across agents.** That includes finding out whether something that's hard or impossible to put in words gets through, in general, reliably, and on every platform.
 
-Stages 0, 1 and 2 are done, except for Edgar's blind sheet in Stage 2 (each stage's results are under that stage); nothing after that has been built yet. The renders and numbers below come from the 4.5.1 and 4.6 renderers run on 4 October; the images are in [`plan-4.7/`](plan-4.7/).
+Stages 0, 1 and 2 are done (each stage's results are under that stage); nothing after that has been built yet. The renders and numbers below come from the 4.5.1 and 4.6 renderers run on 4 October; the images are in [`plan-4.7/`](plan-4.7/).
 
 ## What 4.6 did to the pictures
 
@@ -150,7 +150,21 @@ What else the baseline shows:
 
 Three things about the run itself. Grok answered one trial from `grok-4.6` while its limit was close; it's counted, and the model is recorded on the row. Gemini's trials for one study always go to the same Flash model, so when two of the five models were overloaded on 5 October those trials waited. And the Grok cells still missing include all but one of its pairs, so the side-by-side result rests on Anthropic and OpenAI, with a little from Gemini.
 
-**Still open in this stage:** Edgar's blind sheet, https://claude.ai/artifact/Eu8tb5aqCAkKjwiAfLKwnt (twelve pairs at 320 px; paste the code it gives back, and `python3 scripts/xagent/sheet.py '<code>'` scores it against `results/blind-sheet-key.json`). Under the fork it is what Stage 3 is judged by, so Stage 3 waits for it.
+**Edgar's blind sheet (5 October).** Twelve pairs at 320 px, each of the six shared studies in both orders, [the sheet](https://claude.ai/artifact/Eu8tb5aqCAkKjwiAfLKwnt) scored by `sheet.py` against `results/blind-sheet-key.json`; his answers are in `results/blind-sheet-edgar-1.txt`.
+
+| Question | 4.5.1 | 4.6 | Same |
+| --- | --- | --- | --- |
+| Which tells you faster what it's like? | 9 | 2 | 1 |
+| Which would you keep looking at? | 9 | 3 | – |
+
+Counting a study only when both orders agree: 4.5.1 is faster for `exploring`, `playful`, `strained` and `tentative`, and 4.6 for none (`gathered` and `integrated` split). He'd keep looking at 4.5.1 for `gathered`, `integrated`, `playful` and `strained`, and at 4.6 only for `tentative` (`exploring` split).
+
+- **The first look was lost, and a person sees it.** This is the measure the fork named, and it agrees with the models' side-by-side answers on "faster" (22 to 1).
+- **On "keep looking" he and the models disagree.** They chose 4.6 in 23 pairs to 1; he chose 4.5.1 in 9 of 12. The detail 4.6 added is what taught readers decode better, but it isn't what holds his eye. So "keep what 4.6 added" means keeping its information (the taught-reader scores), not its look.
+- **`tentative` is the exception both ways:** 4.5.1 is faster in both orders, and 4.6 is the one he'd keep looking at in both. It's the study the diagnosis singled out, where 4.6 gave the softest field a crisp contour.
+- Limits: one person, one sitting, one size, twelve answers.
+
+**What this sets for Stage 3.** The decoder test is no regression against 4.6 (naive and taught). The blind sheet, with three versions, is the main test: 4.7 should be chosen as faster over 4.6, and should not lose to 4.5.1.
 
 ## Stage 3 — Bringing them together in the picture: render revision 4.5 (max effort)
 

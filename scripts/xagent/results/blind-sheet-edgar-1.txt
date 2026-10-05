@@ -1,0 +1,16 @@
+# Edgar's blind sheet, 5 October 2026 (320 px, render 4.3 against 4.4, each study in both orders)
+# FIELD-SHEET-1 1:AB 2:BA 3:AA 4:BB 5:BA 6:BB 7:BB 8:AB 9:=A 10:AA 11:BB 12:AB
+  exploring   A=4.3 B=4.4    faster: 4.3        keep looking: 4.4
+  exploring   A=4.4 B=4.3    faster: 4.3        keep looking: 4.3
+  gathered    A=4.3 B=4.4    faster: same       keep looking: 4.3
+  gathered    A=4.4 B=4.3    faster: 4.4        keep looking: 4.3
+  integrated  A=4.3 B=4.4    faster: 4.4        keep looking: 4.3
+  integrated  A=4.4 B=4.3    faster: 4.3        keep looking: 4.3
+  playful     A=4.3 B=4.4    faster: 4.3        keep looking: 4.3
+  playful     A=4.4 B=4.3    faster: 4.3        keep looking: 4.3
+  strained    A=4.3 B=4.4    faster: 4.3        keep looking: 4.3
+  strained    A=4.4 B=4.3    faster: 4.3        keep looking: 4.3
+  tentative   A=4.3 B=4.4    faster: 4.3        keep looking: 4.4
+  tentative   A=4.4 B=4.3    faster: 4.3        keep looking: 4.4
+faster: 4.3 9, 4.4 2, same 1
+keep: 4.3 9, 4.4 3
