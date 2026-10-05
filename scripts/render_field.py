@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render Field grammar v4, rendering revision 4.4. Python standard library only."""
+"""Render Field grammar v4, rendering revision 4.5. Python standard library only."""
 import argparse
 import json
 import math
@@ -10,7 +10,7 @@ PALETTE = {
     "teal": "#42BDB0", "blue": "#648DE5", "violet": "#9B7BE8",
     "amber": "#E8B86A", "coral": "#D97979", "pearl": "#DDE5EA",
 }
-RENDERER_REVISION = "4.4"
+RENDERER_REVISION = "4.5"
 
 
 def srgb_to_linear(v):
@@ -133,6 +133,33 @@ def render(spec):
         # Lit but withdrawn material, for surfaces that are remembered or inferred.
         lightness, a, b = to_oklab(color)
         return oklab_hex((min(.91, lightness * amount), a * chroma, b * chroma))
+
+    def tint(color, amount, rich=1):
+        # Light that carries colour. A hue can only be lightened so far before sRGB
+        # has no room left for its chroma, and past that point it turns to white.
+        # So a mark is lit only as far as its hue can hold; pearl, which has almost
+        # no chroma to lose, is the one colour that still reaches near-white.
+        lightness, a, b = to_oklab(color)
+        a, b = a*rich, b*rich
+
+        def holds(level):
+            channels = from_oklab((level, a*.85, b*.85))
+            return min(channels) >= 0 and max(channels) <= 1
+        low, high = lightness, min(.91, lightness*amount)
+        if high > low and not holds(high):
+            for _ in range(12):
+                middle = (low + high) / 2
+                if holds(middle):
+                    low = middle
+                else:
+                    high = middle
+            high = low
+        return oklab_hex((high, a, b))
+
+    def shade(color, amount, chroma=1):
+        # The same material in shadow: deeper, and no greyer.
+        lightness, a, b = to_oklab(color)
+        return oklab_hex((lightness * amount, a * chroma, b * chroma))
 
     c1 = pigment(p["primary"])
     c2 = pigment(p["secondary"] or p["primary"])
@@ -270,34 +297,56 @@ def render(spec):
         def parting(u):
             v = (u-.14)/.72
             return .52*p['counterpoint']*math.sin(math.pi*v)**1.4
-        near = [surface_point(u, .40) for u in section]
-        far = [surface_point(u, .40+parting(u)) for u in reversed(section)]
-        lens = points_path(near) + ' ' + points_path(far).replace('M', 'L', 1) + ' Z'
-        seam = points_path([surface_point(u, .40+parting(u)) for u in section])
-        return lens, seam, points_path(near)
+        def across(k):
+            return [surface_point(u, .40+k*parting(u)) for u in section]
+        def closed(first, second):
+            return points_path(first) + ' ' + points_path(second[::-1]).replace('M', 'L', 1) + ' Z'
+        near, far = across(0), across(1)
+        return closed(near, far), closed(across(.45), far), closed(near, across(.3)), points_path(far)
 
     outline = ribbon(0, 1)
     # The visible seat of compression, following the geometry that tension bends.
     strain_u = min(.86, max(.14, (2.65-start)/(end-start))) if form == 'envelope' else .48
     counter_hue = ca if p['accent'] else c2
+    # Reading order. Hue, light, posture and softness are read first. The marks
+    # that are read second (relief, ridge, second current, seat of strain,
+    # reticulation, gesture) are drawn in the field's own hues, and one blur,
+    # set by definition, decides how sharply any of them is articulated.
+    fine = .3 + 9*(1-d)**2
+    articulate = max(0, min(1, (d-.4)/.45))
+    articulate = articulate*articulate*(3-2*articulate)
+    body_colors = [c1, c2, mix(c1, ca, p['accent_strength']*.85) if p['accent'] else c1, c1]
+
+    def page_ink(name, colors):
+        return (f'<linearGradient id="{name}" gradientUnits="userSpaceOnUse" x1="180" y1="720" x2="820" y2="270">'
+                f'<stop stop-color="{colors[0]}"/><stop offset=".38" stop-color="{colors[1]}"/>'
+                f'<stop offset=".69" stop-color="{colors[2]}"/><stop offset="1" stop-color="{colors[3]}"/></linearGradient>')
     soft = 1.5 + 18 * (1 - d)
     metadata = escape(json.dumps(p, sort_keys=True, separators=(",", ":")))
     svg = [f'''<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000" viewBox="0 0 1000 1000" role="img" aria-label="A central titanium capsule with a unified abstract field" data-field-version="4" data-field-renderer="{RENDERER_REVISION}">
 <metadata id="field-spec">{metadata}</metadata>
 <defs>
-  <radialGradient id="background"><stop stop-color="{bg_centre}"/><stop offset="1" stop-color="{bg_edge}"/></radialGradient>
+  <radialGradient id="background" gradientUnits="userSpaceOnUse" cx="500" cy="500" r="500"><stop stop-color="{bg_centre}"/><stop offset="1" stop-color="{bg_edge}"/></radialGradient>
   <linearGradient id="field-ink" x1="18%" y1="72%" x2="82%" y2="27%"><stop stop-color="{c1}"/><stop offset=".38" stop-color="{c2}"/><stop offset=".69" stop-color="{mix(c1,ca,p['accent_strength']*.85) if p['accent'] else c1}"/><stop offset="1" stop-color="{c1}"/></linearGradient>
   <radialGradient id="field-atmosphere"><stop stop-color="{c1}" stop-opacity="{.07+.18*breadth:.3f}"/><stop offset=".6" stop-color="{c2}" stop-opacity="{.02+.08*breadth:.3f}"/><stop offset="1" stop-color="{c1}" stop-opacity="0"/></radialGradient>
   <linearGradient id="field-accent-ink"><stop stop-color="{ca}" stop-opacity="0"/><stop offset=".5" stop-color="{ca}" stop-opacity=".72"/><stop offset="1" stop-color="{ca}" stop-opacity="0"/></linearGradient>
   <linearGradient id="field-edge-ink" gradientUnits="userSpaceOnUse" x1="180" y1="720" x2="820" y2="270"><stop stop-color="{c1}" stop-opacity=".1"/><stop offset=".32" stop-color="{c2}" stop-opacity=".75"/><stop offset=".58" stop-color="{c1}" stop-opacity=".15"/><stop offset="1" stop-color="{c1}" stop-opacity=".6"/></linearGradient>
   <linearGradient id="field-crest" gradientUnits="userSpaceOnUse" x1="170" y1="690" x2="790" y2="280"><stop stop-color="{light(c1,1.28)}" stop-opacity=".25"/><stop offset=".36" stop-color="{light(c2,1.45)}" stop-opacity=".9"/><stop offset=".68" stop-color="{light(c1,1.3)}" stop-opacity=".35"/><stop offset="1" stop-color="{light(c1,1.4)}" stop-opacity=".65"/></linearGradient>
   <linearGradient id="field-depth" gradientUnits="userSpaceOnUse" x1="230" y1="730" x2="760" y2="300"><stop stop-color="#0B1520" stop-opacity="0"/><stop offset=".35" stop-color="#0B1520" stop-opacity=".48"/><stop offset=".7" stop-color="#0B1520" stop-opacity=".1"/><stop offset="1" stop-color="#0B1520" stop-opacity=".3"/></linearGradient>
-  <linearGradient id="field-history-ink" gradientUnits="userSpaceOnUse" x1="190" y1="730" x2="810" y2="270"><stop stop-color="{pale(c2,.74,.5)}" stop-opacity=".5"/><stop offset=".47" stop-color="{pale(c1,1.24,.44)}" stop-opacity=".92"/><stop offset="1" stop-color="{pale(c2,.72,.5)}" stop-opacity=".45"/></linearGradient>
-  <linearGradient id="field-counter-ink" gradientUnits="userSpaceOnUse" x1="180" y1="720" x2="820" y2="270"><stop stop-color="{light(counter_hue,.5)}"/><stop offset=".42" stop-color="{light(counter_hue,1.34)}"/><stop offset="1" stop-color="{light(counter_hue,.6)}"/></linearGradient>
+  {page_ink('field-tint', [tint(color, 1.08, 1.5) for color in body_colors])}
+  {page_ink('field-shade', [shade(color, .68, 1.15) for color in body_colors])}
+  {page_ink('field-rib', [tint(color, 1.3, 1.15) for color in body_colors])}
+  <linearGradient id="field-history-ink" gradientUnits="userSpaceOnUse" x1="190" y1="730" x2="810" y2="270"><stop stop-color="{pale(c2,.66,.92)}" stop-opacity=".6"/><stop offset=".47" stop-color="{pale(c1,.88,.92)}" stop-opacity=".9"/><stop offset="1" stop-color="{pale(c2,.64,.92)}" stop-opacity=".55"/></linearGradient>
+  <linearGradient id="field-counter-ink" gradientUnits="userSpaceOnUse" x1="180" y1="720" x2="820" y2="270"><stop stop-color="{shade(counter_hue,.6,1.2)}"/><stop offset=".42" stop-color="{shade(counter_hue,.8,1.2)}"/><stop offset="1" stop-color="{shade(counter_hue,.64,1.2)}"/></linearGradient>
   <linearGradient id="drone-metal" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#34414D"/><stop offset=".5" stop-color="#202B35"/><stop offset="1" stop-color="#101922"/></linearGradient>
   <linearGradient id="drone-rim" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#DDE5EA" stop-opacity=".68"/><stop offset=".6" stop-color="#8C9BA9" stop-opacity=".21"/><stop offset="1" stop-color="#DDE5EA" stop-opacity=".30"/></linearGradient>
   <filter id="field-soft" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="{soft:.2f}"/></filter>
-  <filter id="field-diffuse" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="{1.2+5*(1-d)**2:.2f}"/></filter>''']
+  <filter id="field-diffuse" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="{1.2+5*(1-d)**2:.2f}"/></filter>
+  <filter id="field-fine" filterUnits="userSpaceOnUse" x="0" y="0" width="1000" height="1000" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="{fine:.2f}"/></filter>
+  <filter id="field-recede" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="{1.2+5*(1-d)**2+(.3+18*(1-d)-5*(1-d)**2)*(1-articulate):.2f}"/></filter>''']
+    # field-fine: marks are thin, so their blur is measured against the page, not
+    # their own bounds. field-recede: what is retained keeps its shape only as far
+    # as the field is articulated; otherwise it is an afterglow.
     # Continuous translucent surface, with light gathered into a broad shoulder
     # and released toward the inner edge. Complexity never controls brightness.
     lanes = 28
@@ -305,8 +354,7 @@ def render(spec):
         f = (j + .5) / lanes
         illumination = .46 + .66 * math.exp(-((f - .27) / .3) ** 2)
         illumination += .16 * math.exp(-((f - .91) / .13) ** 2)
-        shades = [light(color, illumination) for color in
-                  (c1, c2, mix(c1, ca, p['accent_strength']*.85) if p['accent'] else c1, c1)]
+        shades = [light(color, illumination) for color in body_colors]
         svg.append(f'<linearGradient id="field-skin-{j}" gradientUnits="userSpaceOnUse" x1="180" y1="720" x2="820" y2="270"><stop stop-color="{shades[0]}"/><stop offset=".38" stop-color="{shades[1]}"/><stop offset=".69" stop-color="{shades[2]}"/><stop offset="1" stop-color="{shades[3]}"/></linearGradient>')
     svg.append(f'''</defs>
 <rect id="field-background" width="1000" height="1000" fill="url(#background)"/>
@@ -314,11 +362,13 @@ def render(spec):
   <ellipse cx="500" cy="500" rx="{min(435,a*fit+45):.2f}" ry="{min(420,b*fit+65):.2f}" fill="url(#field-atmosphere)" transform="rotate({-18+38*p['flow']:.2f} 500 500)"/>''')
     if p['history']:
         ridge, edge = history_ridge()
+        # Older material in the same hues, dimmer and duller. Its lit edge is an
+        # articulated edge like any other, so it is there only when definition is.
         svg.append(f'<g id="field-history" opacity="{strength*p["history"]*(.86+.14*d):.3f}">'
-                   f'<path d="{ridge}" fill="url(#field-history-ink)" filter="url(#field-diffuse)"/>'
-                   f'<path d="{edge}" fill="none" stroke="{pale(c2,1.36,.5)}" stroke-width="{1+1.9*p["history"]:.2f}" opacity=".82"/></g>')
+                   f'<path d="{ridge}" fill="url(#field-history-ink)" filter="url(#field-recede)"/>'
+                   f'<path d="{edge}" fill="none" stroke="{tint(pale(c2,.9,.92),1.3)}" stroke-width="{.9+1.4*p["history"]:.2f}" opacity="{.9*articulate:.3f}" filter="url(#field-fine)"/></g>')
     svg.append(f'''
-  <path d="{outline}" fill="url(#field-ink)" opacity="{strength*.28*(1-.72*weave):.3f}" filter="url(#field-soft)"/>
+  <path d="{outline}" fill="url(#field-ink)" opacity="{strength*.28*(1-.4*weave):.3f}" filter="url(#field-soft)"/>
   <path d="{outline}" fill="url(#field-ink)" opacity="{strength*(.18+.23*d)*(1-.78*weave):.3f}" filter="url(#field-diffuse)"/>
   <path d="{tapered_strip(.11,.9,.79,.15)}" fill="url(#field-depth)" opacity="{strength*(.08+.16*d):.3f}" filter="url(#field-diffuse)"/>
   <g id="field-surface" opacity="{strength*(.35+.1*d):.3f}" filter="url(#field-diffuse)">''')
@@ -328,36 +378,65 @@ def render(spec):
         presence = 1 if f >= weave else .08 + .92*(f/max(1e-6, weave))**.7
         svg.append(f'<path d="{ribbon(j/lanes, min(1,(j+1.65)/lanes))}" fill="url(#field-skin-{j})" opacity="{presence:.3f}"/>')
     svg.append('  </g>')
+    # Threads are the grain of the material. Light, the second current and strain lie over them.
+    svg.append(f'<g id="field-filaments" fill="none" stroke-linecap="round" opacity="{strength*(.42+.58*d):.3f}" filter="url(#field-fine)">')
+    count = 1 + round(c * 10)
+    for j in range(count):
+        # Uneven intervals and lost edges give a few lines compositional weight.
+        f = .12 + .79 * ((j + 1) / (count + 1)) ** 1.45
+        lo = .015 + .045 * (j % 3)
+        hi = .985 - .04 * ((j + 1) % 4)
+        samples = [u for u in us if lo <= u <= hi]
+        pts, trough = [], []
+        for u in samples:
+            crossing = (.012*t + .045*fold) * math.sin(5*math.pi*u + j*.9)
+            shift = crossing * math.sin(math.pi*u)
+            pts.append(surface_point(u, f + shift))
+            trough.append(surface_point(u, f + shift + .028*math.sin(math.pi*u)))
+        # A thread is detail of the material, so where the material is not met it thins with it.
+        weight = (1 if j % 3 == 0 else .55) * (1 if f >= weave else .3 + .7*(f/max(1e-6, weave))**.7)
+        # Each thread is the surface's own colour, more saturated and a little lit,
+        # with a soft shade beside it: a change of surface direction, not a drawn line.
+        relief = .72 + 1.15*breadth
+        svg.append(f'<path d="{points_path(trough)}" stroke="url(#field-shade)" stroke-width="{(1+1.05*d)*relief*weight:.2f}" opacity="{(.16+.18*d)*weight:.3f}"/>')
+        svg.append(f'<path d="{points_path(pts)}" stroke="url(#field-tint)" stroke-width="{(.95+1.05*d)*relief*weight:.2f}" opacity="{(.36+.44*d)*weight:.3f}"/>')
+    svg.append('</g>')
     if weave:
         # Inference is drawn, not filled: the section ribs that define the form
-        # stay visible where its material does not. This is not low definition,
-        # which blurs everything equally; here the structure stays exact.
-        ribs = 7 + round(13*weave)
-        svg.append(f'<g id="field-reticulation" fill="none" stroke-linecap="round" opacity="{strength*(.62+.38*d):.3f}">')
+        # stay visible where its material does not. They soften with definition
+        # like every mark, and are drawn broader as they do, so that an unresolved
+        # form which was also not met still shows that it is described.
+        ribs = 6 + round(11*weave)
+        svg.append(f'<g id="field-reticulation" fill="none" stroke-linecap="round" opacity="{strength*(.62+.38*d):.3f}" filter="url(#field-fine)">')
         for j in range(ribs):
             u = .06 + .88*(j+.5)/ribs
             span = weave*(.52+.48*math.sin(math.pi*u))
             rib = [surface_point(u, span*k/12) for k in range(13)]
-            svg.append(f'<path d="{points_path(rib)}" stroke="{pale(c1,1.38,.6)}" stroke-width="{.9+1.3*weave:.2f}" opacity="{.4+.5*math.sin(math.pi*u):.3f}"/>')
+            svg.append(f'<path d="{points_path(rib)}" stroke="url(#field-rib)" stroke-width="{.9+1.3*weave+.55*fine:.2f}" opacity="{.4+.5*math.sin(math.pi*u):.3f}"/>')
         # A held outer edge keeps the described form exact where it is not filled.
-        svg.append(f'<path d="{points_path([surface_point(u, .02) for u in us])}" stroke="{pale(c1,1.3,.55)}" stroke-width="{.7+1.1*weave:.2f}" opacity="{.3+.4*weave:.3f}"/>')
+        svg.append(f'<path d="{points_path([surface_point(u, .02) for u in us])}" stroke="url(#field-rib)" stroke-width="{.7+1.1*weave+.4*fine:.2f}" opacity="{.3+.4*weave:.3f}"/>')
         svg.append('</g>')
     svg.append(f'<path id="field-shoulder-light" d="{tapered_strip(.07,.94,.31+.5*weave,(.13+.035*breadth)*(1-.45*weave),.12)}" fill="url(#field-crest)" opacity="{strength*(.45+.4*d):.3f}" filter="url(#field-diffuse)"/>')
     if p['counterpoint']:
-        # A second current lives in the same material, so it is modelled by the
-        # same light. It parts above the shoulder, where the surface can be read.
-        lens, seam, near = countercurrent()
+        # A second current lives in the same material. It parts from the surface
+        # along one edge, leaving an opening the ground shows through, and returns
+        # along the other. Across its width it is its own colour, deep beside the
+        # opening and lit toward the seam where it rejoins. The colour says what it
+        # is; the parting says that it is a current, not a palette.
+        lens, lip, opening, seam = countercurrent()
         svg.append(f'<g id="field-countercurrent" opacity="{strength*p["counterpoint"]*(.74+.26*d):.3f}">'
                    f'<path d="{lens}" fill="url(#field-counter-ink)" filter="url(#field-diffuse)"/>'
-                   f'<path d="{near}" fill="none" stroke="#0B1520" stroke-width="{1.1+2.4*p["counterpoint"]:.2f}" opacity=".5"/>'
-                   f'<path d="{seam}" fill="none" stroke="{light(counter_hue,1.44)}" stroke-width="{1+3*p["counterpoint"]:.2f}" opacity=".88"/></g>')
+                   f'<path d="{lip}" fill="{tint(counter_hue,1.4,1.2)}" opacity=".9" filter="url(#field-diffuse)"/>'
+                   f'<g fill="none" filter="url(#field-fine)">'
+                   f'<path d="{opening}" fill="url(#background)" opacity=".85"/>'
+                   f'<path d="{seam}" stroke="{tint(counter_hue,1.6,.7)}" stroke-width="{1+3*p["counterpoint"]:.2f}" opacity=".92"/></g></g>')
     svg.append(f'<path id="field-grazing-light" d="{tapered_strip(.21,.75,.2+.58*weave,.045+.03*breadth,.08)}" fill="url(#field-crest)" opacity="{strength*(.35+.35*d):.3f}"/>')
     if t:
         # Compression gathers shadow behind the strained contour and concentrates
         # light along it. Unresolved pressure, not alarm.
         lo, hi = max(.02, strain_u-.18), min(.98, strain_u+.18)
-        svg.append(f'<path id="field-strain" d="{tapered_strip(lo,hi,.46,.07+.17*t,.1)}" fill="url(#field-depth)" opacity="{strength*t*(.5+.3*d):.3f}" filter="url(#field-diffuse)"/>')
-        svg.append(f'<path id="field-strain-light" d="{tapered_strip(max(.02,strain_u-.13),min(.98,strain_u+.13),.2,.028+.05*t)}" fill="url(#field-crest)" opacity="{strength*t*(.55+.3*d):.3f}"/>')
+        svg.append(f'<path id="field-strain" d="{tapered_strip(lo,hi,.46,.07+.17*t,.1)}" fill="url(#field-shade)" opacity="{strength*t*(.5+.3*d):.3f}" filter="url(#field-diffuse)"/>')
+        svg.append(f'<path id="field-strain-light" d="{tapered_strip(max(.02,strain_u-.13),min(.98,strain_u+.13),.2,.028+.05*t)}" fill="url(#field-tint)" opacity="{strength*t*(.55+.3*d):.3f}" filter="url(#field-fine)"/>')
     # A folded sheet catches light along changing curves inside its envelope.
     # The presence of this relief follows folding, never a separate art setting.
     if fold:
@@ -372,39 +451,18 @@ def render(spec):
         svg.append(f'<path id="field-fold-shadow" d="{tapered_strip(.28,.79,.53,.045+.08*fold,.14)}" fill="url(#field-depth)" opacity="{strength*fold*(.24+.24*d):.3f}" filter="url(#field-diffuse)"/>')
     svg.append(f'''  <path d="{points_path([surface_point(u, .06) for u in us])}" fill="none" stroke="url(#field-edge-ink)" stroke-width="{.65+.75*d+.9*weave:.2f}" opacity="{strength*(d*.68+.3*weave):.3f}"/>
   <path d="{points_path([surface_point(u, .9) for u in us if .47 <= u <= .84])}" fill="none" stroke="url(#field-edge-ink)" stroke-width="{1+.8*d:.2f}" opacity="{strength*d*.6:.3f}"/>
-</g>
-<g id="field-filaments" fill="none" stroke-linecap="round" opacity="{strength*(.42+.58*d):.3f}">''')
-    count = 1 + round(c * 10)
-    for j in range(count):
-        # Uneven intervals and lost edges give a few lines compositional weight.
-        f = .12 + .79 * ((j + 1) / (count + 1)) ** 1.45
-        lo = .015 + .045 * (j % 3)
-        hi = .985 - .04 * ((j + 1) % 4)
-        samples = [u for u in us if lo <= u <= hi]
-        pts, trough = [], []
-        for u in samples:
-            crossing = (.012*t + .045*fold) * math.sin(5*math.pi*u + j*.9)
-            shift = crossing * math.sin(math.pi*u)
-            pts.append(surface_point(u, f + shift))
-            trough.append(surface_point(u, f + shift + .028*math.sin(math.pi*u)))
-        weight = 1 if j % 3 == 0 else .55
-        # Each filament is a crest with its own shadow, so fine structure reads
-        # as a change of surface direction rather than a drawn line.
-        relief = .72 + 1.15*breadth
-        svg.append(f'<path d="{points_path(trough)}" stroke="#0B1520" stroke-width="{(1+1.05*d)*relief*weight:.2f}" opacity="{(.19+.19*d)*weight:.3f}"/>')
-        svg.append(f'<path d="{points_path(pts)}" stroke="{light(c1,1.32)}" stroke-width="{(.85+.95*d)*relief*weight:.2f}" opacity="{(.3+.33*d)*weight:.3f}"/>')
-    svg.append('</g>')
+</g>''')
     svg.append('<g id="field-accent" fill="none">')
     if p["accent"]:
         # Accent lives within the same envelope; its location is not a topic axis.
         seg = [surface_point(u, .57) for u in us if .37 <= u <= .69]
         svg.append(f'<path d="{points_path(seg)}" stroke="url(#field-accent-ink)" stroke-width="{6+25*p["accent_strength"]:.2f}" opacity="{.25+.45*p["accent_strength"]:.2f}" filter="url(#field-soft)"/>')
-        svg.append(f'<path d="{points_path(seg)}" stroke="url(#field-accent-ink)" stroke-width="{1.6+4*p["accent_strength"]:.2f}" opacity=".76"/>')
+        svg.append(f'<path d="{points_path(seg)}" stroke="url(#field-accent-ink)" stroke-width="{1.6+4*p["accent_strength"]:.2f}" opacity=".76" filter="url(#field-fine)"/>')
     # A short highlight articulates definition within the selected hue family.
     if d > .55:
         glint = [point(u, thickness(u)*.45) for u in us if .17 <= u <= .21]
         svg.append(f'<path d="{points_path(glint)}" stroke="{light(c1,1.18)}" stroke-width="1.2" opacity="{strength*(d-.55)*.7:.3f}"/>')
-    svg.append('</g><g id="field-gesture" fill="none" stroke-linecap="round">')
+    svg.append('</g><g id="field-gesture" fill="none" stroke-linecap="round" filter="url(#field-fine)">')
     g, gs = p["gesture"], p["gesture_strength"]
     if g != "none" and gs:
         seg_us = [u for u in us if .28 <= u <= .64]
@@ -416,8 +474,10 @@ def render(spec):
                 wave = math.sin(v*math.pi*3+j*math.pi) if g == "braid" else bow
                 inset = thickness(u)*.5 + (42 if g == "echo" else -38)*gs*wave*bow
                 pts.append(point(u, inset))
-            svg.append(f'<path d="{points_path(pts)}" stroke="#0B1520" stroke-width="{2.6+5*gs:.2f}" opacity="{.16+.26*gs:.3f}"/>')
-            svg.append(f'<path d="{points_path(pts)}" stroke="{light(c2,1.3)}" stroke-width="{1.4+3.2*gs:.2f}" opacity="{.34+.5*gs:.3f}"/>')
+            # A glow of the strand's colour, a soft shade under it, and the thread itself.
+            svg.append(f'<path d="{points_path(pts)}" stroke="{tint(c2,1.2,1.3)}" stroke-width="{6+15*gs:.2f}" opacity="{.07+.14*gs:.3f}" filter="url(#field-diffuse)"/>')
+            svg.append(f'<path d="{points_path(pts)}" stroke="url(#field-shade)" stroke-width="{2.4+4.4*gs:.2f}" opacity="{.14+.2*gs:.3f}"/>')
+            svg.append(f'<path d="{points_path(pts)}" stroke="{tint(c2,1.12,1.4)}" stroke-width="{1.2+2.4*gs:.2f}" opacity="{.3+.42*gs:.3f}"/>')
     svg.append('''</g>
 <g id="drone-body">
   <rect x="436" y="468" width="128" height="64" rx="32" fill="url(#drone-metal)" stroke="url(#drone-rim)" stroke-width="1.5"/>

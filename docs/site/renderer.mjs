@@ -1,6 +1,6 @@
-// Browser implementation of scripts/render_field.py, rendering revision 4.4.
+// Browser implementation of scripts/render_field.py, rendering revision 4.5.
 // Keep geometry and material in step with the Python reference renderer.
-export const REVISION = '4.4';
+export const REVISION = '4.5';
 export const PALETTE = {
   teal: '#42BDB0', blue: '#648DE5', violet: '#9B7BE8',
   amber: '#E8B86A', coral: '#D97979', pearl: '#DDE5EA'
@@ -159,6 +159,22 @@ export function render(spec = {}) {
   const light = (color, amount) => { const [l, a, b] = toOklab(color); return oklabHex([min(.91, l*amount), a, b]); };
   // Lit but withdrawn material, for surfaces that are remembered or inferred.
   const pale = (color, amount, chroma) => { const [l, a, b] = toOklab(color); return oklabHex([min(.91, l*amount), a*chroma, b*chroma]); };
+  // Light that carries colour. A hue can only be lightened so far before sRGB
+  // has no room left for its chroma, and past that point it turns to white.
+  // So a mark is lit only as far as its hue can hold; pearl, which has almost
+  // no chroma to lose, is the one colour that still reaches near-white.
+  const tint = (color, amount, rich = 1) => {
+    const [l, a0, b0] = toOklab(color), a = a0*rich, b = b0*rich;
+    const holds = lightness => { const channels = fromOklab([lightness, a*.85, b*.85]); return min(...channels) >= 0 && max(...channels) <= 1; };
+    let low = l, high = min(.91, l*amount);
+    if (high > low && !holds(high)) {
+      for (let i = 0; i < 12; i++) { const middle = (low+high)/2; if (holds(middle)) low = middle; else high = middle; }
+      high = low;
+    }
+    return oklabHex([high, a, b]);
+  };
+  // The same material in shadow: deeper, and no greyer.
+  const shade = (color, amount, chroma = 1) => { const [l, a, b] = toOklab(color); return oklabHex([l*amount, a*chroma, b*chroma]); };
   const c1 = pigment(p.primary), c2 = pigment(p.secondary || p.primary), ca = pigment(p.accent || p.primary);
   const ambient = pigment(p.ambient || p.primary), climate = p.ambient_strength;
   const bgCentre = mix('#101A25', ambient, .03+.38*climate), bgEdge = mix('#080D16', ambient, .02+.12*climate);
@@ -173,6 +189,12 @@ export function render(spec = {}) {
   // The visible seat of compression, following the geometry that tension bends.
   const strainU = form === 'envelope' ? min(.86,max(.14,(2.65-first)/(last-first))) : .48;
   const counterHue = p.accent ? ca : c2;
+  // Reading order. Hue, light, posture and softness are read first. The marks
+  // that are read second (relief, ridge, second current, seat of strain,
+  // reticulation, gesture) are drawn in the field's own hues, and one blur,
+  // set by definition, decides how sharply any of them is articulated.
+  const fine = .3+9*(1-d)**2;
+  const articulate = (x => x*x*(3-2*x))(max(0,min(1,(d-.4)/.45)));
   const svg = [];
   const add = value => svg.push(value);
   const path = (shape, attrs) => '<path d="' + shape + '" ' + attrs + '/>';
@@ -182,18 +204,26 @@ export function render(spec = {}) {
   const metadata = Object.fromEntries(Object.keys(p).sort().map(k=>[k,p[k]]));
   add('<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000" viewBox="0 0 1000 1000" role="img" aria-label="A central titanium capsule with a unified abstract field" data-field-version="4" data-field-renderer="'+REVISION+'">');
   add('<metadata id="field-spec">'+xml(JSON.stringify(metadata))+'</metadata><defs>');
-  add('<radialGradient id="background">'+stops([bgCentre,bgEdge],[0,1])+'</radialGradient>');
+  // In page units, so that an opening in the field can show the same ground.
+  add('<radialGradient id="background" gradientUnits="userSpaceOnUse" cx="500" cy="500" r="500">'+stops([bgCentre,bgEdge],[0,1])+'</radialGradient>');
   add(linear('field-ink','x1="18%" y1="72%" x2="82%" y2="27%"',[c1,c2,accentMix,c1],[0,.38,.69,1]));
   add('<radialGradient id="field-atmosphere">'+stops([c1,c2,c1],[0,.6,1],[fixed(.07+.18*breadth),fixed(.02+.08*breadth),0])+'</radialGradient>');
   add(linear('field-accent-ink','',[ca,ca,ca],[0,.5,1],[0,.72,0]));
   add(linear('field-edge-ink',pageGradient,[c1,c2,c1,c1],[0,.32,.58,1],[.1,.75,.15,.6]));
   add(linear('field-crest','gradientUnits="userSpaceOnUse" x1="170" y1="690" x2="790" y2="280"',[light(c1,1.28),light(c2,1.45),light(c1,1.3),light(c1,1.4)],[0,.36,.68,1],[.25,.9,.35,.65]));
   add(linear('field-depth','gradientUnits="userSpaceOnUse" x1="230" y1="730" x2="760" y2="300"',Array(4).fill('#0B1520'),[0,.35,.7,1],[0,.48,.1,.3]));
-  add(linear('field-history-ink','gradientUnits="userSpaceOnUse" x1="190" y1="730" x2="810" y2="270"',[pale(c2,.74,.5),pale(c1,1.24,.44),pale(c2,.72,.5)],[0,.47,1],[.5,.92,.45]));
-  add(linear('field-counter-ink',pageGradient,[light(counterHue,.5),light(counterHue,1.34),light(counterHue,.6)],[0,.42,1]));
+  add(linear('field-tint',pageGradient,[c1,c2,accentMix,c1].map(color=>tint(color,1.08,1.5)),[0,.38,.69,1]));
+  add(linear('field-shade',pageGradient,[c1,c2,accentMix,c1].map(color=>shade(color,.68,1.15)),[0,.38,.69,1]));
+  add(linear('field-rib',pageGradient,[c1,c2,accentMix,c1].map(color=>tint(color,1.3,1.15)),[0,.38,.69,1]));
+  add(linear('field-history-ink','gradientUnits="userSpaceOnUse" x1="190" y1="730" x2="810" y2="270"',[pale(c2,.66,.92),pale(c1,.88,.92),pale(c2,.64,.92)],[0,.47,1],[.6,.9,.55]));
+  add(linear('field-counter-ink',pageGradient,[shade(counterHue,.6,1.2),shade(counterHue,.8,1.2),shade(counterHue,.64,1.2)],[0,.42,1]));
   add(linear('drone-metal','x1="0" y1="0" x2="0" y2="1"',['#34414D','#202B35','#101922'],[0,.5,1]));
   add(linear('drone-rim','x1="0" y1="0" x2="1" y2="1"',['#DDE5EA','#8C9BA9','#DDE5EA'],[0,.6,1],[.68,.21,.30]));
   for (const [id,blur] of [['field-soft',1.5+18*(1-d)],['field-diffuse',1.2+5*(1-d)**2]]) add('<filter id="'+id+'" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="'+fixed(blur,2)+'"/></filter>');
+  // Marks are thin, so their blur is measured against the page, not their own bounds.
+  add('<filter id="field-fine" filterUnits="userSpaceOnUse" x="0" y="0" width="1000" height="1000" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="'+fixed(fine,2)+'"/></filter>');
+  // What is retained keeps its shape only as far as the field is articulated; otherwise it is an afterglow.
+  add('<filter id="field-recede" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="'+fixed(1.2+5*(1-d)**2+(.3+18*(1-d)-5*(1-d)**2)*(1-articulate),2)+'"/></filter>');
   const lanes = 28;
   for (let j=0;j<lanes;j++) {
     const f=(j+.5)/lanes;
@@ -211,9 +241,11 @@ export function render(spec = {}) {
     const offset = u=>p.history*(30+34*breadth)*sin(PI*u)**1.6*(.84+.16*cos(3*PI*u));
     const ridge=closed(us.map(u=>location(u,.07,offset(u))),reverse(us).map(u=>location(u,.34,offset(u)*.17)));
     const edge=pointsPath(us.filter(u=>u>=.16&&u<=.84).map(u=>location(u,.07,offset(u))));
-    add('<g id="field-history" opacity="'+fixed(strength*p.history*(.86+.14*d))+'">'+path(ridge,'fill="url(#field-history-ink)" filter="url(#field-diffuse)"')+path(edge,'fill="none" stroke="'+pale(c2,1.36,.5)+'" stroke-width="'+fixed(1+1.9*p.history,2)+'" opacity=".82"')+'</g>');
+    // Older material in the same hues, dimmer and duller. Its lit edge is an
+    // articulated edge like any other, so it is there only when definition is.
+    add('<g id="field-history" opacity="'+fixed(strength*p.history*(.86+.14*d))+'">'+path(ridge,'fill="url(#field-history-ink)" filter="url(#field-recede)"')+path(edge,'fill="none" stroke="'+tint(pale(c2,.9,.92),1.3)+'" stroke-width="'+fixed(.9+1.4*p.history,2)+'" opacity="'+fixed(.9*articulate)+'" filter="url(#field-fine)"')+'</g>');
   }
-  add(path(outline,'fill="url(#field-ink)" opacity="'+fixed(strength*.28*(1-.72*weave))+'" filter="url(#field-soft)"'));
+  add(path(outline,'fill="url(#field-ink)" opacity="'+fixed(strength*.28*(1-.4*weave))+'" filter="url(#field-soft)"'));
   add(path(outline,'fill="url(#field-ink)" opacity="'+fixed(strength*(.18+.23*d)*(1-.78*weave))+'" filter="url(#field-diffuse)"'));
   add(path(strip(.11,.9,.79,.15),'fill="url(#field-depth)" opacity="'+fixed(strength*(.08+.16*d))+'" filter="url(#field-diffuse)"'));
   add('<g id="field-surface" opacity="'+fixed(strength*(.35+.1*d))+'" filter="url(#field-diffuse)">');
@@ -224,42 +256,64 @@ export function render(spec = {}) {
     add(path(ribbon(j/lanes,min(1,(j+1.65)/lanes)),'fill="url(#field-skin-'+j+')" opacity="'+fixed(presence)+'"'));
   }
   add('</g>');
+  // Threads are the grain of the material. Light, the second current and strain lie over them.
+  add('<g id="field-filaments" fill="none" stroke-linecap="round" opacity="'+fixed(strength*(.42+.58*d))+'" filter="url(#field-fine)">');
+  const count=1+roundEven(c*10);
+  for(let j=0;j<count;j++) {
+    const f=.12+.79*((j+1)/(count+1))**1.45,lo=.015+.045*(j%3),hi=.985-.04*((j+1)%4);
+    const samples=us.filter(u=>u>=lo&&u<=hi);
+    const shift=u=>(.012*t+.045*fold)*sin(5*PI*u+j*.9)*sin(PI*u);
+    const pts=samples.map(u=>surface(u,f+shift(u)));
+    const trough=samples.map(u=>surface(u,f+shift(u)+.028*sin(PI*u)));
+    // A thread is detail of the material, so where the material is not met it thins with it.
+    const weight=(j%3===0?1:.55)*(f>=weave?1:.3+.7*(f/max(1e-6,weave))**.7), relief=.72+1.15*breadth;
+    // Each thread is the surface's own colour, more saturated and a little lit,
+    // with a soft shade beside it: a change of surface direction, not a drawn line.
+    add(path(pointsPath(trough),'stroke="url(#field-shade)" stroke-width="'+fixed((1+1.05*d)*relief*weight,2)+'" opacity="'+fixed((.16+.18*d)*weight)+'"'));
+    add(path(pointsPath(pts),'stroke="url(#field-tint)" stroke-width="'+fixed((.95+1.05*d)*relief*weight,2)+'" opacity="'+fixed((.36+.44*d)*weight)+'"'));
+  }
+  add('</g>');
   if(weave) {
     // Inference is drawn, not filled: the section ribs that define the form
-    // stay visible where its material does not. This is not low definition,
-    // which blurs everything equally; here the structure stays exact.
-    const ribs=7+roundEven(13*weave);
-    add('<g id="field-reticulation" fill="none" stroke-linecap="round" opacity="'+fixed(strength*(.62+.38*d))+'">');
+    // stay visible where its material does not. They soften with definition
+    // like every mark, and are drawn broader as they do, so that an unresolved
+    // form which was also not met still shows that it is described.
+    const ribs=6+roundEven(11*weave);
+    add('<g id="field-reticulation" fill="none" stroke-linecap="round" opacity="'+fixed(strength*(.62+.38*d))+'" filter="url(#field-fine)">');
     for(let j=0;j<ribs;j++) {
       const u=.06+.88*(j+.5)/ribs, span=weave*(.52+.48*sin(PI*u));
-      add(path(pointsPath(seq(13,k=>surface(u,span*k/12))),'stroke="'+pale(c1,1.38,.6)+'" stroke-width="'+fixed(.9+1.3*weave,2)+'" opacity="'+fixed(.4+.5*sin(PI*u))+'"'));
+      add(path(pointsPath(seq(13,k=>surface(u,span*k/12))),'stroke="url(#field-rib)" stroke-width="'+fixed(.9+1.3*weave+.55*fine,2)+'" opacity="'+fixed(.4+.5*sin(PI*u))+'"'));
     }
     // A held outer edge keeps the described form exact where it is not filled.
-    add(path(pointsPath(us.map(u=>surface(u,.02))),'stroke="'+pale(c1,1.3,.55)+'" stroke-width="'+fixed(.7+1.1*weave,2)+'" opacity="'+fixed(.3+.4*weave)+'"'));
+    add(path(pointsPath(us.map(u=>surface(u,.02))),'stroke="url(#field-rib)" stroke-width="'+fixed(.7+1.1*weave+.4*fine,2)+'" opacity="'+fixed(.3+.4*weave)+'"'));
     add('</g>');
   }
   // Light falls only where there is material to catch it, so it moves inward.
   add(path(strip(.07,.94,.31+.5*weave,(.13+.035*breadth)*(1-.45*weave),.12),'id="field-shoulder-light" fill="url(#field-crest)" opacity="'+fixed(strength*(.45+.4*d))+'" filter="url(#field-diffuse)"'));
   if(p.counterpoint) {
-    // A second current lives in the same material, so it is modelled by the
-    // same light. It parts above the shoulder, where the surface can be read.
+    // A second current lives in the same material. It parts from the surface
+    // along one edge, leaving an opening the ground shows through, and returns
+    // along the other. Across its width it is its own colour, deep beside the
+    // opening and lit toward the seam where it rejoins. The colour says what it
+    // is; the parting says that it is a current, not a palette.
     const section=[.14,...us.filter(u=>u>.14&&u<.86),.86];
     const parting=u=>.52*p.counterpoint*max(0,sin(PI*((u-.14)/.72)))**1.4;
-    const near=section.map(u=>surface(u,.40));
-    const lens=closed(near,reverse(section).map(u=>surface(u,.40+parting(u))));
-    const seam=pointsPath(section.map(u=>surface(u,.40+parting(u))));
+    const across=k=>section.map(u=>surface(u,.40+k*parting(u)));
+    const near=across(0), far=across(1);
     add('<g id="field-countercurrent" opacity="'+fixed(strength*p.counterpoint*(.74+.26*d))+'">'
-      +path(lens,'fill="url(#field-counter-ink)" filter="url(#field-diffuse)"')
-      +path(pointsPath(near),'fill="none" stroke="#0B1520" stroke-width="'+fixed(1.1+2.4*p.counterpoint,2)+'" opacity=".5"')
-      +path(seam,'fill="none" stroke="'+light(counterHue,1.44)+'" stroke-width="'+fixed(1+3*p.counterpoint,2)+'" opacity=".88"')+'</g>');
+      +path(closed(near,reverse(far)),'fill="url(#field-counter-ink)" filter="url(#field-diffuse)"')
+      +path(closed(across(.45),reverse(far)),'fill="'+tint(counterHue,1.4,1.2)+'" opacity=".9" filter="url(#field-diffuse)"')
+      +'<g fill="none" filter="url(#field-fine)">'
+      +path(closed(near,reverse(across(.3))),'fill="url(#background)" opacity=".85"')
+      +path(pointsPath(far),'stroke="'+tint(counterHue,1.6,.7)+'" stroke-width="'+fixed(1+3*p.counterpoint,2)+'" opacity=".92"')+'</g></g>');
   }
   add(path(strip(.21,.75,.2+.58*weave,.045+.03*breadth,.08),'id="field-grazing-light" fill="url(#field-crest)" opacity="'+fixed(strength*(.35+.35*d))+'"'));
   if(t) {
     // Compression gathers shadow behind the strained contour and concentrates
     // light along it. Unresolved pressure, not alarm.
     const lo=max(.02,strainU-.18), hi=min(.98,strainU+.18);
-    add(path(strip(lo,hi,.46,.07+.17*t,.1),'id="field-strain" fill="url(#field-depth)" opacity="'+fixed(strength*t*(.5+.3*d))+'" filter="url(#field-diffuse)"'));
-    add(path(strip(max(.02,strainU-.13),min(.98,strainU+.13),.2,.028+.05*t),'id="field-strain-light" fill="url(#field-crest)" opacity="'+fixed(strength*t*(.55+.3*d))+'"'));
+    add(path(strip(lo,hi,.46,.07+.17*t,.1),'id="field-strain" fill="url(#field-shade)" opacity="'+fixed(strength*t*(.5+.3*d))+'" filter="url(#field-diffuse)"'));
+    add(path(strip(max(.02,strainU-.13),min(.98,strainU+.13),.2,.028+.05*t),'id="field-strain-light" fill="url(#field-tint)" opacity="'+fixed(strength*t*(.55+.3*d))+'" filter="url(#field-fine)"'));
   }
   if(fold) {
     add('<g id="field-fold-light" fill="url(#field-edge-ink)" opacity="'+fixed(strength*fold*(.1+.3*d))+'" filter="url(#field-diffuse)">');
@@ -272,36 +326,24 @@ export function render(spec = {}) {
   }
   add(path(pointsPath(us.map(u=>surface(u,.06))),'fill="none" stroke="url(#field-edge-ink)" stroke-width="'+fixed(.65+.75*d+.9*weave,2)+'" opacity="'+fixed(strength*(d*.68+.3*weave))+'"'));
   add(path(pointsPath(us.filter(u=>u>=.47&&u<=.84).map(u=>surface(u,.9))),'fill="none" stroke="url(#field-edge-ink)" stroke-width="'+fixed(1+.8*d,2)+'" opacity="'+fixed(strength*d*.6)+'"'));
-  add('</g><g id="field-filaments" fill="none" stroke-linecap="round" opacity="'+fixed(strength*(.42+.58*d))+'">');
-  const count=1+roundEven(c*10);
-  for(let j=0;j<count;j++) {
-    const f=.12+.79*((j+1)/(count+1))**1.45,lo=.015+.045*(j%3),hi=.985-.04*((j+1)%4);
-    const samples=us.filter(u=>u>=lo&&u<=hi);
-    const shift=u=>(.012*t+.045*fold)*sin(5*PI*u+j*.9)*sin(PI*u);
-    const pts=samples.map(u=>surface(u,f+shift(u)));
-    const trough=samples.map(u=>surface(u,f+shift(u)+.028*sin(PI*u)));
-    const weight=j%3===0?1:.55, relief=.72+1.15*breadth;
-    // Each filament is a crest with its own shadow, so fine structure reads
-    // as a change of surface direction rather than a drawn line.
-    add(path(pointsPath(trough),'stroke="#0B1520" stroke-width="'+fixed((1+1.05*d)*relief*weight,2)+'" opacity="'+fixed((.19+.19*d)*weight)+'"'));
-    add(path(pointsPath(pts),'stroke="'+light(c1,1.32)+'" stroke-width="'+fixed((.85+.95*d)*relief*weight,2)+'" opacity="'+fixed((.3+.33*d)*weight)+'"'));
-  }
   add('</g><g id="field-accent" fill="none">');
   if(p.accent) {
     const seg=pointsPath(us.filter(u=>u>=.37&&u<=.69).map(u=>surface(u,.57)));
     add(path(seg,'stroke="url(#field-accent-ink)" stroke-width="'+fixed(6+25*p.accent_strength,2)+'" opacity="'+fixed(.25+.45*p.accent_strength,2)+'" filter="url(#field-soft)"'));
-    add(path(seg,'stroke="url(#field-accent-ink)" stroke-width="'+fixed(1.6+4*p.accent_strength,2)+'" opacity=".76"'));
+    add(path(seg,'stroke="url(#field-accent-ink)" stroke-width="'+fixed(1.6+4*p.accent_strength,2)+'" opacity=".76" filter="url(#field-fine)"'));
   }
   if(d>.55) add(path(pointsPath(us.filter(u=>u>=.17&&u<=.21).map(u=>point(u,thickness(u)*.45))),'stroke="'+light(c1,1.18)+'" stroke-width="1.2" opacity="'+fixed(strength*(d-.55)*.7)+'"'));
-  add('</g><g id="field-gesture" fill="none" stroke-linecap="round">');
+  add('</g><g id="field-gesture" fill="none" stroke-linecap="round" filter="url(#field-fine)">');
   const g=p.gesture,gs=p.gesture_strength;
   if(g!=='none'&&gs) for(let j=0;j<(g==='braid'?2:1);j++) {
     const pts=us.filter(u=>u>=.28&&u<=.64).map(u=>{
       const v=(u-.28)/.36,bow=sin(PI*v),wave=g==='braid'?sin(v*PI*3+j*PI):bow;
       return point(u,thickness(u)*.5+(g==='echo'?42:-38)*gs*wave*bow);
     });
-    add(path(pointsPath(pts),'stroke="#0B1520" stroke-width="'+fixed(2.6+5*gs,2)+'" opacity="'+fixed(.16+.26*gs)+'"'));
-    add(path(pointsPath(pts),'stroke="'+light(c2,1.3)+'" stroke-width="'+fixed(1.4+3.2*gs,2)+'" opacity="'+fixed(.34+.5*gs)+'"'));
+    // A glow of the strand's colour, a soft shade under it, and the thread itself.
+    add(path(pointsPath(pts),'stroke="'+tint(c2,1.2,1.3)+'" stroke-width="'+fixed(6+15*gs,2)+'" opacity="'+fixed(.07+.14*gs)+'" filter="url(#field-diffuse)"'));
+    add(path(pointsPath(pts),'stroke="url(#field-shade)" stroke-width="'+fixed(2.4+4.4*gs,2)+'" opacity="'+fixed(.14+.2*gs)+'"'));
+    add(path(pointsPath(pts),'stroke="'+tint(c2,1.12,1.4)+'" stroke-width="'+fixed(1.2+2.4*gs,2)+'" opacity="'+fixed(.3+.42*gs)+'"'));
   }
   add('</g><g id="drone-body"><rect x="436" y="468" width="128" height="64" rx="32" fill="url(#drone-metal)" stroke="url(#drone-rim)" stroke-width="1.5"/></g></svg>');
   return svg.join('\n')+'\n';

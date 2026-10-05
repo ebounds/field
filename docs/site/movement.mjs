@@ -48,9 +48,13 @@ export function compositionSVG(update,previous) {
       ink.append(element('stop',{offset,'stop-color':PALETTE[color]}));
     svg.querySelector('defs').append(ink);
     const group=svg.querySelector('#field-history');
+    // The real contour takes the drawn ridge's softness and its edge's articulation,
+    // so what is retained is no sharper than the field that retains it.
+    const [ridge,edge]=group.children;
     group.setAttribute('data-trace-source',String(previous.sequence));
-    group.replaceChildren(element('path',{d:path,fill:'url(#retained-ink)',opacity:'.7',filter:'url(#field-diffuse)'}),
-      element('path',{d:pointsPath(outer),fill:'none',stroke:PALETTE[previous.spec.primary],'stroke-width':String(1.2+.6*h),opacity:'.6'}));
+    group.replaceChildren(element('path',{d:path,fill:'url(#retained-ink)',opacity:'.7',filter:ridge.getAttribute('filter')}),
+      element('path',{d:pointsPath(outer),fill:'none',stroke:PALETTE[previous.spec.primary],'stroke-width':String(1.2+.6*h),
+        opacity:edge.getAttribute('opacity'),filter:edge.getAttribute('filter')}));
     // Let the remembered ridge read on the surface, beneath its grazing light.
     const shoulder=svg.querySelector('#field-shoulder-light');
     shoulder.parentNode.insertBefore(group,shoulder);

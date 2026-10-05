@@ -1,6 +1,6 @@
 # Field Listening 1.1
 
-An optional musical companion to Field v4, introduced in package 4.4 and revised in 4.6. The visual renderer is revision 4.4. Ordinary Field invocations remain visual. Invoke listening only when the user asks for sound, music, listening, or an audio companion; an explicitly requested audio-only Field is also supported.
+An optional musical companion to Field v4, introduced in package 4.4 and revised in 4.6. The visual renderer is revision 4.5. Ordinary Field invocations remain visual. Invoke listening only when the user asks for sound, music, listening, or an audio companion; an explicitly requested audio-only Field is also supported.
 
 ## One interpretation, two expressions
 

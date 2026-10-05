@@ -142,7 +142,7 @@ function download(blob,filename) {
 }
 $('#save-svg').addEventListener('click',()=>{
   if (frame) { cancelAnimationFrame(frame); paint(); }
-  download(new Blob([currentSvg],{type:'image/svg+xml'}),'field-4.4.svg');
+  download(new Blob([currentSvg],{type:'image/svg+xml'}),'field-4.5.svg');
   message('Saved the SVG artwork, with its drawing controls embedded.');
 });
 $('#save-png').addEventListener('click',async()=>{
@@ -159,7 +159,7 @@ $('#save-png').addEventListener('click',async()=>{
     context.drawImage(image,0,0,2000,2000);
     const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
     if (!blob) throw new Error('The image could not be saved.');
-    download(blob,'field-4.4.png'); message('Saved a 2000 × 2000 image of this field.');
+    download(blob,'field-4.5.png'); message('Saved a 2000 × 2000 image of this field.');
   } catch (error) { message(error.message+' You can also save the SVG.'); }
   finally { if(source) URL.revokeObjectURL(source); button.disabled=false; }
 });
