@@ -50,4 +50,4 @@ The diagonal (a model decoding its own encodings) is kept and reported apart fro
 
 ## Changes after 4 October
 
-None yet.
+- **5 October.** Nothing in the measures or thresholds changed. The first run stopped on usage limits (Claude, Codex, Grok) on 4 October and was finished the next day from the same file. Grok and Gemini have not had their two full passes: both are on free tiers, and their missing cells stay missing until someone runs them. One Grok trial was answered by `grok-4.6`; it is counted, with the model on its row.

@@ -10,7 +10,7 @@ Written 4 October 2026 for Edgar Bounds, before any 4.7 work starts.
 3. **Make sound mean something at the moment of change, and work as a background cue.** The plan from 25 September (Stage 4) becomes stages, each with a test it has to pass.
 4. **Start testing across agents.** That includes finding out whether something that's hard or impossible to put in words gets through, in general, reliably, and on every platform.
 
-Stage 0 is done (its results are under that stage); nothing else in this plan has been built yet. The renders and numbers below come from the 4.5.1 and 4.6 renderers run on 4 October; the images are in [`plan-4.7/`](plan-4.7/).
+Stages 0, 1 and 2 are done, except for Edgar's blind sheet in Stage 2 (each stage's results are under that stage); nothing after that has been built yet. The renders and numbers below come from the 4.5.1 and 4.6 renderers run on 4 October; the images are in [`plan-4.7/`](plan-4.7/).
 
 ## What 4.6 did to the pictures
 
@@ -134,6 +134,23 @@ This is the answer to "don't be reactive". Without it, the art change would be j
 **Edgar's part:** a blind sheet of the same studies at 320 px, 4.5.1 and 4.6 shuffled. For each: "which tells you faster what it's like?" and "which would you keep looking at?". It takes about ten minutes.
 
 **Output:** a baseline number for what's being lost, recorded before Stage 3 starts.
+
+**Stage 2 results (4–5 October).** The harness is `scripts/xagent/`; what it measures was fixed in [`PREREG.md`](../scripts/xagent/PREREG.md) before any counted trial, and the full tables are in [`results/stage2-report.md`](../scripts/xagent/results/stage2-report.md). 935 of 1,066 trials are answered. Every Claude and Codex cell is complete (Opus 5.5, Sonnet 5.5, Haiku 4.5, Astra, Sol). Gemini and Grok are part done: both stopped on their free tiers, and their remaining cells can be run later without changing anything else. No answer failed to parse.
+
+**The pre-registered test found no decoder gap.** At 160 px, naive readers picked the right word 30 % of the time under 4.5.1 and 29 % under 4.6 (chance is 14 %), each family weighted equally. Two of the four families had 4.5.1 ahead (OpenAI +.04, xAI +.06); Anthropic was level and Google went the other way (−.10). The rule needed a 10-point gap in three of four families. So the plan's fork applies as written: Stage 3's decoder test is "no regression against 4.6", and Edgar's blind sheet is the main measure of the first look.
+
+What else the baseline shows:
+
+- **Asked directly, the models describe the trade Edgar described.** Shown both renders side by side at 320 px, they said 4.5.1 "tells you faster what it's like" in 21 pairs and 4.6 in none (9 gave no signal), and that they'd "keep looking at" 4.6 in 22 pairs against 1 (7 no signal). At 160 px it's the same direction and weaker (10 to 2, and 11 to 1, with 18 no signal each). Opus, Sonnet, Astra and Sol all agree; Haiku mostly gave no signal. This is a stated preference between two pictures, not a measured speed, and it doesn't change the verdict above. It does say that the loss isn't in which word a field suggests; it's in how the two pictures compare when seen together.
+- **`tentative` moved the way the diagnosis predicted, within the noise.** It was named correctly in 77 % of trials under 4.5.1 at 160 px and 64 % under 4.6 (13 and 14 trials; the intervals overlap widely). It's the best-read study under either revision.
+- **At full size 4.6 reads a little better** (30 % against 22 % at 1000 px), mostly through `gathered` (70 % against 36 %). The prediction was "level, or 4.6 ahead".
+- **Half the studies don't read at a glance under either revision.** `playful` was never named correctly in 74 trials; it's called "integrated". `strained` is named correctly in 9 % of trials (7 of 76) and called "tentative" in 58 %. `described` is at 3 % (1 of 39), read most often as "tentative". Only `tentative` and `gathered` are reliably above chance. This is a larger gap than the one between the revisions, and Stage 3 can use it: a field under pressure currently looks, to a reader with no grammar, like a field that's unsure. (Limits: seven words chosen by the people who drew the studies, and a forced choice.)
+- **Taught readers do better under 4.6**, which is the baseline Stage 3 must hold. "Held from earlier" at 320 px: seen 60 % of the time when it was there (47 % under 4.5.1), with false alarms down from 33 % to 13 %. A second current at 1000 px: seen 87 % against 67 %. `grounding` (4.6 only) is the clearest channel in the grammar: a reconstructed reading was seen 87 % of the time, with false alarms at 7 % (320 px) and 2 % (1000 px).
+- **The real-conversation fields** (the nine E3 readings) were mostly called "integrated" under both revisions, and a decoder gave the same word to both revisions of a reading in 37 of 54 cases.
+
+Three things about the run itself. Grok answered one trial from `grok-4.6` while its limit was close; it's counted, and the model is recorded on the row. Gemini's trials for one study always go to the same Flash model, so when two of the five models were overloaded on 5 October those trials waited. And the Grok cells still missing (42) include all but one of its pairs, so the side-by-side result rests on Anthropic and OpenAI alone.
+
+**Still open in this stage:** Edgar's blind sheet, https://claude.ai/artifact/Eu8tb5aqCAkKjwiAfLKwnt (twelve pairs at 320 px; paste the code it gives back, and `python3 scripts/xagent/sheet.py '<code>'` scores it against `results/blind-sheet-key.json`). Under the fork it is what Stage 3 is judged by, so Stage 3 waits for it.
 
 ## Stage 3 — Bringing them together in the picture: render revision 4.5 (max effort)
 
