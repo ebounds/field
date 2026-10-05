@@ -88,7 +88,9 @@ Palette now moves a piece 2.6 times as far as it did, and further than any form 
 | Gentle arch: first and last entry in the middle, five in the canopy | 0.79 | 38 / 18 |
 | Strong arch: rises to three canopy entries and comes down | 0.97 | 40 / 20 |
 
-Even the strong arch stops just short of the gate. Both are one line in `compose()`, the `register` of each entry. They are rendered for listening alongside 1.1 and 1.2.
+Even the strong arch stops just short of the gate. Both are one line in `compose()`, the `register` of each entry.
+
+**For listening:** seventeen renders, made with `renderAudio` and encoded as MP3: the seven studies in 1.1 (`a244a80`) and in 1.2 (`4472d81`), and the three mantle studies with the strong arch (register `[1,1,2,2,2,1,1]`). They are heard as ten blind A/B pairs, 1.1 against 1.2 and then the octave against the arch, each with two questions (which tells you its color sooner, or holds a tall space better; which you would keep listening to) and room for notes. What was what is shown only at the end.
 
 What the check holds now (`scripts/check_audio.mjs`): the timbre term names palettes; the level guard; two real rests in every study, with the centre silent in the first and returning after the last; and a floor of 0.6 on the margin, so palette cannot quietly fall back toward 1.1. It reports whether the gate is met. When it is, the floor becomes the gate.
 
