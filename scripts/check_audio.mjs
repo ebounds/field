@@ -4,33 +4,10 @@ import {createHash} from 'node:crypto';
 import {compose,renderAudio,encodeWav} from '../docs/site/audio.mjs';
 import {PRESETS} from '../docs/site/presets.mjs';
 import {DEFAULTS} from '../docs/site/renderer.mjs';
+import {fingerprint,listeningDistance,timeCourseDistance} from './audio_fingerprint.mjs';
+import {measureGate,reportGate} from './listening_gate.mjs';
 
 const hash=array=>createHash('sha256').update(new Uint8Array(array.buffer)).digest('hex');
-/** A coarse listening fingerprint: loudness and brightness over time. Hash
- *  inequality proves two renders are not the same file; it says nothing about
- *  whether anyone could tell them apart. This is the difference we care about. */
-function fingerprint(audio) {
-  const step=audio.sampleRate/2, frames=[];
-  for(let start=0;start+step<=audio.left.length;start+=step) {
-    let energy=0,crossings=0;
-    for(let i=start;i<start+step;i++) {
-      const value=audio.left[i]+audio.right[i];
-      energy+=value*value;
-      if(i>start&&((value<0)!==((audio.left[i-1]+audio.right[i-1])<0))) crossings++;
-    }
-    frames.push([Math.sqrt(energy/step),crossings/step]);
-  }
-  return frames;
-}
-/** Distance between two fingerprints: loudness in decibels, brightness in rate. */
-function listeningDistance(a,b) {
-  let total=0;
-  for(let i=0;i<a.length;i++) {
-    const loud=20*Math.log10(Math.max(a[i][0],1e-5)/Math.max(b[i][0],1e-5));
-    total+=Math.abs(loud)/6+Math.abs(a[i][1]-b[i][1])*90;
-  }
-  return +(total/a.length).toFixed(3);
-}
 function measure(audio) {
   let peak=0,energy=0,dc=0,difference=0,stereo=0;
   for(let i=0;i<audio.left.length;i++) {
@@ -75,12 +52,13 @@ assert.equal(hashes.size,Object.keys(PRESETS).length,'studies should render dist
 // Distinct samples are not yet distinct music. Every pair of studies must also
 // differ audibly, and the closest pair is reported so the margin stays visible.
 {
-  const names=[...prints.keys()];let closest=Infinity,pair='';
+  const names=[...prints.keys()];let closest=Infinity,pair='',course=0;
   for(let i=0;i<names.length;i++) for(let j=i+1;j<names.length;j++) {
     const distance=listeningDistance(prints.get(names[i]),prints.get(names[j]));
-    if(distance<closest) {closest=distance;pair=names[i]+'/'+names[j];}
+    if(distance<closest) {closest=distance;pair=names[i]+'/'+names[j];
+      course=timeCourseDistance(prints.get(names[i]),prints.get(names[j]));}
   }
-  console.log('closest pair',pair,closest);
+  console.log('closest pair',pair,closest,'(time course alone',course+')');
   assert(closest>=.20,`studies ${pair} are too alike to hear apart: ${closest}`);
 }
 // Epistemic texture must be audible: an inferred reading keeps a voice's
@@ -102,4 +80,15 @@ measure(renderAudio({...allHigh,primary:'coral',secondary:'coral',accent:'coral'
 measure(renderAudio({intensity:0,complexity:0,definition:0,breadth:0,openness:0}));
 for(const invalid of [{tension:NaN},{history:2},{version:3},{primary:'red'},{secret:'no'}]) assert.throws(()=>renderAudio(invalid));
 for(const sampleRate of [0,NaN,1e9,44100.5]) assert.throws(()=>renderAudio({}, {sampleRate}));
+// Palette carried as far as form? First the measure must hear palette at all:
+// heard in all six palettes, a study's palette has to be named from timbre well
+// above chance. Then palette's separation is set against form's and the margin
+// reported. See docs/field-4.7-listening.md for the measure and its thresholds.
+{
+  const gate=await measureGate(PRESETS);
+  reportGate(gate);
+  const {compared,timeCourseCompared}=gate.naming;
+  assert(compared.accuracy>=.5,`the timbre term cannot name palettes: ${compared.correct}/${compared.total}`);
+  assert(compared.correct>timeCourseCompared.correct,'the timbre term should hear palette better than the time course');
+}
 console.log('Passed: distinct studies, deterministic audio, center, optional voices, extremes, fades, headroom, stereo WAV/metadata, and invalid input.');
