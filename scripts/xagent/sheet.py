@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """Build the blind comparison sheet a person fills in.
 
-    CHROME_BIN=/path/to/chromium python3 scripts/xagent/sheet.py
+    CHROME_BIN=/path/to/chromium python3 scripts/xagent/sheet.py [--sheet 2]
+    python3 scripts/xagent/sheet.py 'FIELD-SHEET-2 1:AB 2:B= ...'      # score a pasted code
 
-Each shared study is shown as a pair, one renderer revision beside another, in
-both orders, shuffled. The page never says which is which: it gives a code to
-paste back, and the key that decodes it is written to results/, not to the page.
+Each study is shown as a pair, one renderer revision beside another, in both
+orders, shuffled. The page never says which is which: it gives a code to paste
+back, and the key that decodes it is written to results/, not to the page.
 The page goes to .xagent/sheet/ (ignored by git). Standard library only.
 """
 import base64
@@ -19,9 +20,18 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import items  # noqa: E402
 
 SHEET = items.WORK / 'sheet'
-KEY = Path(__file__).resolve().parent / 'results' / 'blind-sheet-key.json'
+RESULTS = Path(__file__).resolve().parent / 'results'
 SIZE = 320
-SEED = 'field-4.7 sheet 1'
+# Each sheet: its key file, the revisions it draws, which of them it sets side by side,
+# and studies shown only for some of those pairs. A sheet already filled in is never rebuilt
+# over its key, so its answers stay scoreable.
+SHEETS = {
+    '1': {'key': 'blind-sheet-key.json', 'revs': ('4.3', '4.4'), 'versus': (('4.3', '4.4'),), 'extra': ()},
+    # Stage 3: the new revision beside each of the two before it; `described` only where both draw it.
+    '2': {'key': 'blind-sheet-2-key.json', 'revs': ('4.3', '4.4', '4.5'),
+          'versus': (('4.4', '4.5'), ('4.3', '4.5')), 'extra': (('described', '4.4', '4.5'),)},
+}
+LATEST = '2'
 
 PAGE = '''<title>Field Blind Sheet</title>
 <style>
@@ -137,16 +147,24 @@ show();
 '''
 
 
-def main():
-    manifest = items.load()
-    revs = list(items.REVISIONS)
+def main(sheet_id):
+    items.load()
+    sheet = SHEETS[sheet_id]
+    revs, key = list(sheet['revs']), RESULTS / sheet['key']
+    if key.exists() and '--again' not in sys.argv:
+        sys.exit(f'Sheet {sheet_id} already has a key ({key.name}). A new sheet needs a new entry in SHEETS; '
+                 'pass --again only to rebuild the same page.')
     SHEET.mkdir(parents=True, exist_ok=True)
-    shuffle = random.Random(SEED)
+    shuffle = random.Random(f'field-4.7 sheet {sheet_id}')
+    built = {rev: items.stamp(rev) for rev in revs}
     images, ids = {}, {}
-    for name in items.SHARED:
+    names = list(items.SHARED) + [name for name, *_ in sheet['extra'] if name not in items.SHARED]
+    for name in names:
         for rev in revs:
+            if name not in items.SHARED and not any(rev in extra[1:] for extra in sheet['extra'] if extra[0] == name):
+                continue
             # Twice the pixels, shown at SIZE: how a field looks on a phone or a sharp screen.
-            png = SHEET / f'{name}-{rev}.png'
+            png = SHEET / f'{name}-{rev}-{built[rev]}.png'
             if not png.exists():
                 svg = items.WORK / 'svg' / f'study-{name}-{rev}.svg'
                 html = png.with_suffix('.html')
@@ -161,34 +179,37 @@ def main():
             images[ids[(name, rev)]] = 'data:image/png;base64,' + base64.b64encode(png.read_bytes()).decode()
     trials = []
     for name in items.SHARED:
-        for first in range(len(revs)):
-            for second in range(len(revs)):
-                if first != second:
-                    trials.append((name, revs[first], revs[second]))
+        for first, second in sheet['versus']:
+            trials += [(name, first, second), (name, second, first)]
+    for name, first, second in sheet['extra']:
+        trials += [(name, first, second), (name, second, first)]
     shuffle.shuffle(trials)
     # No study twice in a row, so the second look at a pair isn't a memory of the first.
     for _ in range(200):
         if all(trials[i][0] != trials[i + 1][0] for i in range(len(trials) - 1)):
             break
         shuffle.shuffle(trials)
-    sheet_id = '1'
     # The images go in last: base64 can contain any of the other placeholders by chance.
     page = (PAGE.replace('SHEET_ID', sheet_id).replace('COUNT', str(len(trials))).replace('SIZE', str(SIZE))
             .replace('TRIALS_JSON', json.dumps([[ids[(n, a)], ids[(n, b)]] for n, a, b in trials]))
             .replace('IMAGES_JSON', json.dumps(dict(sorted(images.items())))))
-    (SHEET / 'blind-sheet.html').write_text(page)
-    KEY.parent.mkdir(exist_ok=True)
-    KEY.write_text(json.dumps({'sheet': sheet_id, 'size': SIZE, 'packages': {r: items.REVISIONS[r][0] for r in revs},
-                               'trials': [{'pair': i + 1, 'study': n, 'A': a, 'B': b}
-                                          for i, (n, a, b) in enumerate(trials)]}, indent=1) + '\n')
-    print(f'{len(trials)} pairs -> {SHEET / "blind-sheet.html"} ({len(page)//1024} KB); key -> {KEY.name}')
+    key.parent.mkdir(exist_ok=True)
+    record = {'sheet': sheet_id, 'size': SIZE, 'packages': {r: items.REVISIONS[r][0] for r in revs},
+              'trials': [{'pair': i + 1, 'study': n, 'A': a, 'B': b} for i, (n, a, b) in enumerate(trials)]}
+    if sheet_id != '1':
+        record['built'] = built       # which build of each renderer the pictures came from
+    key.write_text(json.dumps(record, indent=1) + '\n')
+    page_file = SHEET / ('blind-sheet.html' if sheet_id == '1' else f'blind-sheet-{sheet_id}.html')
+    page_file.write_text(page)
+    print(f'{len(trials)} pairs -> {page_file} ({len(page)//1024} KB); key -> {key.name}')
 
 
 def decode(text):
-    """Score a pasted code against the key: python3 sheet.py 'FIELD-SHEET-1 1:AB 2:B= ...'"""
-    key = json.loads(KEY.read_text())
+    """Score a pasted code against its sheet's key: python3 sheet.py 'FIELD-SHEET-1 1:AB 2:B= ...'"""
+    sheet_id = text.split()[0].rpartition('-')[2]
+    key = json.loads((RESULTS / SHEETS[sheet_id]['key']).read_text())
     tally = {'faster': {}, 'keep': {}}
-    rows = []
+    rows, by_study = [], {}
     for part in text.split()[1:]:
         number, _, marks = part.partition(':')
         trial = key['trials'][int(number) - 1]
@@ -196,15 +217,29 @@ def decode(text):
         for question, mark in zip(('faster', 'keep'), marks):
             picked[question] = trial.get(mark, 'same' if mark == '=' else 'unanswered')
             tally[question][picked[question]] = tally[question].get(picked[question], 0) + 1
+            by_study.setdefault((tuple(sorted((trial['A'], trial['B']))), question, trial['study']), []).append(picked[question])
         rows.append((trial['study'], f'A={trial["A"]} B={trial["B"]}', picked['faster'], picked['keep']))
     for row in sorted(rows):
         print('  %-11s %-14s faster: %-10s keep looking: %s' % row)
     for question, counts in tally.items():
         print(question + ':', ', '.join(f'{k} {v}' for k, v in sorted(counts.items())))
+    if sheet_id == '1':
+        return
+    # A study counts for a revision only when both orders agree (PREREG.md, Stage 3).
+    print()
+    for versus in sorted({pair for pair, _, _ in by_study}):
+        for question in ('faster', 'keep'):
+            wins = {rev: [] for rev in versus}
+            for (pair, asked, study), picks in sorted(by_study.items()):
+                if pair == versus and asked == question and len(picks) == 2 and picks[0] == picks[1] and picks[0] in wins:
+                    wins[picks[0]].append(study)
+            print(f'{versus[0]} beside {versus[1]}, {question}: ' + '; '.join(
+                f'{rev} in {len(found)} ({", ".join(found) or "none"})' for rev, found in wins.items()))
 
 
 if __name__ == '__main__':
-    if len(sys.argv) > 1:
-        decode(sys.argv[1])
+    args = [a for a in sys.argv[1:] if a != '--again']
+    if args and args[0].startswith('FIELD-SHEET-'):
+        decode(args[0])
     else:
-        main()
+        main(args[args.index('--sheet') + 1] if '--sheet' in args else LATEST)

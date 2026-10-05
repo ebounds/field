@@ -10,6 +10,7 @@ random file name. Python 3 standard library and a Chrome/Chromium binary only.
 Images and the manifest go to .xagent/ (ignored by git). They are a pure
 function of the controls and the pinned commits, so they are rebuilt, not kept.
 """
+import hashlib
 import json
 import os
 import re
@@ -24,6 +25,7 @@ ROOT = Path(__file__).resolve().parents[2]
 WORK = ROOT / '.xagent'
 ITEMS = WORK / 'items'
 MANIFEST = ITEMS / 'manifest.json'
+STAMPS = ITEMS / 'stamps.json'
 
 # Renderer revision -> (package it shipped in, commit it is read from).
 # Pinned to commits, so a later change in the working tree can't move a baseline.
@@ -31,7 +33,10 @@ MANIFEST = ITEMS / 'manifest.json'
 REVISIONS = {
     '4.3': ('4.5.1', '005dbae'),
     '4.4': ('4.6.0', 'a244a80'),
+    '4.5': ('4.7.0', 'bf6b84d'),
 }
+# What a revision's images are made from. A change in any of these rebuilds them.
+SOURCES = ('scripts/render_field.py', 'assets/reference-atlas.svg', 'references/visual-grammar.md')
 SIZES = (160, 320, 1000)
 SHARED = ('gathered', 'exploring', 'strained', 'tentative', 'integrated', 'playful')
 WORDS = SHARED + ('described',)
@@ -65,12 +70,21 @@ def show(commit, path):
 
 
 def renderer(rev):
-    """The renderer script of a revision, extracted once."""
+    """The renderer script of a revision."""
     target = WORK / 'renderers' / rev / 'render_field.py'
-    if not target.exists() or REVISIONS[rev][1] == 'WORKTREE':
+    source = show(REVISIONS[rev][1], SOURCES[0])
+    if not target.exists() or target.read_bytes() != source:
         target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_bytes(show(REVISIONS[rev][1], 'scripts/render_field.py'))
+        target.write_bytes(source)
     return target
+
+
+def stamp(rev):
+    """One hash of everything a revision's images are made from."""
+    digest = hashlib.sha256()
+    for path in SOURCES:
+        digest.update(show(REVISIONS[rev][1], path))
+    return digest.hexdigest()[:12]
 
 
 def supports_grounding(rev):
@@ -161,6 +175,16 @@ def build():
     svg_dir = WORK / 'svg'
     svg_dir.mkdir(exist_ok=True)
     jobs = []
+    # A revision still being built moves. When it does, everything drawn from it is stale.
+    stamps = json.loads(STAMPS.read_text()) if STAMPS.exists() else {}
+    for rev in REVISIONS:
+        now = stamp(rev)
+        if stamps.get(rev, now) != now:
+            for item_id in [i for i, r in manifest.items() if rev in (r.get('rev'), r.get('left'), r.get('right'))]:
+                (ITEMS / manifest.pop(item_id)['file']).unlink(missing_ok=True)
+            for old in [*svg_dir.glob(f'*-{rev}.svg'), ITEMS / f'atlas-{rev}.png', ITEMS / f'grammar-{rev}.md']:
+                old.unlink(missing_ok=True)
+        stamps[rev] = now
 
     def item(item_id, record, svgs, size):
         known = manifest.get(item_id)
@@ -178,16 +202,21 @@ def build():
         sizes = SIZES if kind == 'study' else (320, 1000) if kind == 'probe' else (320,)
         for size in sizes:
             item(f'{kind}:{name}|{rev}|{size}',
-                 {'kind': kind, 'name': name, 'rev': rev, 'size': size, 'truth': truth(kind, name, spec)},
+                 {'kind': kind, 'name': name, 'rev': rev, 'size': size, 'truth': truth(kind, name, spec),
+                  'built': {rev: stamps[rev]}},
                  [svg], size)
-    revs = list(REVISIONS)
-    for name in SHARED:
-        for size in (160, 320):
-            for left, right in ((revs[0], revs[1]), (revs[1], revs[0])):
-                item(f'pair:{name}|{left}>{right}|{size}',
-                     {'kind': 'pair', 'name': name, 'left': left, 'right': right, 'size': size,
-                      'truth': {'left': left, 'right': right}},
-                     [sources[('study', name, left)], sources[('study', name, right)]], size)
+    # Every two revisions of a study side by side, in both orders.
+    for name in WORDS:
+        for left in REVISIONS:
+            for right in REVISIONS:
+                if left == right or not {('study', name, left), ('study', name, right)} <= sources.keys():
+                    continue
+                for size in (160, 320):
+                    item(f'pair:{name}|{left}>{right}|{size}',
+                         {'kind': 'pair', 'name': name, 'left': left, 'right': right, 'size': size,
+                          'truth': {'left': left, 'right': right},
+                          'built': {left: stamps[left], right: stamps[right]}},
+                         [sources[('study', name, left)], sources[('study', name, right)]], size)
     # The atlas a taught decoder is shown, per revision.
     for rev, (_, commit) in REVISIONS.items():
         atlas_svg = svg_dir / f'atlas-{rev}.svg'
@@ -222,6 +251,7 @@ def build():
     with ThreadPoolExecutor(4) as pool:
         list(pool.map(run, jobs))
     MANIFEST.write_text(json.dumps(manifest, indent=1, sort_keys=True))
+    STAMPS.write_text(json.dumps(stamps, indent=1, sort_keys=True))
     return manifest, len(jobs)
 
 

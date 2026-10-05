@@ -3,6 +3,7 @@
 
     python3 scripts/xagent/run.py --task naive --decoders claude:haiku,grok
     python3 scripts/xagent/run.py --task all --dry
+    python3 scripts/xagent/run.py --task all --revs 4.5 --out stage3.jsonl --seen stage2.jsonl
 
 A rerun skips every trial already answered, so stopping costs nothing. Tasks,
 measures and thresholds are in PREREG.md. Python 3 standard library only.
@@ -61,10 +62,12 @@ def seeded(*parts):
     return random.Random(int(hashlib.sha256('|'.join(map(str, parts)).encode()).hexdigest()[:12], 16))
 
 
-def trials(task, manifest, wanted, sizes, passes):
+def trials(task, manifest, wanted, sizes, passes, probe_passes=1, revs=None):
     """Every (item, decoder, repeat) this task asks for."""
     for item_id, item in manifest.items():
         kind = item['kind']
+        if revs and not revs & {item.get('rev'), item.get('left'), item.get('right')}:
+            continue
         if task == 'naive' and kind not in ('study', 'e3'):
             continue
         if task == 'taught' and kind != 'probe':
@@ -76,11 +79,11 @@ def trials(task, manifest, wanted, sizes, passes):
         for decoder in wanted:
             if decoder == 'grok' and (item['size'] > 320 or task == 'taught'):
                 continue
-            repeats = passes if kind == 'study' else 1
+            repeats = passes if kind == 'study' else probe_passes if kind == 'probe' else 1
             for rep in range(1, repeats + 1):
                 yield {'key': f'{task}|{item_id}|{decoder}|{rep}', 'task': task, 'item': item_id,
                        'decoder': decoder, 'rep': rep, **{k: item.get(k) for k in
-                       ('kind', 'name', 'rev', 'size', 'truth', 'left', 'right')}}
+                       ('kind', 'name', 'rev', 'size', 'truth', 'left', 'right', 'built')}}
 
 
 def ask(trial, manifest):
@@ -109,8 +112,11 @@ def main():
     ap.add_argument('--task', default='naive', help='naive, taught, pair, or all')
     ap.add_argument('--decoders', default=','.join(decoders.ALL))
     ap.add_argument('--sizes', default='160,320,1000')
-    ap.add_argument('--passes', type=int, default=2)
+    ap.add_argument('--passes', type=int, default=2, help='passes over the studies')
+    ap.add_argument('--probe-passes', type=int, default=1, help='passes over the taught probes')
+    ap.add_argument('--revs', help='only items drawn by these renderer revisions, e.g. 4.5')
     ap.add_argument('--out', default='stage2.jsonl')
+    ap.add_argument('--seen', default='', help='other results files whose answered trials count as done')
     ap.add_argument('--limit', type=int, help='at most this many trials per decoder')
     ap.add_argument('--dry', action='store_true', help='count what would run')
     args = ap.parse_args()
@@ -122,15 +128,17 @@ def main():
     out = RESULTS / args.out
     RESULTS.mkdir(exist_ok=True)
     done = set()
-    if out.exists():
-        for row in out.read_text().splitlines():
-            record = json.loads(row)
-            if record.get('ok'):
-                done.add(record['key'])
+    for file in [out] + [RESULTS / name for name in args.seen.split(',') if name]:
+        if file.exists():
+            for row in file.read_text().splitlines():
+                record = json.loads(row)
+                if record.get('ok'):
+                    done.add(record['key'])
+    revs = set(args.revs.split(',')) if args.revs else None
 
     queue = {}
     for task in tasks:
-        for trial in trials(task, manifest, wanted, sizes, args.passes):
+        for trial in trials(task, manifest, wanted, sizes, args.passes, args.probe_passes, revs):
             if trial['key'] not in done:
                 queue.setdefault(trial['decoder'], []).append(trial)
     for decoder, todo in queue.items():

@@ -37,6 +37,30 @@ The harness is in this directory. `README.md` says how to run it. Every trial is
 
 **Known limits, said now.** Seven items per revision is a small set, and the study names were chosen by the people who drew the studies. The open questions are asked in the same call as the word list, so the list can colour them. Decoders are models, not people. Edgar's sheet is the human measure.
 
+## Stage 3: does rendering revision 4.5 keep what 4.4 added, without what it cost?
+
+Written 5 October 2026, after Stage 2's results and before any counted trial on revision 4.5. The renderer under test is pinned to a commit in `items.py` (`REVISIONS['4.5']`); every counted trial records the build it saw (`built`).
+
+**The fork was taken.** Stage 2 found no decoder gap. So, as fixed above, the decoder test for Stage 3 is "no regression against 4.6", and Edgar's blind sheet is the main measure of the first look. Nothing below changes that.
+
+**Pilots, not counted.** While revision 4.5 was being drawn, four small runs were made on candidates and are kept in `results/pilot-*.jsonl`: side-by-side pairs at 320 px twice (Sonnet and Sol on an early candidate; Astra and Sol on a later one) and the taught probes three times (Sonnet and Sol twice, Astra and Sol once). They were used to decide whether a candidate kept the three taught channels and still read faster than 4.4 beside it. The countercurrent and the retained ridge were redrawn after them. The frozen renderer (`bf6b84d`) differs from the last piloted candidate in one thing, how the countercurrent's parting is drawn, and that last change was not piloted. The pilots used the same items the counted run uses. That is a limit: the renderer was chosen with a look at three decoders' answers on these items. The counted run asks all seven decoders afresh, and Edgar's sheet has no pilot.
+
+**Items and trials.** As in Stage 2, with revision 4.5 added to every item. The questions, the word list, its shuffles and the decoders are unchanged, so a 4.5 image is asked exactly what its 4.3 and 4.4 counterparts were asked. Revision 4.5's trials go to `results/stage3.jsonl`. The 4.3 and 4.4 trials are Stage 2's, in `results/stage2.jsonl`, with one addition below.
+
+**Naive readers: no regression.** The measure is Stage 2's: the share of right words on the six shared studies, each family weighted equally. A regression is the Stage 2 gap turned against the new revision: at any of the three sizes, 4.5's family mean is at least 10 points under 4.4's, and at least 3 of the 4 families are lower. A family votes at a size only if it has at least six answered trials there under each revision; if fewer than three families can vote at a size, that size is undecided, not passed. The same comparison with 4.3 is reported and is not a test.
+
+**Taught readers: no regression.** For each of the three channels, the measure is how well it separates fields that have it from fields that do not: the share seen minus the share of false alarms, both sizes and all decoders together. A regression is a channel where 4.5 is more than 15 points under 4.4. To give this a fair chance, every probe is read **twice** under 4.5, and 4.4's probes are read a **second time now**, alongside (Stage 2 read them once); both of 4.4's passes count. With two passes that is about 70 fields with a channel and 210 without per revision, so 15 points is about 1.7 standard errors of the difference: the test can miss a real drop of ten points, and it can call a regression by chance about one time in twenty when nothing changed. The per-size table is reported as in Stage 2.
+
+**Side by side.** Revision 4.5 beside 4.4, and beside 4.3, in both orders, at 160 and 320 px, with Stage 2's two questions. Two predictions, on "which tells you faster what it is like?" at 320 px, all decoders together, counting only pairs where a decoder chose the same picture in both orders:
+- 4.5 is chosen over 4.4 (more pairs for 4.5, two-sided sign test p < .05);
+- 4.5 does not lose to 4.3 (4.3 is not chosen over 4.5 at p < .05).
+
+"Which would you keep looking at?" is reported without a prediction. In Stage 2 the models and Edgar disagreed on it.
+
+**Edgar's sheet 2.** 26 pairs at 320 px: each of the six shared studies as 4.5 beside 4.4 and as 4.5 beside 4.3, in both orders, and `described` as 4.5 beside 4.4. A study counts for a revision only when both orders agree, as in Stage 2. On "faster", the sheet passes if (a) 4.5 is chosen over 4.4 in more of the six studies than 4.4 over 4.5, and (b) 4.3 is not chosen over 4.5 in more studies than 4.5 over 4.3. "Keep looking" and `described` are reported. The key is `results/blind-sheet-2-key.json`; `sheet.py` scores a pasted code.
+
+**Known limits, said now.** Those of Stage 2. The 4.3 and 4.4 naive and side-by-side answers are from 4–5 October and 4.5's from 5 October on; the decoders are the same named models, but nothing guarantees they answer alike from one day to the next (the taught comparison has a concurrent pass for that reason). Grok and Gemini run on free tiers and may again leave cells empty; empty cells are reported as empty.
+
 ## Stage 5: thresholds (from the plan, unchanged)
 
 - **Communicable:** 2AFC accuracy of at least .70, with the lower 95 % bound above .50, in at least 3 of 4 decoder families, and replicated on held-out items.
