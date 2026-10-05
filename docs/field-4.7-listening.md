@@ -52,7 +52,7 @@ The reason is visible in the spectrum. In 1.1, between 40 and 98 per cent of a p
 | Coral | Bowed: a full harmonic tone that swells, with bow grain and a slow vibrato that arrives after the onset. |
 | Pearl | Open harmonic light: only octaves and fifths among the overtones, the upper ones drifting slowly. |
 
-The materials are balanced in level: changing palette moves a study's overall level by at most 1.24 dB, against a guard of 1.5. The ambient color also tints the room, brighter and longer for glass and open light, warmer and closer for wood and felt. It is heard mostly in the rests.
+The materials are balanced in level: changing palette moves a study's overall level by at most 1.25 dB, against a guard of 1.5. Grounding works as it did in 1.1: an inferred voice loses its fundamental and keeps its partials, a glassy rim and a little quiet air. The ambient color also tints the room, brighter and longer for glass and open light, warmer and closer for wood and felt. It is heard mostly in the rests.
 
 **The visual's reading order, given time.** The picture is read color, glow and posture first, then the finer marks. The piece now has the same order:
 
@@ -68,36 +68,64 @@ The 24 seconds, the tonal centre, the intervals, every control's meaning and the
 
 | | Listening 1.1 | Listening 1.2 |
 | --- | --- | --- |
-| Palette named from timbre, compared | 32 of 42 | 34 of 42 |
-| Palette named from one listen (target 21) | 14 of 42 | 19 of 42 |
-| Palette separation | 1.026 | **2.670** |
-| Form separation | 3.702 | 3.837 |
-| **Margin (gate: 1.00)** | 0.28 | **0.70, not met** |
-| Margin on timbre alone | 0.27 | 0.55 |
-| Form separation where the register is the same (envelope against sweep) | 1.537 | 1.638 |
-| Largest level change from a palette change (guard 1.5 dB) | 0.95 dB | 1.24 dB |
+| Palette named from timbre, compared | 32 of 42 | 35 of 42 |
+| Palette named from one listen (target 21) | 14 of 42 | **24 of 42** |
+| Palette separation | 1.026 | **2.693** |
+| Form separation | 3.702 | 3.769 |
+| **Margin (gate: 1.00)** | 0.28 | **0.71, not met** |
+| Margin on timbre alone | 0.27 | 0.56 |
+| Form separation where the register is the same (envelope against sweep) | 1.537 | 1.639 |
+| Largest level change from a palette change (guard 1.5 dB) | 0.95 dB | 1.25 dB |
 | Real rests | none | two in every study |
 
-Palette now moves a piece 2.6 times as far as it did, and further than any form change that keeps the register: changing envelope to sweep moves a piece 1.64, changing its palette 2.67. **The gate is not met** because of one thing: the mantle sounds an octave higher throughout, and the timbre term hears that as the largest single change in the instrument. Changing any form to or from the mantle moves a piece about 4.7. Every study has the mantle on one side of a form comparison, so it dominates form's average.
+Palette now moves a piece 2.6 times as far as it did, and further than any form change that keeps the register: changing envelope to sweep moves a piece 1.64, changing its palette 2.69. **The gate is not met** because of one thing: the mantle sounds an octave higher throughout, and the timbre term hears that as the largest single change in the instrument. Changing any form to or from the mantle moves a piece about 4.7. Every study has the mantle on one side of a form comparison, so it dominates form's average.
 
 **Decision for Edgar: may the mantle arch?** The mantle's identity in sound is a decision about form, as the centre's silence was about the capsule, so it isn't taken here. The grammar's own word for the mantle is *arching*. Instead of transposing every entry, it could rise into its canopy and come down:
 
 | Mantle | Margin | Palette named, compared / one listen |
 | --- | --- | --- |
-| An octave up throughout (1.1, and 1.2 as committed) | 0.70 | 34 / 19 |
-| Gentle arch: first and last entry in the middle, five in the canopy | 0.79 | 38 / 18 |
-| Strong arch: rises to three canopy entries and comes down | 0.97 | 40 / 20 |
+| An octave up throughout (1.1, and 1.2 as committed) | 0.71 | 35 / 24 |
+| Gentle arch: first and last entry in the middle, five in the canopy | 0.81 | 38 / 20 |
+| Strong arch: rises to three canopy entries and comes down | 0.98 | 38 / 25 |
 
 Even the strong arch stops just short of the gate. Both are one line in `compose()`, the `register` of each entry.
 
-**For listening:** seventeen renders, made with `renderAudio` and encoded as MP3: the seven studies in 1.1 (`a244a80`) and in 1.2 (`4472d81`), and the three mantle studies with the strong arch (register `[1,1,2,2,2,1,1]`). They are heard as ten blind A/B pairs, 1.1 against 1.2 and then the octave against the arch, each with two questions (which tells you its color sooner, or holds a tall space better; which you would keep listening to) and room for notes. What was what is shown only at the end.
+**For listening:** seventeen renders, made with `renderAudio` and encoded as MP3: the seven studies in 1.1 (`a244a80`) and in 1.2 (this branch), and the three mantle studies with the strong arch (register `[1,1,2,2,2,1,1]`). They are heard as ten blind A/B pairs, 1.1 against 1.2 and then the octave against the arch, each with two questions (which tells you its color sooner, or holds a tall space better; which you would keep listening to) and room for notes. What was what is shown only at the end.
 
 What the check holds now (`scripts/check_audio.mjs`): the timbre term names palettes; the level guard; two real rests in every study, with the centre silent in the first and returning after the last; and a floor of 0.6 on the margin, so palette cannot quietly fall back toward 1.1. It reports whether the gate is met. When it is, the floor becomes the gate.
 
-## 5. What I could not do
+## 5. Checked across the controls
+
+- **Random controls.** 240 random sets of controls over their full ranges, and 96 extremes of the noisiest settings (every primary at grounding 0 and .2, definition 0 and 1, saturation and stretch at both ends): every rendering is finite, inside the headroom, free of steps that would click, silent at both ends, rests twice with each rest at least 36 dB down, and returns to D.
+- **One fix came from this.** At low grounding, teal's onset chiff was multiplied by the extra air of an inferred reading and became a burst, and that air was about 17 dB louder and brighter than 1.1's. The chiff is now added to the air rather than scaling it, and an inferred voice's air is back near 1.1's level. The largest sample step over the extremes fell from 0.193 to 0.147 (the click limit is 0.2).
+- **Sample rates.** The seven studies render at 8, 22.05, 32, 48 and 96 kHz with the same level within 0.1 dB and the same peaks.
+- **Browser and command line.** Headless Chromium renders all seven studies bit for bit the same as Node, so a WAV from `render_audio.mjs` is what the playground plays.
+
+## 6. A finer cross-check, after the fact
+
+This is not the gate, and it was added after the gate was fixed. Its job is to look where the fingerprint is blind. `scripts/listening_crosscheck.mjs` describes timbre with a mel-cepstrum, which resolves single pitches at the low end and so hears a palette's intervals as well as its material. With `--material-only` every hue gets the same scale, so a palette change is a change of material alone.
+
+| | 1.1 | 1.2 |
+| --- | --- | --- |
+| Fingerprint, palettes as they are: palette / form | 0.28 | 0.71 |
+| Fingerprint, material only: palette separation | 0.79 | 2.87 |
+| Fingerprint, material only: named from one listen | 13 of 42 | 22 of 42 |
+| Fingerprint, material only: closest pair | blue/pearl 0.20 | blue/amber 1.19 |
+| Mel-cepstrum, palettes as they are: palette / form | 1.04 | 1.23 |
+| Mel-cepstrum, palettes as they are: named from one listen | 38 of 42 | 33 of 42 |
+| Mel-cepstrum, material only: palette / form | 0.82 | 1.16 |
+| Mel-cepstrum, material only: named from one listen | 22 of 42 | 35 of 42 |
+
+Three things come out of it:
+
+1. **1.1's colors were told apart by their intervals, not their materials.** On the finer measure, 1.1's palettes are already as far apart as its forms and can be named from one listen, because each color has its own scale. Hold the scale fixed and 1.1's six materials nearly merge: on the fingerprint its closest pair sits at the 0.20 floor below which two pieces can't be heard apart. This is the imbalance 4a was asked to fix, seen more precisely.
+2. **1.2's materials do the work.** With the scale fixed, they separate pieces three and a half times as far as 1.1's on the fingerprint, and on the finer measure they separate them further than form does.
+3. **The pairs to listen for.** Blue against amber is the closest pair on both measures (a held, nearly pure tone against struck felt, both dark). Teal against coral is close on the finer one (both breathe, both sustain). Coral against pearl, close on the fingerprint, is not close on the finer measure, which supports the caution that the fingerprint under-reports some differences. The finer measure has a blind spot of its own: a palette's intervals can stand in for its material.
+
+## 7. What I could not do
 
 - **I could not hear any of it.** Every claim about 1.2 comes from rendered samples, spectra and the score. There was no listening model available in this session either. Listening is the 4a gate that remains, and it's yours.
-- **The fingerprint is coarse.** Six bands and a centroid can't hear vibrato, bow grain, inharmonicity, or which overtones are missing. It scores coral against pearl and blue against amber as the closest pairs, when bowed string against an open octave-and-fifth tone, or a held pure tone against struck felt, are probably easier to tell apart by ear. It may under-report palette, the same way the time course alone did in 4.6.
+- **The fingerprint is coarse.** Six bands and a centroid can't hear vibrato, bow grain, inharmonicity, or which overtones are missing. The cross-check in section 6 bears that out for coral against pearl, but not for blue against amber, which both measures place closest.
 - **The arch is untested by ear,** and so is whether a real rest after eight seconds feels like breath or like a dropout. Both are for listening.
 - **Stage 1's lines are untouched.** It changes `references/listening-grammar.md` lines 7 and 19 and `docs/listening.html` lines 42 and 51; this work edits neither, so the two branches should merge cleanly.
 

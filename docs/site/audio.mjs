@@ -19,7 +19,7 @@ const ease = x => { x = clamp(x); return x*x*(3-2*x); };
 export const VOICES = {
   teal:   {ratios:[1, 9/8, 3/2, 2, 9/4], name:'breathing wood', room:{light:-.03, hold:-.01},
     sound:{harmonics:[1,.06,.40,.05,.19,.03,.08,0,.035], fade:.08, onset:[.05,.55], flutter:.015,
-      air:{level:.42, centre:9, low:900, high:2600, q:.8, chiff:2.2, chiffTime:.07}, level:.903}},
+      air:{level:.42, centre:9, low:900, high:2600, q:.8, chiff:1.8, chiffTime:.07}, level:.903}},
   blue:   {ratios:[1, 4/3, 3/2, 2, 8/3], name:'clear, spare tones', room:{light:.05, hold:-.04},
     sound:{harmonics:[1,.14,0,.05], fade:.30, onset:[.02,.35],
       tine:{ratio:6, level:.05, time:.09}, level:1.007}},
@@ -208,16 +208,19 @@ function synthVoice(left, right, sampleRate, event, p) {
     const white = (noiseState>>>0)/2147483648-1;
     if (air) {
       air.low += air.g*air.band; air.band += air.g*(white-air.low-air.damp*air.band);
-      const chiff = sound.air.chiff && !event.soft ? 1+sound.air.chiff*Math.exp(-t/sound.air.chiffTime) : 1;
-      value += sound.air.level*air.band*chiff*(1+.6*described);
+      // The chiff is a breath at the onset, added to the air rather than scaling it,
+      // so an inferred reading's extra air never turns it into a burst.
+      const chiff = sound.air.chiff && !event.soft ? sound.air.chiff*Math.exp(-t/sound.air.chiffTime) : 0;
+      value += sound.air.level*air.band*(1+.3*described+chiff);
     }
     if (thump && t<sound.thump.time*8) {
       thump.low += thump.g*thump.band; thump.band += thump.g*(white-thump.low-thump.damp*thump.band);
       value += sound.thump.level*thump.band*Math.exp(-t/sound.thump.time);
     }
+    // The air that describes an inferred voice stays quiet, as in 1.1.
     if (rough && described>0) {
       rough.low += rough.g*rough.band; rough.band += rough.g*(white-rough.low-rough.damp*rough.band);
-      value += .30*described*rough.band;
+      value += .10*described*rough.band;
     }
     // Bow pressure wanders a little, irregularly: grain, not a tremolo.
     if (sound.grain) {
