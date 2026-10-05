@@ -10,7 +10,7 @@ Written 4 October 2026 for Edgar Bounds, before any 4.7 work starts.
 3. **Make sound mean something at the moment of change, and work as a background cue.** The plan from 25 September (Stage 4) becomes stages, each with a test it has to pass.
 4. **Start testing across agents.** That includes finding out whether something that's hard or impossible to put in words gets through, in general, reliably, and on every platform.
 
-Stages 0, 1 and 2 are done (each stage's results are under that stage); nothing after that has been built yet. The renders and numbers below come from the 4.5.1 and 4.6 renderers run on 4 October; the images are in [`plan-4.7/`](plan-4.7/).
+Stages 0, 1 and 2 are done, and Stage 3's renderer is drawn, frozen and under test (each stage's results are under that stage); nothing after that has been built yet. The renders and numbers below come from the 4.5.1 and 4.6 renderers run on 4 October; the images are in [`plan-4.7/`](plan-4.7/).
 
 ## What 4.6 did to the pictures
 
@@ -186,6 +186,46 @@ Counting a study only when both orders agree: 4.5.1 is faster for `exploring`, `
 5. Stage 2's naive decoders score 4.7 at least as well as 4.5.1, and better than 4.6. The taught decoders score 4.7 at least as well as 4.6 on the per-channel questions. **The fork:** if Stage 2's baseline shows no decoder gap between 4.5.1 and 4.6, that's a finding in itself (the loss is in what people see, or in something models don't weigh), and the diagnosis isn't forced. The test then becomes "no decoder regression against 4.6", and Edgar's blind sheet becomes the main measure of the first look.
 6. Edgar's blind sheet, now with three versions.
 7. The usual suite passes: `check_browser_renderer.py` (Python and browser renders match), `check_continuity.mjs`, `check_companion_browser.mjs` and `check_public_site.mjs`. Then watch one transition into and out of a low-`grounding` field by eye.
+
+**Stage 3 results so far (5 October).** Render revision 4.5 is drawn in both renderers, frozen at `bf6b84d`, and under test. The machine checks pass. The decoder run is pre-registered and under way. Edgar's second sheet is ready and unanswered.
+
+**What was drawn.** Geometry is untouched: every outline is where 4.4 put it. Three rules do the work, and the grammar's rendering section now states them.
+
+- **Light carries colour.** The near-white had one cause. Lightening a colour to the old cap leaves teal whole but strips blue to 36–56 % of its chroma, violet to 35–51 % and coral to 45–50 %. A mark is now lit only as far as its hue can hold its chroma (`tint`), and shaded without greying (`shade`). Pearl has almost no chroma to lose, so it alone still reaches near-white. No special case was needed.
+- **`definition` articulates every mark.** One blur softens threads, ribs, seams, gestures and the ridge's lit edge together. A second value (`articulate`) decides whether an edge is drawn at all.
+- **Marks are made of the field.** Threads are the surface's own colour, more saturated, and now lie *under* the surface's light, so they no longer dim its highlights. The seat of strain is the surface's colour made denser. A gesture is a strand of the secondary hue inside a glow of the same colour. The retained ridge is darker material in the same hues; it keeps its shape and a fine edge only as far as the field is articulated, and is otherwise an afterglow.
+
+Four things came out differently from the candidate moves:
+
+- **The ridge is darker, not greyer.** Desaturating it, as the move said, paled the body's own highlights where the ridge lies under them. It keeps 92 % of its chroma and loses lightness instead.
+- **Ribs soften, but are drawn broader as they do.** With the one shared blur alone, ribs vanished below about `definition` .4, and the companion's opening scene ("much of it is still inferred") lost the mark that says so. A softer rib is now a wider one. An unresolved field that was also not met still shows that it is described.
+- **A described field keeps most of its glow.** 4.4 thinned the soft glow with the matter. Glow is read first, so it now thins by 40 % of the missing grounding, not 72 %.
+- **The countercurrent parts for real.** Drawn only as a band of its own colour, taught readers took it for palette (below). It now leaves a narrow opening the ground shows through, and is lit toward the seam where it rejoins. That is form, not line work, and it survives at 320 px.
+
+**Acceptance, check by check.**
+
+1. `check_expression.mjs` passes, unchanged. Against its floors: `history` 4.51 (floor 3.2; 4.4 scored 4.74), `grounding` 5.72 (4; 5.94), `complexity` 1.50 (.85; 1.24), `counterpoint` 1.87 (1.3; 1.98), `accent_strength` 2.51 (1.2; 1.88), `gesture_strength` 1.39 (.5; .71).
+2. **`scripts/check_reading_order.mjs` is the new check**, and it passes. Its measures are the planning session's own, recovered from that session's record and reproduced first (fine detail for `tentative` .76 → 1.17 under 4.4; chroma 14.9 → 14.1). It renders 4.3 from its pinned commit in the same browser, so nothing depends on stored numbers. **Run on release 4.6.0 it fails 20 clauses**, which is the point of having it.
+   - Fine detail rises with `definition` on a field carrying every mark: 1.28, 1.50, 2.84, 5.44, 6.79, 7.20 % of the frame from `definition` .05 to 1.
+   - At `definition` ≤ .2 it is under 4.3's: 1.28 and 1.50 against 1.77 and 1.94 (4.4: 3.94 and 4.02). `tentative` is .72 against 4.3's .76, and under `gathered` (3.05).
+3. Field chroma is at 4.3's level or above in all six shared studies: five are 1 to 5 % above, and `playful` is .2 % under, inside the 2 % tolerance (4.4 was 3 to 9 % under in all six). At `grounding` .3 no study loses more than 3 % of its chroma (4.4 lost 11 % in `playful`). The check reads "within 5 %" one-sidedly: `gathered` gains 9 %, which is the hue surviving, not failing.
+4. **"Near-white crest pixels" needed a definition that could fail.** The planning session's first measure read zero in four of six studies under both revisions. The check uses crests (brightness more than 8 above its own 2 px blur) whose chroma is under 16: under 4.4 every study without pearl had more of them than under 4.3; under 4.5 every one has fewer (`strained` .22 % of the frame against .44; `tentative` .12 against .14). A second clause was added: the mean chroma of crests is at least 4.3's. It rose 1 to 24 %.
+5. Decoders: see below.
+6. Edgar's sheet: see below.
+7. `check_browser_renderer.py` (26 cases, and 400 random ones run once by hand), `check_continuity.mjs`, `check_audio.mjs`, `check_companion_browser.mjs` and `check_public_site.mjs` pass. **Nobody has watched a transition into and out of a low-`grounding` field by eye.** That is still Edgar's.
+
+Measured inside each field's own outline, the body is lighter than 4.3's in every fully met study (by .4 to 6 %) and more coloured (2 to 27 %). So the move about body light is met without a change to the body.
+
+**What the pilots showed (not counted; `results/pilot-*.jsonl`).** Four small runs on candidates, with two decoders each.
+
+- Side by side at 320 px, an early candidate was called faster than 4.4 in 5 pairs to 0 (7 no signal) and level with 4.3 (1 to 0 for 4.3; 11 no signal), by Sonnet and Sol. A later, more articulated candidate beat 4.4 in 6 to 0 and lost to 4.3 in 5 to 0, all five from Astra. Astra calls the plainer picture faster and the richer one the one to keep looking at, every time. Both candidates were chosen over 4.3 on "keep looking" (8 to 0, 9 to 0).
+- **Taught readers are where the cost showed.** `grounding` held throughout (seen every time, as under 4.4). The second current did not: drawn as a coloured band, plain fields were called countercurrents (false alarms up from .33 to .53), and when the grammar said so more carefully, real ones were missed at 320 px. Opus and Sonnet carry almost all of this channel's signal in Stage 2 (Astra says yes to nearly everything, Haiku no). The countercurrent was redrawn on this evidence, first modelled across its width, then given the opening. **That last redraw is in the frozen renderer and was not piloted**: Codex had reached its usage limit and Claude's window was nearly spent.
+
+**The counted run.** [`PREREG.md`](../scripts/xagent/PREREG.md) fixed the Stage 3 rules before any counted trial: for naive readers, Stage 2's gap rule turned against 4.5; for taught readers, a channel more than 15 points under 4.4 on seen minus false alarms is a regression, with two passes of the probes under both revisions; for the pairs, 4.5 over 4.4 on "faster", and not losing to 4.3. The trials go to `results/stage3.jsonl` and `report.py stage2.jsonl stage3.jsonl` writes `results/stage3-report.md`. It runs in waves as quotas allow: Gemini and Grok first, Claude after its window reset, Codex after its limit lifted. **Its results are not in this section yet.**
+
+**Edgar's sheet 2** is at <https://claude.ai/artifact/Hyxkx49MpB8RpHoZJUiGmj>: 26 pairs at 320 px, 4.5 beside 4.4 and beside 4.3 for the six shared studies in both orders, and `described` beside 4.4. Paste the code back and `python3 scripts/xagent/sheet.py 'FIELD-SHEET-2 …'` scores it against `results/blind-sheet-2-key.json`. It passes if 4.5 is faster than 4.4 in more studies than the reverse, and 4.3 is not faster than 4.5 in more studies than the reverse.
+
+**What this stage did not do.** The public studies, hero and social card still show 4.4, because `build_public_assets.py` would have rewritten `field-4.6.0.zip`; they, the zip, the guide and the README's revision line wait for Stage 6. The template and the atlas *were* rebuilt, since taught readers are shown the atlas of the revision they read. The naive-reader gap Stage 2 found (`strained` read as "tentative", `playful` as "integrated") was not chased; if 4.5's denser coral and coloured braid move it, the counted run will show that.
 
 ## Stage 4 — Sound for the moment and for the background
 
