@@ -65,7 +65,9 @@ export async function measureGate(studies, {concurrency=(os.availableParallelism
     const form = forms.map(f=>distanceParts(prints[base],prints[f.id]));
     const summary = changes => ({total:mean(changes.map(total)),
       loudness:mean(changes.map(c=>c.loudness)), brightness:mean(changes.map(c=>c.brightness)), timbre:mean(changes.map(c=>c.timbre))});
-    return {name, palette:summary(palette), form:summary(form)};
+    // Diagnostic only: form changes that keep the register, envelope against sweep.
+    const level = forms.filter(f=>[f.form,spec.form||'envelope'].every(x=>x!=='mantle')).map(f=>total(distanceParts(prints[base],prints[f.id])));
+    return {name, palette:summary(palette), form:summary(form), sameRegister:level};
   });
   const overall = key => mean(perStudy.map(study=>study[key].total));
   const items = plan.flatMap(({name,palettes})=>palettes.map(({hue,id})=>({study:name, hue, print:prints[id]})));
@@ -74,6 +76,7 @@ export async function measureGate(studies, {concurrency=(os.availableParallelism
     renders:specs.length, perStudy,
     palette:overall('palette'), form:overall('form'),
     margin:overall('palette')/overall('form'),
+    sameRegisterForm:mean(perStudy.flatMap(s=>s.sameRegister)),
     timbreMargin:mean(perStudy.map(s=>s.palette.timbre))/mean(perStudy.map(s=>s.form.timbre)),
     naming:{
       compared:naming(timbreFeatures,true), oneListen:naming(timbreFeatures,false),
@@ -94,5 +97,6 @@ export function reportGate(result, log=console.log) {
   log(`palette named from timbre, one study in all six palettes: ${out(n.compared)}; from the time course alone: ${out(n.timeCourseCompared)}`);
   log(`palette named from timbre, one listen, no comparison: ${out(n.oneListen)}`);
   log(`palette separation ${f(result.palette)}, form ${f(result.form)}: margin ${result.margin.toFixed(2)} (timbre alone ${result.timbreMargin.toFixed(2)})`);
+  log(`  where form keeps the register (envelope against sweep) it separates ${f(result.sameRegisterForm)}; the mantle's octave makes up the rest`);
   log(`level spread across the six palettes of a study: at most ${Math.max(...result.levels.map(l=>l.spread)).toFixed(2)} dB`);
 }

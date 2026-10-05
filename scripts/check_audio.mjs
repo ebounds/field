@@ -27,12 +27,35 @@ function measure(audio) {
   return {peak:+peak.toFixed(3),rms:+Math.sqrt(energy/(audio.left.length*2)).toFixed(4)};
 }
 
+/** Rests: stretches between 1 s and 22 s where no voice of the score sounds,
+ *  with the quietest 50 ms of each measured against the piece's loud level. */
+function restsOf(score,audio) {
+  const spans=score.events.map(e=>[e.start,e.start+e.duration]).sort((a,b)=>a[0]-b[0]);
+  const rests=[];let reach=0;
+  for(const [start,end] of spans) {if(start-reach>=.5&&reach>1&&start<22) rests.push([reach,start]);reach=Math.max(reach,end);}
+  const step=Math.round(audio.sampleRate*.05),levels=[];
+  for(let i=0;i+step<=audio.left.length;i+=step) {
+    let energy=0;for(let j=i;j<i+step;j++) energy+=(audio.left[j]+audio.right[j])**2;
+    levels.push(10*Math.log10(energy/step+1e-20));
+  }
+  const loud=[...levels].sort((a,b)=>a-b)[Math.floor(levels.length*.95)];
+  return rests.map(([start,end])=>({start,end,depth:Math.min(...levels.slice(Math.ceil(start/.05),Math.floor(end/.05)))-loud}));
+}
+
 const hashes=new Set(),prints=new Map();
 for(const [name,spec] of Object.entries(PRESETS)) {
   const audio=renderAudio(spec);
   console.log(name,measure(audio));hashes.add(hash(audio.left));prints.set(name,fingerprint(audio));
   const score=compose(spec),anchor=score.events.find(e=>e.role==='center');
   assert.equal(anchor.pan,0);assert.equal(anchor.frequency,73.41619197935);
+  // Real rests (Edgar, 4 October: the centre may fall silent). Nothing sounds
+  // between the statement and the answer, or before the return, so the room
+  // empties; and the centre comes back for the close: it returns to D.
+  const rests=restsOf(score,audio),centres=score.events.filter(e=>e.role==='center');
+  assert(rests.length>=2,`${name} should rest twice`);
+  for(const rest of rests) assert(rest.depth<=-30,`${name} rest at ${rest.start.toFixed(1)}s is not silent: ${rest.depth.toFixed(1)} dB`);
+  assert(centres.some(e=>e.start>=rests.at(-1).end),`${name}: the centre should return after the last rest`);
+  assert(!centres.some(e=>e.start<rests[0].end&&e.start+e.duration>rests[0].start),`${name}: the centre should fall silent in the first rest`);
   for(const event of score.events) {
     assert(event.start>=0&&event.duration>0&&event.start+event.duration<=24);
     assert(event.frequency>50&&event.frequency<2000);
@@ -90,5 +113,14 @@ for(const sampleRate of [0,NaN,1e9,44100.5]) assert.throws(()=>renderAudio({}, {
   const {compared,timeCourseCompared}=gate.naming;
   assert(compared.accuracy>=.5,`the timbre term cannot name palettes: ${compared.correct}/${compared.total}`);
   assert(compared.correct>timeCourseCompared.correct,'the timbre term should hear palette better than the time course');
+  // Palette must not win by being louder.
+  const spread=Math.max(...gate.levels.map(l=>l.spread));
+  assert(spread<=1.5,`a palette change moves the level by ${spread.toFixed(2)} dB`);
+  // The 4a gate is palette at least as far as form (margin 1). Listening 1.2
+  // reaches 0.71 with the mantle an octave up, as in 1.1; whether the mantle
+  // should arch instead is Edgar's decision (the note, section 4). Until then,
+  // hold the ground gained: 1.1 measured 0.28.
+  console.log(gate.margin>=1?'4a gate met.':`4a gate not met: margin ${gate.margin.toFixed(2)} of 1.00 (see docs/field-4.7-listening.md).`);
+  assert(gate.margin>=.6,`palette has fallen back toward 1.1's margin: ${gate.margin.toFixed(2)}`);
 }
-console.log('Passed: distinct studies, deterministic audio, center, optional voices, extremes, fades, headroom, stereo WAV/metadata, and invalid input.');
+console.log('Passed: distinct studies, real rests and the centre\'s return, palette heard in timbre, deterministic audio, center, optional voices, extremes, fades, headroom, stereo WAV/metadata, and invalid input.');
