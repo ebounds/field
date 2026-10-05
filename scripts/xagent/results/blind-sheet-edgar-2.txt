@@ -1,0 +1,35 @@
+# Edgar's blind sheet 2, 5 October 2026 (320 px; render 4.5 beside 4.4 and beside 4.3, each study in both orders; described beside 4.4)
+# FIELD-SHEET-2 1:AA 2:AA 3:BB 4:=A 5:AA 6:AA 7:BB 8:BB 9:AA 10:AA 11:BA 12:== 13:A= 14:AA 15:BB 16:AB 17:== 18:BB 19:AA 20:B= 21:AA 22:== 23:AA 24:BA 25:AA 26:B=
+  described   A=4.4 B=4.5    faster: 4.4        keep looking: 4.4
+  described   A=4.5 B=4.4    faster: 4.4        keep looking: 4.4
+  exploring   A=4.3 B=4.5    faster: 4.5        keep looking: 4.3
+  exploring   A=4.4 B=4.5    faster: 4.5        keep looking: 4.5
+  exploring   A=4.5 B=4.3    faster: 4.3        keep looking: 4.3
+  exploring   A=4.5 B=4.4    faster: 4.5        keep looking: 4.5
+  gathered    A=4.3 B=4.5    faster: 4.3        keep looking: 4.3
+  gathered    A=4.4 B=4.5    faster: 4.4        keep looking: 4.4
+  gathered    A=4.5 B=4.3    faster: same       keep looking: same
+  gathered    A=4.5 B=4.4    faster: 4.5        keep looking: 4.5
+  integrated  A=4.3 B=4.5    faster: 4.3        keep looking: 4.3
+  integrated  A=4.4 B=4.5    faster: 4.4        keep looking: 4.4
+  integrated  A=4.5 B=4.3    faster: 4.3        keep looking: same
+  integrated  A=4.5 B=4.4    faster: 4.5        keep looking: 4.5
+  playful     A=4.3 B=4.5    faster: 4.3        keep looking: 4.3
+  playful     A=4.4 B=4.5    faster: 4.5        keep looking: same
+  playful     A=4.5 B=4.3    faster: same       keep looking: same
+  playful     A=4.5 B=4.4    faster: 4.5        keep looking: 4.5
+  strained    A=4.3 B=4.5    faster: 4.5        keep looking: 4.3
+  strained    A=4.4 B=4.5    faster: 4.5        keep looking: 4.5
+  strained    A=4.5 B=4.3    faster: 4.5        keep looking: 4.3
+  strained    A=4.5 B=4.4    faster: 4.5        keep looking: same
+  tentative   A=4.3 B=4.5    faster: same       keep looking: 4.3
+  tentative   A=4.4 B=4.5    faster: 4.4        keep looking: 4.4
+  tentative   A=4.5 B=4.3    faster: same       keep looking: same
+  tentative   A=4.5 B=4.4    faster: 4.4        keep looking: 4.4
+faster: 4.3 5, 4.4 6, 4.5 11, same 4
+keep: 4.3 8, 4.4 6, 4.5 6, same 6
+
+4.3 beside 4.5, faster: 4.3 in 1 (integrated); 4.5 in 1 (strained)
+4.3 beside 4.5, keep: 4.3 in 2 (exploring, strained); 4.5 in 0 (none)
+4.4 beside 4.5, faster: 4.4 in 2 (described, tentative); 4.5 in 3 (exploring, playful, strained)
+4.4 beside 4.5, keep: 4.4 in 2 (described, tentative); 4.5 in 1 (exploring)
