@@ -3,6 +3,7 @@ import {FieldMovement} from './movement.mjs';
 import {STUDY} from './companion-studies.mjs';
 import {PALETTE} from './renderer.mjs';
 import {createListening} from './listening.mjs';
+import {createReading} from './reading.mjs';
 
 const $=selector=>document.querySelector(selector),params=new URLSearchParams(location.search);
 const live=params.get('mode')==='live';
@@ -12,6 +13,7 @@ const scene=new FieldMovement($('#field-stage'));
 const listening=createListening({getSpec:()=>viewed?.spec||STUDY[0].update.spec,
   getName:()=>viewed?(live?'Expression '+viewed.sequence:'Moment '+viewed.sequence+' — '+viewed.source.turn):'this field',
   getIdentity:()=>viewed?viewed.conversation+':'+viewed.sequence:'',download});
+const reading=createReading({getSvg:()=>scene.snapshot()});
 const cachePrefix='field-companion-v1:';
 function storageGet(key) {try{return localStorage.getItem(key);}catch{return null;}}
 function storageSet(key,value) {try{localStorage.setItem(key,value);}catch{$('#companion-status').textContent='Browser storage is unavailable. The local server still keeps your conversation history.';}}
@@ -72,7 +74,7 @@ function show(update,{immediate=false}={}) {
   $('#view-kind').textContent=viewingHistory?'History · '+update.sequence:live?'Current expression':'Scripted study';
   const study=STUDY.find(x=>x.update.sequence===update.sequence);
   $('#current-moment').textContent=live?(viewingHistory?'An earlier expression.':'Holding the latest expression.'):(study?.description||'');
-  scene.show(update,previous,{immediate});listening.update();
+  scene.show(update,previous,{immediate});listening.update();reading.update(update,previous);
   $('#save-field').disabled=false;$('#save-history').disabled=false;
   const audioSupported=Boolean((window.AudioContext||window.webkitAudioContext)&&window.Worker);
   $('#listen').disabled=!audioSupported;$('#save-audio').disabled=!audioSupported;
@@ -115,7 +117,7 @@ function connectConversation(id) {
   conversationId(id);
   const token=++generation;stream?.close();connected=false;selected=id;state=null;viewed=null;
   stopReplay();listening.stop('Sound begins only when you press Listen.');
-  viewingHistory=false;scene.finish();scene.target=null;$('#field-stage').replaceChildren();
+  viewingHistory=false;scene.finish();scene.target=null;$('#field-stage').replaceChildren();reading.clear();
   $('#inspection-values').replaceChildren();$('#history-list').replaceChildren();$('#history-count').textContent='0 moments';
   $('#listen').disabled=true;$('#save-audio').disabled=true;$('#save-field').disabled=true;$('#save-history').disabled=true;$('#replay').disabled=true;
   $('#return-current').hidden=true;$('#current-moment').textContent='';$('#session-title').textContent=id;

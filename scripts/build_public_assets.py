@@ -52,7 +52,7 @@ def main():
              ROOT/'scripts/render_audio.mjs', ROOT/'scripts/field.mjs',
              ROOT/'docs/companion.html', ROOT/'docs/continuity.html']
     files += [SITE/name for name in ('audio.mjs','audio-worker.mjs','listening.mjs',
-              'renderer.mjs','continuity.mjs','movement.mjs','companion.mjs',
+              'renderer.mjs','continuity.mjs','movement.mjs','companion.mjs','reading.mjs',
               'companion-studies.mjs','presets.mjs','style.css','companion.css','icon.svg')]
     for folder in ('references','assets','agents'):
         files += sorted((ROOT/folder).glob('*'))

@@ -20,10 +20,26 @@
     <div class="companion-layout">
       <section class="art-column" aria-label="Current Field expression">
         <div class="session-heading"><span id="session-title">Field Companion</span><span id="view-kind">Scripted study</span></div>
-        <div id="field-stage" class="companion-art" tabindex="-1" aria-label="The current wordless Field artwork"><img src="site/icon.svg" alt="Field's fixed capsule" width="128" height="128"></div>
+        <div class="stage-wrap">
+          <div id="field-stage" class="companion-art" tabindex="-1" aria-label="The current wordless Field artwork"><img src="site/icon.svg" alt="Field's fixed capsule" width="128" height="128"></div>
+          <div id="reading-pointer" class="reading-pointer" aria-hidden="true" hidden><img alt=""></div>
+        </div>
         <p id="empty-note" hidden>No expression has been published yet. Your agent can give this conversation its first field.</p>
         <div class="companion-actions"><button id="movement" type="button" class="button" aria-pressed="true">Movement on</button><button id="save-field" type="button" class="text-link" disabled>Save SVG ↓</button><button id="focus-view" type="button" class="text-link" aria-pressed="false">Focus view</button></div>
         <p id="current-moment" class="current-moment" role="status" aria-live="polite"></p>
+        <details id="reading" class="reading">
+          <summary><span class="reading-title">Read this field</span><span class="reading-tag">A guide · optional</span></summary>
+          <div class="reading-body">
+            <p class="reading-intro">Read it in two looks.</p>
+            <p class="reading-how">First the colour, the climate, the posture, the light and the softness. Then what the surface carries. Each line says where this field sits. Open a line to see this same field with only that one thing changed.</p>
+            <p id="reading-changed" class="reading-changed" role="status" aria-live="polite"></p>
+            <h3>First look</h3>
+            <ul id="reading-first" class="reading-rows"></ul>
+            <p class="reading-note">Stretch and flow lengthen and turn the form. They are posture, with no fixed meaning.</p>
+            <h3>Second look</h3>
+            <ul id="reading-second" class="reading-rows"></ul>
+          </div>
+        </details>
         <details id="listening" class="listening">
           <summary><span class="listening-title">Listen to a moment</span><span class="listening-tag">Optional · 24 seconds</span></summary>
           <div class="listening-body">

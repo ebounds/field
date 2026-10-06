@@ -95,6 +95,17 @@ try {
   assert((await evaluate("document.querySelector('#connection').textContent")).includes('Scripted'));
   assert.equal(await currentSequence(),1);assert.equal(await evaluate('window.audioAudit.contexts.length'),0);
   await screenshot('companion-desktop');
+  // The legend reads the field in view: where it sits, what it had to go on, and one mark alone.
+  await click('#reading>summary');
+  await waitFor("document.querySelectorAll('.reading-row').length===15&&document.querySelector('#reading-row-grounding .reading-value').textContent!==''");
+  assert.equal(await evaluate("document.querySelector('#reading-row-grounding .reading-value').textContent"),String((await spec()).grounding).replace(/^0\./,'.'));
+  assert((await evaluate("document.querySelector('#reading-changed').textContent")).startsWith('The first moment'));
+  await click('#reading-row-grounding summary');
+  await waitFor("document.querySelectorAll('#reading-row-grounding .reading-strip img').length===5");
+  assert((await evaluate("document.querySelector('#reading-row-grounding .reading-extra').textContent")).includes('early available'));
+  await click('#reading-point-grounding');
+  assert.equal(await evaluate("document.querySelector('#reading-pointer').hidden"),false);
+  await screenshot('companion-reading');
   await click('#next-study');await waitSequence(2);
   assert.equal(await evaluate("document.querySelector('#field-stage').dataset.moving"),'true');
   await pause(2100);await screenshot('companion-in-motion');
@@ -103,6 +114,8 @@ try {
   assert.equal(await evaluate("document.querySelector('#field-history').getAttribute('data-trace-source')"),'1');
   assert.equal(await evaluate("document.querySelector('#field-stage').innerHTML.includes('NaN')"),false);
   await waitFor("document.querySelector('#field-stage').dataset.moving==='false'");
+  assert.equal(await evaluate("document.querySelector('#reading-pointer').hidden"),true);
+  assert((await evaluate("document.querySelector('#reading-changed').textContent")).includes('met or reconstructed up (.45 to .82)'));
   await click('#save-field');
   for(let i=0;i<80;i++){if((await readdir(downloads)).includes('field-continuity.svg'))break;await pause(100);}
   const saved=await readFile(join(downloads,'field-continuity.svg'),'utf8');
@@ -179,7 +192,7 @@ try {
   const history=JSON.parse(await readFile(join(downloads,'field-history.json'),'utf8'));
   assert.equal(history.conversation,'b');assert.equal(history.updates.length,2);assert.equal(history.ledger,undefined);
   assert.deepEqual(errors,[]);
-  console.log('Passed: scripted movement and real retained contour, fixed capsule, still/reduced motion, replay, SVG/history export, phone layouts, live publishing, isolated conversations, restore/reconnect, freshness, and optional audio.');
+  console.log('Passed: scripted movement and real retained contour, fixed capsule, the legend, still/reduced motion, replay, SVG/history export, phone layouts, live publishing, isolated conversations, restore/reconnect, freshness, and optional audio.');
 } finally {
   await command('Browser.close',{},false).catch(()=>{});browser.kill();
   for(const item of pending.values())clearTimeout(item.timer);
