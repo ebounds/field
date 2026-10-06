@@ -74,7 +74,8 @@ function show(update,{immediate=false}={}) {
   $('#view-kind').textContent=viewingHistory?'History · '+update.sequence:live?'Current expression':'Scripted study';
   const study=STUDY.find(x=>x.update.sequence===update.sequence);
   $('#current-moment').textContent=live?(viewingHistory?'An earlier expression.':'Holding the latest expression.'):(study?.description||'');
-  scene.show(update,previous,{immediate});listening.update();reading.update(update,previous);
+  // Only a scripted study tells its story. A live expression with the same sequence number must not borrow one.
+  scene.show(update,previous,{immediate});listening.update();reading.update(update,previous,update.source.kind==='scripted'?study?.reading:null);
   $('#save-field').disabled=false;$('#save-history').disabled=false;
   const audioSupported=Boolean((window.AudioContext||window.webkitAudioContext)&&window.Worker);
   $('#listen').disabled=!audioSupported;$('#save-audio').disabled=!audioSupported;

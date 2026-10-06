@@ -357,6 +357,8 @@ Results that miss these are reported as they are.
 
 The package becomes 4.7.0 with render revision 4.5, Listening 1.2 plus ground 1.0, companion 1.1, synthesis 3.3 and grammar v4 (unchanged). Rebuild the atlas, presets, the zip and `SHA256SUMS`, and `field-guide.pdf`. Write a handback in the 4.6 shape (base and result commits, what changed and why, what was checked, what wasn't, open questions). Edgar uploads the package to claude.ai. Only then do the Stage 5 platform-conformance runs mean anything there.
 
+**After the release, to talk through with Edgar (his request, 5 October):** making Field a Claude plugin; what distinguishes a skill or a project from a plugin; the eval that says whether it is ready; and the process for adding it to the Claude directory, if that is appropriate. Nothing here is decided or started.
+
 ---
 
 ## Order at a glance
@@ -389,8 +391,19 @@ Stages 1, 2 and 4a can run in parallel. Stage 3 waits for Stage 2's baseline. 4c
 
 **Decided by Edgar, 5 October 2026:**
 9. `grounding` isn't intuitive to him yet, so he won't rule on how it is drawn until he has used it. The companion gets a legend to learn it by (below), and the redraw of low `grounding` proposed after sheet 2 is parked until he has.
+10. The legend gives instances, not definitions. Reading the legend and the scripted study, he felt a tension between saying something general, the limits of analogy included, and the specifics a person's intuition needs, and his instinct was to define the terms. What was agreed, in four rules:
+    1. An instance is the kind of conversation that would be drawn that way. It sits under the comparison pictures at the ends of a line's scale, and never on the line that reads the field in view.
+    2. On a live field an instance speaks of conversations in general, never as "I". First person belongs only to the scripted study, which has an authored story to tell. A live field's author says nothing in words, and the legend must not say it for them.
+    3. Each line gets at least two, one at each end of its scale, so that no single example hardens into the meaning of the term.
+    4. When ruling on how anything is drawn: look first with the panel closed, and view both candidates under the same legend. A legend teaches whichever drawing it sits beside, so what is already drawn will tend to feel right.
+
+    The artwork stays wordless, and the grammar and both renderers are untouched. Not decided, and not built: grouping the legend by the composition score's six questions instead of by control.
 
 **The companion's legend (5 October).** "Read this field" is a panel under the picture on `companion.html`, closed until asked for (`companion.html#reading` opens it). It reads the field in view in the picture's own order: first look (colour, climate, form, openness, breadth, folding, pull, light, softness), then second look (pressure, threads, a second current, what remains, met or reconstructed, gesture). Each line shows where the field sits on that channel, with the moment before marked, and says it in the grammar's words. Opening a line draws this same field with only that one control low, as it is, and high. The `grounding` line also shows the coverage record it answers to, a sweep of 1, .6 and .3, and low softness beside low grounding. "Show me in the picture" dims the field and lights one mark alone. A line at the top says what moved since the moment before. It is `docs/site/reading.mjs`; neither renderer changed, and `check_companion_browser.mjs` covers it.
+
+**Instances and the study's story (5 October, decision 10).** The legend described the drawing in the drawing's words and said what each thing isn't (eight of its fifteen lines carry a "not…"); it gave the limits of the analogy without the analogy. Now an opened line shows, under the picture at each end of its scale, "For instance:" and one sentence about a conversation: `EG` in `reading.mjs`, 32 in all. Their wording follows the composition score and the synthesis procedure, which authors already answer (the three forms are the score's own "gathering and sheltering", "reaching and moving", "arching around a difficult open center"), so readers and writers keep one language. Colour has no scale and gets one, under the palette. Form gets three. Pull gained a balanced picture so that its two ends are none and strong, and keeps its two directions as a second strip. `Met or reconstructed` gets four: under met and .3, and under each of "unsure of the shape" and "sure of the shape, not met". Stretch and flow stay "posture, with no fixed meaning". On narrow screens each comparison picture takes a row with its words beside it, so nothing is cut off.
+
+The scripted study now has the conversation's side: each moment in `companion-studies.mjs` carries a short story in the assistant's words, shown at the top of the legend, and the lines it accounts for carry "In this study: the reservation." The story is passed to the legend only when an update's source is `scripted`; the browser check publishes a live expression whose sequence number matches a study moment and fails if it borrows the story. The wording of all of it is a first draft for Edgar to mark up.
 
 Nothing is waiting on Edgar before work starts. The rest of what he does is in the order table: blind sheets, the three-hour gate, a live week, and uploading the package to claude.ai.
 

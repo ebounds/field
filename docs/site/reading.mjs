@@ -1,6 +1,7 @@
 // The companion's legend: what the field in view says, where it sits on each
 // channel, and how that is drawn. It is read in the picture's own order, and
-// its words are the visual grammar's. It never alters the field's own SVG.
+// its words are the visual grammar's. An opened line also gives instances under
+// its comparison pictures (EG below). It never alters the field's own SVG.
 import {render,validate,PALETTE} from './renderer.mjs';
 
 const HUES={teal:'attention, receptivity, engaged inquiry',blue:'analytical composure, precision, evidential restraint',
@@ -17,9 +18,37 @@ const el=(tag,attributes={},...children)=>{
   for(const [name,value] of Object.entries(attributes)) node.setAttribute(name,value);
   node.append(...children);return node;
 };
-// A row's three small pictures: this same field with one control low, as it is, and high.
-const sweep=(control,low,high,labels=['less','more'],also={})=>p=>[[
-  [labels[0]+' · '+number(low),{...also,[control]:low}],['now · '+number(p[control]),{},true],[labels[1]+' · '+number(high),{...also,[control]:high}]]];
+// Instances: the kind of conversation that would be drawn that way, one for each end of a
+// row's scale so that no single example stands for the term. Their wording follows the
+// composition score and the synthesis procedure, which the author of a field answers. They
+// speak of conversations in general, never as "I" and never of the field in view, and they
+// sit under the comparison pictures, never beside the reading of this field.
+const EG={
+  colour:'A long, careful inquiry that ends on a joke keeps the colour of the inquiry.',
+  climate:['A businesslike exchange with little atmosphere of its own.','A long conversation in which one quality got into everything said.'],
+  form:{envelope:'An exchange gathered around one thing, sheltering it.',sweep:'An exchange on its way somewhere, reaching and moving.',
+    mantle:'An exchange arching around a hard question that stays open at its centre.'},
+  openness:['One thing being settled, with the rest set aside.','A question that could still go several ways.'],
+  breadth:['One precise point, attended to closely.','A whole situation taken in at once, not one part of it.'],
+  folding:['One steady stance from beginning to end.','Enthusiasm for an idea and doubt about it, in the same breath.'],
+  pull:['No choice left hanging.','Two ways forward, neither chosen, and the choice still tugging.'],
+  light:['A low-key exchange, lightly held.','An exchange at full attention and full energy, whatever its mood.'],
+  softness:['A conversation still finding out what it is about.','A conversation that knows what it is about, right or wrong.'],
+  pressure:['Differences, if there are any, sitting easily.','One point pressed again and again without giving.'],
+  threads:['A long conversation about one simple thing.','A short conversation that has to keep many things in mind at once.'],
+  current:['One quality throughout, with nothing kept apart from it.','Warmth toward a person kept alongside disagreement with their plan.'],
+  remains:['A conversation that has gone one way from the start.','An early misunderstanding, long cleared up, that still shapes how carefully things are said.'],
+  grounding:{met:'Every message of the conversation read as it was written.',thin:'The middle of a long conversation known only from a few retrieved lines.',
+    unsure:'Every message read, and still no settled sense of what it comes to.',
+    unmet:'A clear summary standing in for an opening that was never read: what happened is known, how it went is not.'},
+  gesture:['Nothing the rest of the field does not already say.','One turn that changed the direction of things, with no neat translation.']
+};
+const instance=text=>el('span',{class:'reading-instance'},el('span',{},'For instance: '),text);
+// A row's three small pictures: this same field with one control low, as it is, and high,
+// with an instance under each end.
+const sweep=(control,low,high,labels=['less','more'],eg=[],also={})=>p=>[[
+  [labels[0]+' · '+number(low),{...also,[control]:low},false,eg[0]],['now · '+number(p[control]),{},true],
+  [labels[1]+' · '+number(high),{...also,[control]:high},false,eg[1]]]];
 
 // In reading order. `at` places the field on the row's scale; `mark` names the
 // SVG groups that carry it, for rows whose mark can be picked out of the picture.
@@ -33,76 +62,80 @@ const ROWS=[
   {key:'climate',look:'first',name:'Climate',control:'ambient_strength',
     say:p=>'A '+(p.ambient||p.primary)+' climate, '+band(p.ambient_strength,'a restrained dark surround','present around the field','permeating the frame')+'.',
     drawn:'The background is the lasting climate of the conversation. Its hue says which, and its brightness says how far that climate reaches, not how good the mood is.',
-    strips:sweep('ambient_strength',.05,.9,['restrained','permeating']),
+    strips:sweep('ambient_strength',.05,.9,['restrained','permeating'],EG.climate),
     changed:(a,b)=>(a.ambient||a.primary)!==(b.ambient||b.primary)?'the climate\'s colour':''},
   {key:'form',look:'first',name:'Form',
     say:p=>(p.form==='envelope'?'An ':'A ')+p.form+': it '+FORMS[p.form]+'.',
     drawn:'One of three ways of holding space. A choice of composition, not a mood.',
-    strips:p=>[Object.keys(FORMS).map(form=>[form,{form},form===p.form])],
+    strips:p=>[Object.keys(FORMS).map(form=>[form,{form},form===p.form,EG.form[form]])],
     changed:(a,b)=>a.form!==b.form?'the form ('+a.form+' to '+b.form+')':''},
   {key:'openness',look:'first',name:'Openness',control:'openness',
     say:p=>band(p.openness,'Small and held.','Partly open.','Expansive and open.'),
-    drawn:'How far the form opens: the gap in an envelope, the reach of a sweep or a mantle.',strips:sweep('openness',.1,1,['held','open'])},
+    drawn:'How far the form opens: the gap in an envelope, the reach of a sweep or a mantle.',strips:sweep('openness',.1,1,['held','open'],EG.openness)},
   {key:'breadth',look:'first',name:'Breadth',control:'breadth',
     say:p=>band(p.breadth,'Thin and specifically focused.','Moderately broad.','Broad and enveloping.'),
-    drawn:'How thick the band is.',strips:sweep('breadth',.1,1,['thin','broad'])},
+    drawn:'How thick the band is.',strips:sweep('breadth',.1,1,['thin','broad'],EG.breadth)},
   {key:'folding',look:'first',name:'Folding',control:'folding',
     say:p=>band(p.folding,'Smooth and continuous.','Somewhat folded.','Distinctly folded: several qualities held together.'),
-    drawn:'The contour folds and its surface turns. Complexity or ambivalence, not automatically distress.',strips:sweep('folding',0,1,['smooth','folded'])},
+    drawn:'The contour folds and its surface turns. Complexity or ambivalence, not automatically distress.',strips:sweep('folding',0,1,['smooth','folded'],EG.folding)},
   {key:'pull',look:'first',name:'Pull',control:'imbalance',at:p=>Math.abs(p.imbalance),
     say:p=>band(Math.abs(p.imbalance),'No lateral pull to speak of.','A pull to one side.','A strong pull to one side.'),
     drawn:'The form leans. How far says how strong a live, unresolved pull is. Which way says nothing.',
-    strips:p=>[[['one way',{imbalance:-.8}],['now · '+number(Math.abs(p.imbalance)),{},true],['the other',{imbalance:.8}]]]},
+    strips:p=>[[['balanced · 0',{imbalance:0},false,EG.pull[0]],['now · '+number(Math.abs(p.imbalance)),{},true],
+        ['pulled · .8',{imbalance:p.imbalance<0?-.8:.8},false,EG.pull[1]]],
+      [['one way',{imbalance:-.8}],['the other',{imbalance:.8}]]],
+    captions:['','Which way says nothing:']},
   {key:'light',look:'first',name:'Light',control:'intensity',
     say:p=>band(p.intensity,'A quiet presence.','A clear presence.','Strong and luminous.'),
-    drawn:'How brightly the whole field stands out. Not certainty.',strips:sweep('intensity',.15,1,['quiet','luminous'])},
+    drawn:'How brightly the whole field stands out. Not certainty.',strips:sweep('intensity',.15,1,['quiet','luminous'],EG.light)},
   {key:'softness',look:'first',name:'Softness',control:'definition',
     say:p=>band(p.definition,'Diffuse: the shape of this isn’t settled.','Partly resolved.','Clearly articulated.'),
-    drawn:'How sharply everything is drawn, the marks below included. Not a correctness score.',strips:sweep('definition',.1,1,['diffuse','articulated'])},
+    drawn:'How sharply everything is drawn, the marks below included. Not a correctness score.',strips:sweep('definition',.1,1,['diffuse','articulated'],EG.softness)},
 
   {key:'pressure',look:'second',name:'Pressure',control:'tension',mark:['field-strain','field-strain-light'],
     say:p=>band(p.tension,'Supple, with little pressure.','Some pressure.','Strong local compression: unresolved pressure.'),
-    drawn:'The contour pinches at one place, and the colour there grows denser.',strips:sweep('tension',0,1,['supple','compressed'])},
+    drawn:'The contour pinches at one place, and the colour there grows denser.',strips:sweep('tension',0,1,['supple','compressed'],EG.pressure)},
   {key:'threads',look:'second',name:'Threads',control:'complexity',mark:['field-filaments'],
     say:p=>band(p.complexity,'Few threads.','Several threads.','Rich, interwoven fine structure.'),
-    drawn:'Fine threads along the band, in its own colour. How many considerations are held at once, not how many messages.',strips:sweep('complexity',0,1,['few','rich'])},
+    drawn:'Fine threads along the band, in its own colour. How many considerations are held at once, not how many messages.',strips:sweep('complexity',0,1,['few','rich'],EG.threads)},
   {key:'current',look:'second',name:'A second current',control:'counterpoint',mark:['field-countercurrent'],absent:p=>!p.counterpoint,
     say:p=>!p.counterpoint?'None here.':band(p.counterpoint,'A slight second current.','A second current alongside the first.','A strong second current alongside the first.'),
-    drawn:'A strand in its own colour parts from the band, leaving a dark opening, and rejoins it. A quality held alongside another, not automatically a conflict.',strips:sweep('counterpoint',0,.9,['none','strong'])},
+    drawn:'A strand in its own colour parts from the band, leaving a dark opening, and rejoins it. A quality held alongside another, not automatically a conflict.',strips:sweep('counterpoint',0,.9,['none','strong'],EG.current)},
   {key:'remains',look:'second',name:'What remains',control:'history',mark:['field-history'],absent:p=>!p.history,
     say:p=>!p.history?'Nothing carried forward.':band(p.history,'A faint trace of an earlier change.','An earlier change, still present.','An earlier change, strongly present.'),
-    drawn:'A dimmer shell just outside the band. On this page it follows the actual contour of the moment before. A retained influence, not a timeline.',strips:sweep('history',0,.9,['none','strong'])},
+    drawn:'A dimmer shell just outside the band. On this page it follows the actual contour of the moment before. A retained influence, not a timeline.',strips:sweep('history',0,.9,['none','strong'],EG.remains)},
   {key:'grounding',look:'second',name:'Met or reconstructed',control:'grounding',mark:['field-reticulation'],absent:p=>p.grounding>=1,
     say:p=>p.grounding>=.95?'Met directly.':band(p.grounding,'Mostly reconstructed. Little of it was met directly.','About half met directly, the rest reconstructed.','Mostly met directly, some of it reconstructed.'),
     drawn:'How much of this reading rests on what was actually in the conversation, as against a summary, a memory or an inference. Where it was not met, the outer band thins and its cross-ribs show: the shape is described, the material is not there.',
-    strips:p=>[[['met · 1',{grounding:1}],['.6',{grounding:.6}],['.3',{grounding:.3}]],
-      [['unsure of the shape',{definition:.1,grounding:1}],['sure of the shape, not met',{definition:Math.max(p.definition,.8),grounding:.3}]]],
+    strips:p=>[[['met · 1',{grounding:1},false,EG.grounding.met],['.6',{grounding:.6}],['.3',{grounding:.3},false,EG.grounding.thin]],
+      [['unsure of the shape',{definition:.1,grounding:1},false,EG.grounding.unsure],
+        ['sure of the shape, not met',{definition:Math.max(p.definition,.8),grounding:.3},false,EG.grounding.unmet]]],
     captions:['Less and less of it met, on this field:','Two different things. Low softness says the shape is unsettled. Low grounding says the shape is clear and was not touched:']},
   {key:'gesture',look:'second',name:'Gesture',control:'gesture_strength',mark:['field-gesture'],absent:p=>p.gesture==='none'||!p.gesture_strength,
     say:p=>p.gesture==='none'||!p.gesture_strength?'None here.':'A'+(p.gesture==='echo'?'n ':' ')+p.gesture+': '+GESTURES[p.gesture]+band(p.gesture_strength,', delicate.','.',', pronounced.'),
     drawn:'An optional local inflection: a strand of the second colour, with a glow of the same colour around it.',
-    strips:p=>sweep('gesture_strength',0,.9,['none','pronounced'],p.gesture==='none'?{gesture:'braid'}:{})(p),
+    strips:p=>sweep('gesture_strength',0,.9,['none','pronounced'],EG.gesture,p.gesture==='none'?{gesture:'braid'}:{})(p),
     changed:(a,b)=>a.gesture!==b.gesture?'the gesture ('+a.gesture+' to '+b.gesture+')':''}
 ];
 
 export function createReading({getSvg}) {
   const panel=document.querySelector('#reading'),changed=document.querySelector('#reading-changed');
-  const pointer=document.querySelector('#reading-pointer'),rows=new Map();
+  const story=document.querySelector('#reading-story'),pointer=document.querySelector('#reading-pointer'),rows=new Map();
   let now=null,before=null,coverage=null,pointed='',timer=0;
   const remember=value=>{try{localStorage.setItem('field-reading',value);}catch{}};
 
   for(const row of ROWS) {
-    const value=el('span',{class:'reading-value'}),say=el('span',{class:'reading-say'});
+    const value=el('span',{class:'reading-value'}),say=el('span',{class:'reading-say'}),here=el('span',{class:'reading-here',hidden:''});
     const scale=el('span',{class:'reading-scale','aria-hidden':'true'},el('b'),el('i'));
     const extra=el('div',{class:'reading-extra'}),strips=el('div',{class:'reading-strips'});
     const more=el('div',{class:'reading-more'},el('p',{class:'reading-drawn'},row.drawn),extra,strips);
     const point=row.mark?el('button',{type:'button',class:'text-link reading-point',id:'reading-point-'+row.key,'aria-pressed':'false'},'Show me in the picture'):null;
     if(point) {more.append(point);point.addEventListener('click',()=>show(pointed===row.key?'':row.key));}
-    const head=el('summary',{},el('span',{class:'reading-name'},row.name),value,row.control?scale:'',say);
+    const head=el('summary',{},el('span',{class:'reading-name'},row.name),value,row.control?scale:'',say,here);
     const details=el('details',{id:'reading-row-'+row.key},head,more);
     details.addEventListener('toggle',()=>{if(details.open)draw(row.key);else{release(row.key);if(pointed===row.key)show('');}});
     document.querySelector('#reading-'+row.look).append(el('li',{class:'reading-row'},details));
-    rows.set(row.key,{row,details,value,scale,say,extra,strips,point,urls:[],drawn:''});
+    rows.set(row.key,{row,details,value,scale,say,here,extra,strips,point,urls:[],drawn:''});
   }
   panel.addEventListener('toggle',()=>{
     remember(panel.open?'open':'closed');
@@ -124,13 +157,14 @@ export function createReading({getSvg}) {
     if(!now||!item.row.strips||!panel.open||!item.details.open||item.drawn===identity) return;
     release(key);item.drawn=identity;
     item.row.strips(now).forEach((strip,index)=>{
-      if(item.row.captions) item.strips.append(el('p',{class:'reading-caption'},item.row.captions[index]));
+      if(item.row.captions?.[index]) item.strips.append(el('p',{class:'reading-caption'},item.row.captions[index]));
       const figures=el('div',{class:'reading-strip'});
-      for(const [label,change,current] of strip) {
+      for(const [label,change,current,eg] of strip) {
         // Each picture is its own document, so its gradients can't be mistaken for the field's.
         const url=URL.createObjectURL(new Blob([render({...now,...change})],{type:'image/svg+xml'}));
         item.urls.push(url);
-        figures.append(el('figure',current?{class:'is-now'}:{},el('img',{src:url,alt:'',width:'200',height:'200',loading:'lazy'}),el('figcaption',{},label)));
+        figures.append(el('figure',current?{class:'is-now'}:{},el('img',{src:url,alt:'',width:'200',height:'200',loading:'lazy'}),
+          el('figcaption',{},label,eg?instance(eg):'')));
       }
       item.strips.append(figures);
     });
@@ -178,7 +212,7 @@ export function createReading({getSvg}) {
         palette.append(el('dt',roles[hue]?{class:'is-here'}:{},swatch,hue+(roles[hue]?' · '+roles[hue]:'')),el('dd',{},meaning));
       }
       item.extra.append(palette,el('p',{class:'reading-fact'},'Saturation '+number(now.saturation)+': '
-        +(now.saturation<.65?'muted.':now.saturation>1.05?'vivid.':'neither muted nor vivid.')));
+        +(now.saturation<.65?'muted.':now.saturation>1.05?'vivid.':'neither muted nor vivid.')),instance(EG.colour));
     }
     if(item.row.key==='grounding'&&coverage) {
       // The coverage record is what grounding answers to, so the two are shown together.
@@ -189,12 +223,17 @@ export function createReading({getSvg}) {
     }
   }
   return {
-    update(update,previous) {
+    /** `told` is a scripted study's own account of the moment: {story, here:{row key: phrase}}. */
+    update(update,previous,told=null) {
       now=validate(update.spec);before=previous?validate(previous.spec):null;coverage=update.coverage;
       show('');
+      story.hidden=!told?.story;
+      story.replaceChildren(...(told?.story?[el('span',{},'In this study, in the assistant’s words'),told.story]:[]));
       for(const item of rows.values()) {
         const {row}=item;
         item.say.textContent=row.say(now);
+        const here=told?.here?.[row.key];
+        item.here.hidden=!here;item.here.textContent=here?'In this study: '+here+'.':'';
         item.details.classList.toggle('is-absent',Boolean(row.absent?.(now)));
         if(item.point) item.point.disabled=Boolean(row.absent?.(now));
         if(row.control) {
@@ -212,8 +251,8 @@ export function createReading({getSvg}) {
       timer=setTimeout(()=>{for(const [key,item] of rows) if(item.details.open) draw(key);},450);
     },
     clear() {
-      clearTimeout(timer);show('');now=before=coverage=null;changed.textContent='';
-      for(const [key,item] of rows) {release(key);item.say.textContent='';item.value.textContent='';item.extra.replaceChildren();}
+      clearTimeout(timer);show('');now=before=coverage=null;changed.textContent='';story.hidden=true;story.replaceChildren();
+      for(const [key,item] of rows) {release(key);item.say.textContent='';item.here.hidden=true;item.here.textContent='';item.value.textContent='';item.extra.replaceChildren();}
     }
   };
 }

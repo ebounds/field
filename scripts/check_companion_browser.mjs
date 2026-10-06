@@ -100,9 +100,23 @@ try {
   await waitFor("document.querySelectorAll('.reading-row').length===15&&document.querySelector('#reading-row-grounding .reading-value').textContent!==''");
   assert.equal(await evaluate("document.querySelector('#reading-row-grounding .reading-value').textContent"),String((await spec()).grounding).replace(/^0\./,'.'));
   assert((await evaluate("document.querySelector('#reading-changed').textContent")).startsWith('The first moment'));
+  // The scripted study tells its own story, and names it on the lines it accounts for.
+  assert.equal(await evaluate("document.querySelector('#reading-story').hidden"),false);
+  assert((await evaluate("document.querySelector('#reading-story').textContent")).includes('my guess'));
+  assert.equal(await evaluate("document.querySelector('#reading-row-grounding .reading-here').textContent"),'In this study: the guessing.');
   await click('#reading-row-grounding summary');
   await waitFor("document.querySelectorAll('#reading-row-grounding .reading-strip img').length===5");
   assert((await evaluate("document.querySelector('#reading-row-grounding .reading-extra').textContent")).includes('early available'));
+  // Instances sit under the comparison pictures, at each end of a line's scale. They speak of
+  // conversations in general: never as "I", never of the field in view, never on the line itself.
+  assert.equal(await evaluate("document.querySelectorAll('#reading-row-grounding .reading-instance').length"),4);
+  await evaluate("for(const row of document.querySelectorAll('.reading-row details'))row.open=true");
+  await waitFor("document.querySelectorAll('.reading-instance').length===32");
+  for(const text of await evaluate("[...document.querySelectorAll('.reading-instance')].map(node=>node.textContent)"))
+    assert(text.startsWith('For instance: ')&&!/\b(I|me|my|you|your|we|our|here|this (conversation|field))\b/i.test(text),text);
+  assert.equal(await evaluate("document.querySelectorAll('.reading-row summary .reading-instance').length"),0);
+  assert.equal(await evaluate("[...document.querySelectorAll('.reading-row details')].every(row=>row.querySelectorAll('.reading-instance').length>=(row.id==='reading-row-colour'?1:2))"),true);
+  await evaluate("for(const row of document.querySelectorAll('.reading-row details'))row.open=row.id==='reading-row-grounding'");
   await click('#reading-point-grounding');
   assert.equal(await evaluate("document.querySelector('#reading-pointer').hidden"),false);
   await screenshot('companion-reading');
@@ -138,6 +152,10 @@ try {
   assert.equal(await evaluate("document.querySelector('#listen').disabled"),true);
   await publish('a',1);await waitSequence(1);
   assert.equal((await spec()).primary,'violet');
+  // A live expression never borrows the study's story, though its sequence number matches a study moment.
+  assert.equal(await evaluate("document.querySelector('#reading-row-grounding .reading-say').textContent!==''"),true);
+  assert.equal(await evaluate("document.querySelector('#reading-story').hidden&&document.querySelector('#reading-story').textContent===''"),true);
+  assert.equal(await evaluate("document.querySelectorAll('.reading-here:not([hidden])').length"),0);
   await publish('a',2,'amber');await waitSequence(2);
   await click('#movement'); // Browser preference is scoped to the companion origin.
   await waitFor("document.querySelector('#field-stage').dataset.moving==='false'");
