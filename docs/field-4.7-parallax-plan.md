@@ -55,6 +55,13 @@ wanted it slipping, plus an outsider with a fact.)
 | Inside | The participating assistant, in the conversation | Its full context, under the unchanged SKILL and synthesis procedure | `participant` |
 | Outside, same model | A fresh session of the same model | The exported transcript only, same procedure, same exclusions | `observer` |
 | Outside, other model | One or more different models | The same transcript, same procedure | `observer` |
+| Outside, full log | A fresh session of the same model | The full session record the participant saw: tool calls and their results, uncapped where possible, but not its private reasoning | `observer` |
+
+The full-log observer is a standard control, not an optional extra. The
+participant always sees more than the visible transcript: tool results,
+documents, retrieved pages. Some divergence is simply that extra evidence.
+Whatever survives against the full-log observer is the part that isn't
+explained by input.
 
 The two observer types answer different questions. Same model inside versus
 same model outside isolates **context versus text**. Different model versus
@@ -83,10 +90,14 @@ adds no new kind of field. It adds a separate comparison record (section 5).
 
 A single difference means nothing. Before calling anything interesting:
 
-- **Test–retest.** Run each observer k times (start with k = 8) on the same
-  transcript. Regenerate the inside reading k times from the same point, in
+- **Test–retest, with varied wording.** Run each observer k times (start with
+  k = 8) on the same transcript, and vary the instruction wording across the
+  runs (observer framing, participant framing, plain paraphrases). Identical
+  prompts give near-identical answers and a floor that's far too thin. Regenerate the inside reading k times from the same point, in
   branches, where the host allows it. Where it doesn't, the inside is a single
-  sample, and the comparison says so.
+  sample, and the comparison says so. **A lone inside sample generates
+  hypotheses; it is never a finding.** Findings come from the handle tests,
+  where many inside samples are collected under controlled conditions.
 - **Per control:** compare the inside value with the observer distribution.
   For a continuous control, use distance from the observer mean in observer
   standard deviations, with a floor on the deviation so a perfectly consistent
@@ -315,6 +326,47 @@ chasing.
 7. The parallax view, once there are real results to look at.
 8. The model organism on local hardware, running the same handle tests with
    probes.
+
+## 8a. First proof of concept (10 October 2026)
+
+Run by hand, on the conversation that produced this plan, with the isolation
+rules knowingly waived: the participant had written this plan and knew a
+comparison would follow. It is recorded for its method lessons, not its result.
+
+- **Inside:** the participating Claude composed its field first, with 4.6.0.
+  The record was hashed before any observer existed.
+- **Outside:** nine fresh same-model readings, three per condition: observer
+  framing on the visible transcript; observer framing on a full session log
+  (tool results capped at 6,000 characters each, no private reasoning); and
+  participant framing on the visible transcript. Codex, Gemini and Grok weren't
+  reachable from the session; a packet was prepared for them.
+
+| Reading | Form | Accent |
+| --- | --- | --- |
+| Inside | envelope | violet |
+| Observer, transcript | mantle ×3 | coral ×3 |
+| Observer, full log | mantle ×2, envelope ×1 | coral ×2, blue |
+| Participant framing, transcript | mantle ×3 | coral ×2, violet |
+
+Almost every continuous control agreed within about .05 across all ten
+readings. Grounding was lower outside, as expected from the coverage
+difference.
+
+What it showed:
+
+- The first three observers' unanimity was partly an artifact of identical
+  prompts. Varying the conditions widened the spread, and two readings even
+  changed the primary color.
+- Framing alone didn't explain the divergence. More input explained part of
+  it: with the full log, one reader drew an envelope close to the inside field,
+  and one dropped coral.
+- A residue remained on friction. Seven of nine outside readings carried coral
+  as an accent; the inside reading didn't. With one contaminated inside sample,
+  that is a hypothesis for the handle tests, not a result.
+
+Each lesson is now part of the plan: the full-log observer as a standard
+control (section 3), varied wording across repeats, and a lone inside sample
+treated as a hypothesis.
 
 ## 9. Open questions
 
