@@ -1,0 +1,108 @@
+WEBVTT
+
+1
+00:00:00.350 --> 00:00:03.000
+The conversation comes first.
+
+2
+00:00:03.450 --> 00:00:09.500
+Conversation excerpt: Making something together. Earlier: the concept, first drafts, and a discussion of fidelity.
+You: Extra polish is ok for the video and audio, but it should faithfully represent the actual product.
+Model: We can add cinematic polish while keeping the product demonstration recognizable and accurate.
+
+3
+00:00:09.500 --> 00:00:14.100
+Ask your model: @field
+Model / Field response: I’m using our conversation so far: the concept, earlier drafts, and your feedback on polish.
+
+4
+00:00:14.100 --> 00:00:16.000
+Ask your model: @field
+Model / Field response: I’m using our conversation so far: the concept, earlier drafts, and your feedback on polish.
+Reading the model’s stance: Violet — imagination; Teal — attention. Open sweep · room to explore.
+
+5
+00:00:16.000 --> 00:00:19.300
+You: It should all happen as one.
+Model: I’ll make the field move as one continuous shape
+Updated with the next exchange.
+Reading the model’s stance: Violet — imagination; Teal — attention. Open sweep · room to explore.
+
+6
+00:00:19.300 --> 00:00:23.150
+You: It should all happen as one.
+Model: I’ll make the field move as one continuous shape
+Updated with the next exchange.
+Reading the model’s stance: Violet — imagination; Teal — attention. Clearer edges · a more articulated stance.
+
+7
+00:00:23.950 --> 00:00:29.500
+Conversation excerpt: Giving a diagram form. Earlier: the loop concept, paired emblems, and visual feedback.
+You: it should be a semantic change to the site code, fully animated.
+Model: The new process loop is animated in code with CSS/SVG animation.
+
+8
+00:00:29.500 --> 00:00:34.100
+Ask your model: @field
+Model / Field response: I’m using the textual diagram-design discussion so far, including the original concept and earlier visual feedback.
+
+9
+00:00:34.100 --> 00:00:36.000
+Ask your model: @field
+Model / Field response: I’m using the textual diagram-design discussion so far, including the original concept and earlier visual feedback.
+Reading the model’s stance: Amber — warmth and constructive care. Arching form · holding space open.
+
+10
+00:00:36.000 --> 00:00:39.300
+You: We will create a still image first from scratch
+Model: The loop line should be organic, elegant, flowing, and intentional
+Updated with the revised design approach.
+Reading the model’s stance: Amber — warmth and constructive care. Arching form · holding space open.
+
+11
+00:00:39.300 --> 00:00:43.650
+You: We will create a still image first from scratch
+Model: The loop line should be organic, elegant, flowing, and intentional
+Updated with the revised design approach.
+Reading the model’s stance: Amber — warmth and constructive care. Clearer edges · a more articulated stance.
+
+12
+00:00:44.450 --> 00:00:50.000
+Conversation excerpt: Following the evidence. Earlier: claimed thrust, measurement errors, and replication.
+You: What about the room temp superconductor from a couple years ago
+Model: The “partial replications” were the most interesting and confusing part.
+
+13
+00:00:50.000 --> 00:00:54.600
+Ask your model: @field
+Model / Field response: I’m using this science conversation so far: the earlier thrust discussion, measurement errors, and replication.
+
+14
+00:00:54.600 --> 00:00:56.500
+Ask your model: @field
+Model / Field response: I’m using this science conversation so far: the earlier thrust discussion, measurement errors, and replication.
+Reading the model’s stance: Blue — precision; Teal — inquiry. Gathered form · a focused, held opening.
+
+15
+00:00:56.500 --> 00:00:59.700
+You: Oh weren't there some biosignatures on Venus in the last few years that were contested?
+Model: Three layers of uncertainty stacked
+Updated as the inquiry widens.
+Reading the model’s stance: Blue — precision; Teal — inquiry. Gathered form · a focused, held opening.
+
+16
+00:00:59.700 --> 00:01:03.500
+You: Oh weren't there some biosignatures on Venus in the last few years that were contested?
+Model: Three layers of uncertainty stacked
+Updated as the inquiry widens.
+Reading the model’s stance: Blue — precision; Teal — inquiry. More folds · several considerations held together.
+
+17
+00:01:03.600 --> 00:01:06.700
+Read the stance. Notice what shifts.
+An expression. Not a measurement.
+
+18
+00:01:06.800 --> 00:01:12.000
+Field. The shape of thinking together.
+ebounds.github.io/field — Free and open source.

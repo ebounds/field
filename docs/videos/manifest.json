@@ -1,0 +1,54 @@
+{
+  "published_cuts": {
+    "intro": "approved cut 06, 72 seconds in both formats",
+    "parallax": "approved trailer 01, 53 seconds wide and 25 seconds vertical"
+  },
+  "source_renderer": "Field 4.6.0, visual rendering 4.4, Listening 1.1",
+  "files": [
+    {
+      "file": "field-intro-v6-wide.mp4",
+      "bytes": 5828856,
+      "sha256": "97e3a75edbf5220360806395b1ddd9273919d5850006f7ab19996a76aa9ff9d3"
+    },
+    {
+      "file": "field-intro-v6-wide.webm",
+      "bytes": 3866596,
+      "sha256": "adb706e0dd3dbf29726c28fc43fae2482de403ffa47a6f845e337278c6c329fd"
+    },
+    {
+      "file": "field-intro-v6-vertical.mp4",
+      "bytes": 6222895,
+      "sha256": "3436ae03f58a740a6410a0792238fe367742544cad8c455e973a818a8d2904dd"
+    },
+    {
+      "file": "field-intro-v6-vertical.webm",
+      "bytes": 4175962,
+      "sha256": "8e7225d5cf61c5f40aaec90d3cc998dad1f9f26e15f2bd1ccfc1b839bc835302"
+    },
+    {
+      "file": "parallax-v1-wide.mp4",
+      "bytes": 7373529,
+      "sha256": "bdf89a3f8c427ebf0398a2ba944b2a85caf02e7205a63fa8f148ffb9efeeff89"
+    },
+    {
+      "file": "parallax-v1-wide.webm",
+      "bytes": 3789308,
+      "sha256": "6b3e713dc9726303edb4991d52617357ea1f9e08533d7cc7a28bab1f7c8808dd"
+    },
+    {
+      "file": "parallax-v1-vertical.mp4",
+      "bytes": 5177846,
+      "sha256": "ddebec5c537d67e5d18df0499f0e646f7ae5d2ca113295510143f1ba5247c596"
+    },
+    {
+      "file": "parallax-v1-vertical.webm",
+      "bytes": 2399999,
+      "sha256": "8e2c0cfaed0299e7006e7d4e135de2b215f1f38135d045e76c1cf11e7b87edea"
+    }
+  ],
+  "playback": "Native controls, no autoplay, preload none; English captions.",
+  "public_pages": [
+    "intro.html",
+    "parallax-trailer.html"
+  ]
+}

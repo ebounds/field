@@ -1,0 +1,89 @@
+{
+  "purpose": "Film illustration, not an experiment or observed result.",
+  "baseline": "Integrated atlas study, release Field 4.6.0, rendering 4.4.",
+  "observer_fields": "Four hand-authored perturbations rendered by the reference renderer. No observer model was called.",
+  "perturbations": [
+    {
+      "openness": -0.03,
+      "folding": 0.09,
+      "tension": 0.1,
+      "definition": -0.04
+    },
+    {
+      "openness": 0.03,
+      "folding": 0.11,
+      "tension": 0.08,
+      "definition": 0.03
+    },
+    {
+      "openness": -0.02,
+      "folding": 0.08,
+      "tension": 0.12,
+      "definition": -0.02
+    },
+    {
+      "openness": 0.02,
+      "folding": 0.12,
+      "tension": 0.06,
+      "definition": 0.03
+    }
+  ],
+  "inside": {
+    "accent": null,
+    "accent_strength": 0.4,
+    "ambient": "teal",
+    "ambient_strength": 0.75,
+    "breadth": 0.85,
+    "complexity": 0.3,
+    "counterpoint": 0.0,
+    "definition": 0.85,
+    "flow": 0.0,
+    "folding": 0.05,
+    "form": "envelope",
+    "gesture": "none",
+    "gesture_strength": 0.0,
+    "grounding": 1.0,
+    "history": 0.65,
+    "imbalance": 0.0,
+    "intensity": 0.7,
+    "openness": 0.75,
+    "primary": "teal",
+    "saturation": 0.85,
+    "secondary": "pearl",
+    "stretch": -0.2,
+    "tension": 0.15,
+    "version": 4
+  },
+  "observer_mean": {
+    "accent": null,
+    "accent_strength": 0.4,
+    "ambient": "teal",
+    "ambient_strength": 0.75,
+    "breadth": 0.85,
+    "complexity": 0.3,
+    "counterpoint": 0.0,
+    "definition": 0.85,
+    "flow": 0.0,
+    "folding": 0.15,
+    "form": "envelope",
+    "gesture": "none",
+    "gesture_strength": 0.0,
+    "grounding": 1.0,
+    "history": 0.65,
+    "imbalance": 0.0,
+    "intensity": 0.7,
+    "openness": 0.75,
+    "primary": "teal",
+    "saturation": 0.85,
+    "secondary": "pearl",
+    "stretch": -0.2,
+    "tension": 0.24,
+    "version": 4
+  },
+  "mean_method": "Arithmetic average of the numeric drawing controls, rendered with the reference renderer. Illustrative only.",
+  "comparison": "Separate film overlay computed from the inside and mean silhouettes. No calibrated noise floor or experimental statistic.",
+  "native_field_files": "Byte-identical to reference render output before and after comparison.",
+  "release_language": "In development. No date or version promise.",
+  "plan": "https://github.com/ebounds/field/pull/1",
+  "plan_commit": "1d6b471cd5f1d6064ea0057b29a23edbe9ada590"
+}
