@@ -1,0 +1,117 @@
+{
+  "title": "Field Listening — Hear the shape of a conversation",
+  "duration": 80,
+  "formats": [
+    "1920x1080",
+    "1080x1920"
+  ],
+  "source": "Released Field 4.6.0; visual renderer 4.4; Listening 1.1.",
+  "examples": "Six matched palette studies hold all other controls fixed. Three teal forms hold every control except form fixed. Examples teach authored conventions; they are not measured conversations.",
+  "opening_and_close": "The creative-work Field from the approved intro, using its actual controls for both expressions.",
+  "audio": "Only excerpts from the unchanged native Listening renderer, edited at their original rate. No supplementary music or generated soundtrack.",
+  "visual_production": "Native SVG art. Connected contour morphs, framing, bloom and the audio waveform are film graphics. No separate ghost fields.",
+  "source_hashes": {
+    "scripts/render_field.py": "8a0bf5b124fb53f9a0f525cb7ce7d99eefcea5fc20d611e3c828c063fe932537",
+    "docs/site/audio.mjs": "4b0e5ecfe3a72fad54a4542d50db313fea8ebe1b14041fa9e9bf95e08aacaebd",
+    "docs/site/renderer.mjs": "aef07e020a213e352f3867cf6bfe0f4a7e669006cca7819899fdae38c7a35c57"
+  },
+  "scenes": [
+    {
+      "name": "mixed",
+      "start": 0,
+      "end": 11,
+      "heading": "Hear the shape\nof a conversation.",
+      "source_start": 0,
+      "kind": "opening"
+    },
+    {
+      "name": "teal",
+      "start": 11,
+      "end": 18,
+      "heading": "Teal · Attention",
+      "body": "Hollow wood.\nA little air.",
+      "source_start": 0.5,
+      "kind": "palette"
+    },
+    {
+      "name": "blue",
+      "start": 18,
+      "end": 25,
+      "heading": "Blue · Precision",
+      "body": "Clear tones.\nDeliberate space.",
+      "source_start": 0.5,
+      "kind": "palette"
+    },
+    {
+      "name": "violet",
+      "start": 25,
+      "end": 32,
+      "heading": "Violet · Imagination",
+      "body": "Damped glass.\nSuspended intervals.",
+      "source_start": 0.5,
+      "kind": "palette"
+    },
+    {
+      "name": "amber",
+      "start": 32,
+      "end": 39,
+      "heading": "Amber · Care",
+      "body": "Rounded felt and wood.\nGentle attacks.",
+      "source_start": 0.5,
+      "kind": "palette"
+    },
+    {
+      "name": "coral",
+      "start": 39,
+      "end": 46,
+      "heading": "Coral · Concern",
+      "body": "Bowed texture.\nClose intervals.",
+      "source_start": 0.5,
+      "kind": "palette"
+    },
+    {
+      "name": "pearl",
+      "start": 46,
+      "end": 53,
+      "heading": "Pearl · Integration",
+      "body": "Open harmonics.\nThe center stays audible.",
+      "source_start": 0.5,
+      "kind": "palette"
+    },
+    {
+      "name": "teal",
+      "start": 53,
+      "end": 58,
+      "heading": "Envelope · gathers",
+      "body": "A phrase held\naround the center.",
+      "source_start": 0.5,
+      "kind": "form"
+    },
+    {
+      "name": "sweep",
+      "start": 58,
+      "end": 63,
+      "heading": "Sweep · reaches",
+      "body": "Across register\nand stereo space.",
+      "source_start": 0.5,
+      "kind": "form"
+    },
+    {
+      "name": "mantle",
+      "start": 63,
+      "end": 68,
+      "heading": "Mantle · arches",
+      "body": "Higher voices\nhold a canopy.",
+      "source_start": 0.5,
+      "kind": "form"
+    },
+    {
+      "name": "mixed",
+      "start": 68,
+      "end": 80,
+      "heading": "Ask for the\nlistening companion.",
+      "source_start": 12,
+      "kind": "invitation"
+    }
+  ]
+}

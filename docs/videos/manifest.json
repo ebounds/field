@@ -1,7 +1,8 @@
 {
   "published_cuts": {
     "intro": "cut 07, 92 seconds in both formats",
-    "parallax": "trailer 02, 64 seconds wide and 35 seconds vertical"
+    "parallax": "trailer 02, 64 seconds wide and 35 seconds vertical",
+    "listening": "film 01, 80 seconds in both formats"
   },
   "source_renderer": "Field 4.6.0, visual rendering 4.4, Listening 1.1",
   "files": [
@@ -44,12 +45,78 @@
       "file": "parallax-v2-vertical.webm",
       "bytes": 2817877,
       "sha256": "c892bbe69f5e5f984a68abf0644d24142cf4833c5ecf2b13129ba721a205f595"
+    },
+    {
+      "file": "field-listening-v1-wide.mp4",
+      "bytes": 7581609,
+      "sha256": "caaca62d780eb88a8c3eeed0eb0ea4161c72c2a3031e37f6daee99f1ff5afbcb"
+    },
+    {
+      "file": "field-listening-v1-wide.webm",
+      "bytes": 4077739,
+      "sha256": "be6311fff329101b3b0868c9bff9b4a9a97a26c347bd9b752e881d3a079ff6ce"
+    },
+    {
+      "file": "field-listening-v1-vertical.mp4",
+      "bytes": 7754347,
+      "sha256": "5a771e676e86797a640bc31614826471d09f57e386fdb15c9e461c3f4a1642bc"
+    },
+    {
+      "file": "field-listening-v1-vertical.webm",
+      "bytes": 4124014,
+      "sha256": "d77907d47b50fd5bb6fb312a984ddbe3713541ff1c0cedee2d5ae2134cdf6445"
+    },
+    {
+      "file": "field-listening-v1-mixed.wav",
+      "bytes": 4234106,
+      "sha256": "dace1859c48a32d7fe50c43f77f3f10f5c344d9234d1d94b1a1e453ba9a2546d"
+    },
+    {
+      "file": "field-listening-v1-teal.wav",
+      "bytes": 4234082,
+      "sha256": "0505a6fc25fa681efdf3f8ffd10958faa4a1efeb30a25f9765fdedb4b41580b4"
+    },
+    {
+      "file": "field-listening-v1-blue.wav",
+      "bytes": 4234082,
+      "sha256": "81878969e57dad26f3411b4afeea4f1659f4cc9971c7de67cc8a89aac2ed789d"
+    },
+    {
+      "file": "field-listening-v1-violet.wav",
+      "bytes": 4234084,
+      "sha256": "39b67939805cbcc3ebd3349f3e97a43966a8614d8ac5fa05f50d47bad12b76c4"
+    },
+    {
+      "file": "field-listening-v1-amber.wav",
+      "bytes": 4234084,
+      "sha256": "408d08c4bd580aba20e060a55b214a49cbc572fa2d8d104e9d6aa518328f05cd"
+    },
+    {
+      "file": "field-listening-v1-coral.wav",
+      "bytes": 4234084,
+      "sha256": "a7a81f57d6dc0a213d829335600ce0f553e2a5e4ef899578070616d0186bcce0"
+    },
+    {
+      "file": "field-listening-v1-pearl.wav",
+      "bytes": 4234084,
+      "sha256": "e3f4dd0a0277609300892aea0c8383d6b35c877135a18a39892f4b23f667a9c5"
+    },
+    {
+      "file": "field-listening-v1-sweep.wav",
+      "bytes": 4234080,
+      "sha256": "75d37506dec7fd441ad0c4072e836a541ea60401ff5bd6f07af0ff53772f5ca4"
+    },
+    {
+      "file": "field-listening-v1-mantle.wav",
+      "bytes": 4234080,
+      "sha256": "284081002eaabb771744e16dc4052fa91d00f5a74398637657eb6b44b3486995"
     }
   ],
   "playback": "Native controls, no autoplay, preload none; English captions.",
   "public_pages": [
     "intro.html",
-    "parallax-trailer.html"
+    "parallax-trailer.html",
+    "listening-film.html"
   ],
   "pacing": "Targeted pauses for reading excerpts, interpreting formed fields, and following the comparison; original motion timing and musical tempo retained."
 }

@@ -1175,3 +1175,6 @@ textarea {
 .trailer-concept-controls{display:flex;flex-wrap:wrap;gap:12px;margin:20px 0}.trailer-concept-controls button[aria-pressed=true]{border-color:var(--teal);background:#244b50}
 @media(max-width:760px){.film-section{padding:42px 0}.film-links{gap:16px 24px;font-size:12px}.film-note{font-size:12px}.film-page{padding:44px 0 55px}.film-page>h1{font-size:clamp(40px,9vw,68px)}.film-page>.film-lead{font-size:14px}.film-reading{grid-template-columns:1fr;gap:8px}.film-page-section{padding-top:32px;margin-top:32px}.film-page-nav{gap:14px}.trailer-concept-controls .button{font-size:12px;padding:10px 14px}}
 @media(prefers-reduced-motion:reduce){.trailer-concept-art,.trailer-concept-fringes{transition:none}}
+
+/* Film pages share navigation across the three introductions. */
+.film-page-nav{flex-wrap:wrap;justify-content:flex-end}.film-page-nav a{white-space:nowrap}@media(max-width:480px){.film-page-nav{max-width:185px;row-gap:7px}}
