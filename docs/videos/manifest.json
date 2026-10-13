@@ -1,54 +1,55 @@
 {
   "published_cuts": {
-    "intro": "approved cut 06, 72 seconds in both formats",
-    "parallax": "approved trailer 01, 53 seconds wide and 25 seconds vertical"
+    "intro": "cut 07, 92 seconds in both formats",
+    "parallax": "trailer 02, 64 seconds wide and 35 seconds vertical"
   },
   "source_renderer": "Field 4.6.0, visual rendering 4.4, Listening 1.1",
   "files": [
     {
-      "file": "field-intro-v6-wide.mp4",
-      "bytes": 5828856,
-      "sha256": "97e3a75edbf5220360806395b1ddd9273919d5850006f7ab19996a76aa9ff9d3"
+      "file": "field-intro-v7-wide.mp4",
+      "bytes": 6795036,
+      "sha256": "b4d1c72e5ed975ebb201088fb338ae86a2b246580873e17c67a62a52a6215d76"
     },
     {
-      "file": "field-intro-v6-wide.webm",
-      "bytes": 3866596,
-      "sha256": "adb706e0dd3dbf29726c28fc43fae2482de403ffa47a6f845e337278c6c329fd"
+      "file": "field-intro-v7-wide.webm",
+      "bytes": 4581167,
+      "sha256": "94549bc11c9474a41d9af4850be15217117c440ccafb341f55068037acbf732c"
     },
     {
-      "file": "field-intro-v6-vertical.mp4",
-      "bytes": 6222895,
-      "sha256": "3436ae03f58a740a6410a0792238fe367742544cad8c455e973a818a8d2904dd"
+      "file": "field-intro-v7-vertical.mp4",
+      "bytes": 7195115,
+      "sha256": "d409c38b038ebb9e230895de6cde2b58f10954cd61682f99d390987aaee02dcd"
     },
     {
-      "file": "field-intro-v6-vertical.webm",
-      "bytes": 4175962,
-      "sha256": "8e7225d5cf61c5f40aaec90d3cc998dad1f9f26e15f2bd1ccfc1b839bc835302"
+      "file": "field-intro-v7-vertical.webm",
+      "bytes": 4925262,
+      "sha256": "9bfe25a6c2c8b08ac31f2eaf166ab826ca9f053a015e3553eb2beb216bc6c55a"
     },
     {
-      "file": "parallax-v1-wide.mp4",
-      "bytes": 7373529,
-      "sha256": "bdf89a3f8c427ebf0398a2ba944b2a85caf02e7205a63fa8f148ffb9efeeff89"
+      "file": "parallax-v2-wide.mp4",
+      "bytes": 7980096,
+      "sha256": "7572cfbfe81c1d942a4b8efc139f102c9125722a12dd98bb494787213b469e10"
     },
     {
-      "file": "parallax-v1-wide.webm",
-      "bytes": 3789308,
-      "sha256": "6b3e713dc9726303edb4991d52617357ea1f9e08533d7cc7a28bab1f7c8808dd"
+      "file": "parallax-v2-wide.webm",
+      "bytes": 4209602,
+      "sha256": "fc0d706d255ac2275887f6746df58feb5f04bc53a9472a40a589171be1025c77"
     },
     {
-      "file": "parallax-v1-vertical.mp4",
-      "bytes": 5177846,
-      "sha256": "ddebec5c537d67e5d18df0499f0e646f7ae5d2ca113295510143f1ba5247c596"
+      "file": "parallax-v2-vertical.mp4",
+      "bytes": 5402876,
+      "sha256": "fde1f629587e2392bb523e6f420e61045f540c84394c034059fd018fa12b8059"
     },
     {
-      "file": "parallax-v1-vertical.webm",
-      "bytes": 2399999,
-      "sha256": "8e2c0cfaed0299e7006e7d4e135de2b215f1f38135d045e76c1cf11e7b87edea"
+      "file": "parallax-v2-vertical.webm",
+      "bytes": 2817877,
+      "sha256": "c892bbe69f5e5f984a68abf0644d24142cf4833c5ecf2b13129ba721a205f595"
     }
   ],
   "playback": "Native controls, no autoplay, preload none; English captions.",
   "public_pages": [
     "intro.html",
     "parallax-trailer.html"
-  ]
+  ],
+  "pacing": "Targeted pauses for reading excerpts, interpreting formed fields, and following the comparison; original motion timing and musical tempo retained."
 }
