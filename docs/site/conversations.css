@@ -109,3 +109,7 @@
   .speaker p { font-size: 14px; }
   .conv-section { margin-top: 56px; padding-top: 32px; }
 }
+.turn-field { margin: 18px 0 0; max-width: 440px; }
+.turn-field img { width: 100%; height: auto; aspect-ratio: 1; border: 1px solid var(--line); }
+.turn-field figcaption { margin-top: 10px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 18px; font-size: 11px; color: var(--muted); }
+.turn-field figcaption a { color: var(--warm); text-decoration: underline; text-underline-offset: 3px; }
