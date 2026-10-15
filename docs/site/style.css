@@ -1178,3 +1178,6 @@ textarea {
 
 /* Film pages share navigation across the three introductions. */
 .film-page-nav{flex-wrap:wrap;justify-content:flex-end}.film-page-nav a{white-space:nowrap}@media(max-width:480px){.film-page-nav{max-width:185px;row-gap:7px}}
+
+/* Narrow phones: keep the main navigation on one line. */
+@media(max-width:480px){nav{gap:16px}nav a{white-space:nowrap}nav a[href="#intro"]{display:none}}

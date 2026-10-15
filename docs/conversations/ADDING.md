@@ -1,0 +1,19 @@
+# Adding a conversation
+
+Each entry is one page plus a folder holding its field.
+
+1. **Copy the field the assistant actually drew.** Put it at `docs/conversations/<slug>/field.svg`, unchanged, with its `field-spec` and `field-coverage` metadata intact. Save the drawing controls next to it as `controls.json`. Don't redraw it with a newer renderer; record the renderer version on the page instead.
+2. **Copy `quiet-week.html` to `<slug>.html`** and replace the content:
+   - The header: eyebrow number (`Conversations / 002`), title, one-sentence lead, and the meta line (date, participants and model, turn count, which turn the field was drawn after).
+   - The figure: `alt` text describing what the field looks like (not what it means), and the version line from the SVG's `data-field-version` and `data-field-renderer` attributes plus the synthesis version.
+   - The turns. Each `<li class="turn">` gets a short label and a summary for each speaker. Mark the turn where the field was drawn with `class="turn drawn"`, put the `<li class="boundary">` note right after it, and give every later turn `class="turn after"`. If a field was drawn at the very end, leave out the boundary and the after-turns.
+   - "What the field could see", the drawing controls and the coverage record from the SVG, and any sources.
+3. **Add a card** to the top of the list in `docs/conversations/index.html`, newest first.
+4. **Add the page** to `docs/sitemap.xml`.
+
+## Writing the turn summaries
+
+- Summarize each turn in a few sentences. Paraphrase; keep any direct quotes short.
+- Say what each side actually did, including retractions and mistakes. The point of the archive is the relationship between the exchange and the field, and the uncomfortable turns are often the ones that matter.
+- Leave out anything private or identifying that isn't needed. Everyone in the exchange should review the page before it's published.
+- Keep the assistant's own reading of a field clearly labeled as its interpretation, written after the fact.

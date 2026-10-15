@@ -1,0 +1,84 @@
+/* Conversations: fields from real exchanges, read back turn by turn. */
+.conv-page { padding: 72px 0 96px; }
+.conv-page a.inline { color: var(--teal); text-decoration: underline; text-underline-offset: 4px; }
+.conv-lead { font-family: var(--serif); font-size: clamp(21px, 2vw, 26px); line-height: 1.5; color: var(--text); max-width: 760px; margin: 0 0 22px; }
+.conv-intro { color: #b6c0cb; font-size: 15px; line-height: 1.85; max-width: 680px; }
+
+/* Index */
+.conv-index-head { max-width: 860px; margin-bottom: 64px; }
+.conv-index-head h1 { font-size: clamp(46px, 6.4vw, 76px); }
+.conv-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 28px; max-width: 980px; }
+.conv-card { position: relative; display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); background: var(--panel); border: 1px solid var(--line); transition: border-color .2s ease; }
+.conv-card:hover, .conv-card:focus-within { border-color: #46586a; }
+.conv-card img { width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; }
+.conv-card-body { padding: 32px 36px; display: flex; flex-direction: column; justify-content: center; gap: 12px; }
+.conv-card h2 { font-size: 34px; margin: 0; }
+.conv-card h2 a::after { content: ""; position: absolute; inset: 0; }
+.conv-card p { margin: 0; color: #b6c0cb; font-size: 15px; line-height: 1.75; max-width: 520px; }
+.conv-meta { font-size: 11px; letter-spacing: .04em; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 14px; }
+.conv-invite { margin-top: 72px; padding-top: 40px; border-top: 1px solid var(--line); max-width: 680px; }
+.conv-invite h2 { font-size: 32px; margin-bottom: 14px; }
+.conv-invite p { color: var(--muted); font-size: 14px; line-height: 1.8; }
+
+/* Entry */
+.conv-entry-head { max-width: 900px; margin-bottom: 56px; }
+.conv-entry-head h1 { font-size: clamp(48px, 7vw, 84px); margin-bottom: 26px; }
+.conv-entry-head .conv-meta { margin-top: 26px; font-size: 12px; }
+.conv-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr); gap: 72px; align-items: start; }
+.conv-art { position: sticky; top: 28px; margin: 0; }
+.conv-art img { width: 100%; height: auto; aspect-ratio: 1; border: 1px solid var(--line); }
+.conv-art figcaption { margin-top: 14px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 18px; font-size: 11px; color: var(--muted); }
+.conv-art figcaption a { color: var(--warm); text-decoration: underline; text-underline-offset: 3px; }
+
+.turns { list-style: none; margin: 0; padding: 0; counter-reset: turn; }
+.turn { position: relative; padding: 0 0 40px 46px; }
+.turn::before { /* rail */
+  content: ""; position: absolute; left: 9px; top: 26px; bottom: 0; width: 1px; background: var(--rail, #3c6f78);
+}
+.turn:last-child::before { display: none; }
+.turn::after { /* marker */
+  counter-increment: turn; content: counter(turn, decimal-leading-zero);
+  position: absolute; left: 0; top: 2px; width: 19px; height: 19px; border-radius: 50%;
+  background: var(--bg); border: 1px solid var(--marker, var(--teal));
+  font: 500 8px/17px var(--font); text-align: center; color: var(--marker, var(--teal)); letter-spacing: 0;
+}
+.turn.after { --rail: transparent; --marker: #6b7886; }
+.turn.after::before { background: repeating-linear-gradient(to bottom, #3a4654 0 4px, transparent 4px 9px); }
+.turn.drawn { --marker: #91a1ad; }
+.turn.drawn::after { content: ""; width: 21px; height: 11px; top: 6px; left: -1px; border-radius: 6px; background: linear-gradient(#34414d, #101922); border-color: #91a1ad; }
+.turn.drawn::before { background: repeating-linear-gradient(to bottom, #3a4654 0 4px, transparent 4px 9px); }
+.turn-label { font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: #b5a68f; margin: 0 0 14px; }
+.turn.after .turn-label, .turn.drawn .turn-label { color: var(--muted); }
+.speaker { margin: 0 0 14px; }
+.speaker:last-child { margin-bottom: 0; }
+.speaker b { display: block; font-weight: 500; font-size: 11px; letter-spacing: .06em; color: var(--muted); margin-bottom: 4px; }
+.speaker p { margin: 0; color: #c3ccd5; font-size: 15px; line-height: 1.8; }
+.speaker.edgar p { color: var(--text); }
+.speaker q { font-family: var(--serif); font-size: 17px; color: var(--text); quotes: "“" "”"; }
+.boundary { margin: 0 0 40px 46px; padding: 14px 18px; border: 1px solid var(--line); background: var(--panel); font-size: 12px; line-height: 1.7; color: var(--muted); }
+
+.conv-section { margin-top: 80px; padding-top: 44px; border-top: 1px solid var(--line); max-width: 760px; }
+.conv-section h2 { font-size: 34px; margin-bottom: 22px; }
+.conv-section p, .conv-section li { color: #b6c0cb; font-size: 15px; line-height: 1.85; }
+.conv-section ul { padding-left: 20px; }
+.conv-section details { margin-top: 18px; border: 1px solid var(--line); background: var(--panel); }
+.conv-section summary { padding: 14px 18px; cursor: pointer; font-size: 12px; color: var(--text); }
+.conv-section pre { margin: 0; padding: 0 18px 18px; overflow: auto; font-size: 12px; line-height: 1.6; color: #b7caca; }
+.conv-section a { color: var(--teal); text-decoration: underline; text-underline-offset: 4px; }
+.conv-back { margin-top: 64px; }
+
+@media (max-width: 960px) {
+  .conv-layout { grid-template-columns: 1fr; gap: 48px; }
+  .conv-art { position: static; max-width: 560px; }
+}
+@media (max-width: 760px) {
+  .conv-page { padding: 44px 0 64px; }
+  .conv-card { grid-template-columns: 1fr; }
+  .conv-card-body { padding: 24px 22px 28px; }
+  .conv-card h2 { font-size: 30px; }
+  .conv-entry-head { margin-bottom: 36px; }
+  .turn { padding-left: 38px; }
+  .boundary { margin-left: 38px; }
+  .speaker p { font-size: 14px; }
+  .conv-section { margin-top: 56px; padding-top: 32px; }
+}
