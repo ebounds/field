@@ -70,6 +70,13 @@
 .conv-section pre { margin: 0; padding: 0 18px 18px; overflow: auto; font-size: 12px; line-height: 1.6; color: #b7caca; }
 .conv-section a { color: var(--teal); text-decoration: underline; text-underline-offset: 4px; }
 .conv-back { margin-top: 64px; }
+.conv-update { margin: 28px 0 0; display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr); gap: 24px; align-items: center; }
+.conv-update img { width: 100%; height: auto; aspect-ratio: 1; border: 1px solid var(--line); }
+.conv-update figcaption { font-size: 13px; line-height: 1.75; color: var(--muted); }
+.conv-update figcaption b { display: block; font-weight: 500; color: var(--text); margin-bottom: 4px; }
+.conv-update figcaption a { color: var(--warm); }
+.conv-footnote { margin: 0 0 0 46px; font-size: 12px; line-height: 1.7; color: var(--muted); }
+@media (max-width: 760px) { .conv-update { grid-template-columns: 1fr; } .conv-update img { max-width: 320px; } .conv-footnote { margin-left: 38px; } }
 
 @media (max-width: 960px) {
   .conv-layout { grid-template-columns: 1fr; gap: 48px; }

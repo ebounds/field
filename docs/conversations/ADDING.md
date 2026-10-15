@@ -2,7 +2,7 @@
 
 Each entry is one page plus a folder holding its field.
 
-1. **Copy the field the assistant actually drew.** Put it at `docs/conversations/<slug>/field.svg`, unchanged, with its `field-spec` and `field-coverage` metadata intact. Save the drawing controls next to it as `controls.json`. If the original file is gone, redraw it only from its recorded controls with the same renderer revision, check that the redraw is identical from run to run, and say on the page that it was redrawn. Never redraw with a newer renderer.
+1. **Copy the field the assistant actually drew.** Put it at `docs/conversations/<slug>/field.svg`, unchanged, with its `field-spec` and `field-coverage` metadata intact. Save the drawing controls next to it as `controls.json`. If the original file is gone, redraw it only from its recorded controls with the same renderer revision, check that the redraw is identical from run to run, and say on the page that it was redrawn. Never replace the field with a newer renderer's drawing. With the person's approval, the same controls on the current renderer can appear lower on the page as a labeled update (`figure.conv-update`, saved as `field-<version>.svg`), like the one on `zero-hour.html`.
 2. **Copy `quiet-week.html` to `<slug>.html`** and replace the content:
    - The header: eyebrow number (`Conversations / 002`), title, one-sentence lead, and the meta line (date, participants and model, turn count, which turn the field was drawn after).
    - The figure: `alt` text describing what the field looks like (not what it means).
