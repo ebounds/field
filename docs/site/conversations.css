@@ -29,6 +29,10 @@
 .conv-art img { width: 100%; height: auto; aspect-ratio: 1; border: 1px solid var(--line); }
 .conv-art figcaption { margin-top: 14px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 18px; font-size: 11px; color: var(--muted); }
 .conv-art figcaption a { color: var(--warm); text-decoration: underline; text-underline-offset: 3px; }
+.conv-versions { margin: 18px 0 0; padding-top: 16px; border-top: 1px solid var(--line); display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 7px 18px; font-size: 12px; line-height: 1.6; }
+.conv-versions dt { color: var(--muted); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; padding-top: 2px; }
+.conv-versions dd { margin: 0; color: #c3ccd5; }
+.conv-versions code { font-size: 11px; color: #b7caca; }
 
 .turns { list-style: none; margin: 0; padding: 0; counter-reset: turn; }
 .turn { position: relative; padding: 0 0 40px 46px; }
