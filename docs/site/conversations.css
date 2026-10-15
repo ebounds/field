@@ -75,6 +75,22 @@
 .conv-update figcaption { font-size: 13px; line-height: 1.75; color: var(--muted); }
 .conv-update figcaption b { display: block; font-weight: 500; color: var(--text); margin-bottom: 4px; }
 .conv-update figcaption a { color: var(--warm); }
+.conv-section.wide { max-width: 1000px; }
+.conv-section h3 { font-size: 24px; margin: 40px 0 14px; }
+.conv-section .conv-versions { max-width: 760px; margin-top: 26px; }
+.conv-section .conv-triptych, .conv-triptych { list-style: none; margin: 28px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.conv-triptych figure { margin: 0; }
+.conv-triptych img { width: 100%; height: auto; aspect-ratio: 1; border: 1px solid var(--line); }
+.conv-triptych figcaption { margin-top: 10px; font-size: 12px; line-height: 1.6; color: var(--muted); }
+.conv-triptych figcaption b { display: block; color: var(--text); font-weight: 500; }
+.conv-table { width: 100%; max-width: 760px; border-collapse: collapse; margin: 22px 0 8px; font-size: 14px; }
+.conv-table th, .conv-table td { text-align: left; padding: 9px 12px 9px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+.conv-table th { font-weight: 500; color: var(--muted); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
+.conv-table td:first-child { color: var(--muted); }
+.conv-table td { color: #c3ccd5; }
+.conv-table .differs { color: var(--text); }
+.conv-section li b { color: var(--text); font-weight: 500; }
+@media (max-width: 600px) { .conv-section .conv-triptych { grid-template-columns: 1fr; } .conv-triptych figure { max-width: 320px; } .conv-table { font-size: 13px; } }
 .conv-footnote { margin: 0 0 0 46px; font-size: 12px; line-height: 1.7; color: var(--muted); }
 @media (max-width: 760px) { .conv-update { grid-template-columns: 1fr; } .conv-update img { max-width: 320px; } .conv-footnote { margin-left: 38px; } }
 

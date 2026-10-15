@@ -1,0 +1,5 @@
+{"version":4,"primary":"blue","secondary":"amber","accent":"coral","accent_strength":0.55,
+ "ambient":"teal","ambient_strength":0.45,"saturation":1.0,"form":"envelope","openness":0.45,
+ "breadth":0.7,"folding":0.55,"stretch":0.2,"flow":-0.15,"tension":0.45,"definition":0.65,
+ "complexity":0.6,"intensity":0.65,"imbalance":0.25,"history":0.5,"counterpoint":0.55,
+ "gesture":"fold","gesture_strength":0.55,"grounding":0.88}
