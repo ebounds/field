@@ -62,11 +62,14 @@ def seeded(*parts):
     return random.Random(int(hashlib.sha256('|'.join(map(str, parts)).encode()).hexdigest()[:12], 16))
 
 
-def trials(task, manifest, wanted, sizes, passes, probe_passes=1, revs=None):
+def trials(task, manifest, wanted, sizes, passes, probe_passes=1, revs=None, only=None):
     """Every (item, decoder, repeat) this task asks for."""
     for item_id, item in manifest.items():
         kind = item['kind']
-        if revs and not revs & {item.get('rev'), item.get('left'), item.get('right')}:
+        drawn = {item.get('rev'), item.get('left'), item.get('right')} - {None}
+        if revs and not revs & drawn:
+            continue
+        if only and not drawn <= only:
             continue
         if task == 'naive' and kind not in ('study', 'e3'):
             continue
@@ -77,7 +80,7 @@ def trials(task, manifest, wanted, sizes, passes, probe_passes=1, revs=None):
         if item['size'] not in sizes:
             continue
         for decoder in wanted:
-            if decoder == 'grok' and (item['size'] > 320 or task == 'taught'):
+            if decoder.partition(':')[0] == 'grok' and (item['size'] > 320 or task == 'taught'):
                 continue
             repeats = passes if kind == 'study' else probe_passes if kind == 'probe' else 1
             for rep in range(1, repeats + 1):
@@ -115,9 +118,11 @@ def main():
     ap.add_argument('--passes', type=int, default=2, help='passes over the studies')
     ap.add_argument('--probe-passes', type=int, default=1, help='passes over the taught probes')
     ap.add_argument('--revs', help='only items drawn by these renderer revisions, e.g. 4.5')
+    ap.add_argument('--only-revs', help='only items drawn entirely by these revisions (no pair with another)')
     ap.add_argument('--out', default='stage2.jsonl')
     ap.add_argument('--seen', default='', help='other results files whose answered trials count as done')
     ap.add_argument('--limit', type=int, help='at most this many trials per decoder')
+    ap.add_argument('--deadline', help='start no trial after this local time, HH:MM (the next one to come)')
     ap.add_argument('--dry', action='store_true', help='count what would run')
     args = ap.parse_args()
 
@@ -135,10 +140,18 @@ def main():
                 if record.get('ok'):
                     done.add(record['key'])
     revs = set(args.revs.split(',')) if args.revs else None
+    only = set(args.only_revs.split(',')) if args.only_revs else None
+    deadline = None
+    if args.deadline:
+        hour, minute = map(int, args.deadline.split(':'))
+        now = time.localtime()
+        deadline = time.mktime((*now[:3], hour, minute, 0, 0, 0, -1))
+        if deadline <= time.time():
+            deadline += 86400
 
     queue = {}
     for task in tasks:
-        for trial in trials(task, manifest, wanted, sizes, args.passes, args.probe_passes, revs):
+        for trial in trials(task, manifest, wanted, sizes, args.passes, args.probe_passes, revs, only):
             if trial['key'] not in done:
                 queue.setdefault(trial['decoder'], []).append(trial)
     for decoder, todo in queue.items():
@@ -161,6 +174,13 @@ def main():
 
     def one(trial):
         kind = trial['decoder'].partition(':')[0]
+        if deadline and time.time() > deadline:
+            with lock:
+                counts['skipped'] += 1
+                if not counts.get('late'):
+                    counts['late'] = True
+                    print(f'Past the deadline ({args.deadline}): starting no more trials', flush=True)
+            return
         if kind == 'claude':
             with lock:
                 counts['claude'] += 1
@@ -189,7 +209,7 @@ def main():
                     break
             record(trial, ok=True, family=decoders.FAMILY[kind], model=answer['model'], asked=asked,
                    answer=parsed, raw=answer['text'][:600], secs=round(time.time() - started, 1),
-                   **({'ran_commands': True} if answer.get('ran_commands') else {}))
+                   **{k: answer[k] for k in ('ran_commands', 'tool_calls') if answer.get(k)})
             counts['ok'] += 1
         except decoders.Skip as why:
             counts['skipped'] += 1

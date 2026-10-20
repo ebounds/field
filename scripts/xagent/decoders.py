@@ -15,6 +15,7 @@ import tempfile
 import threading
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 from pathlib import Path
 
@@ -25,7 +26,7 @@ CODEX = {'astra': 'gpt-6-astra', 'sol': 'gpt-5.6-sol'}
 # Full Flash models only: the lite ones were weaker judges on 28 September.
 GEMINI = ('gemini-3.5-flash', 'gemini-3.6-flash', 'gemini-3.7-flash', 'gemini-3.8-flash',
           'gemini-3-flash-preview')
-ALL = ('claude:haiku', 'claude:sonnet', 'claude:opus', 'codex:astra', 'codex:sol', 'grok', 'gemini')
+ALL = ('claude:haiku', 'claude:sonnet', 'claude:opus', 'codex:astra', 'codex:sol', 'grok:4.7', 'gemini')
 ARG_LIMIT = 125000  # Linux allows 128 KB for one argument
 
 
@@ -100,7 +101,31 @@ def codex(model, prompt, images, timeout):
         shutil.rmtree(cwd, ignore_errors=True)
 
 
+# Grok Build ignores `--tools ''` and reads the Claude and Cursor setups in the home directory, so
+# the October `grok` decoder had every tool, auto-approved, and the Field skill's description in its
+# context (README, "Grok's October trials"). `grok:4.7` runs with an empty home, those scans off,
+# every optional tool removed and the terminal denied. Its rows go to their own results file.
+GROK_ENV = {f'GROK_{vendor}_{cell}_ENABLED': 'false'
+            for vendor in ('CLAUDE', 'CURSOR') for cell in ('SKILLS', 'AGENTS', 'RULES', 'MCPS', 'HOOKS')}
+GROK_ENV.update(GROK_MEMORY='0', GROK_SUBAGENTS='0')
+GROK_TOOLS = ('run_terminal_command,read_file,search_replace,list_dir,grep,kill_command_or_subagent,todo_write,'
+              'get_command_or_subagent_output,spawn_subagent,scheduler_create,scheduler_delete,scheduler_list,'
+              'monitor,search_tool,use_tool,workflow,enter_plan_mode,exit_plan_mode,ask_user_question,'
+              'send_feedback,image_gen,image_edit,image_to_video,reference_to_video,write')
+GROK_LEAKS = ('/.claude/', 'central drone', 'fixed capsule', r'\n- field:')   # as written in the JSON record
+
+
+def grok_session(cwd, session):
+    """What Grok kept of a call: its context and its tool calls, or None if it can't be found."""
+    path = Path.home() / '.grok/sessions' / urllib.parse.quote(cwd, safe='') / session / 'chat_history.jsonl'
+    return path.read_text() if path.exists() else None
+
+
 def grok(model, prompt, images, timeout):
+    if not model:
+        raise Skip('the unisolated grok decoder is retired; use grok:4.7')
+    if _grok_spent[0]:
+        raise Skip('grok is at its usage limit')
     blocks = [{'type': 'text', 'text': prompt}] + [
         {'type': 'image', 'data': b64(i), 'mimeType': 'image/png'} for i in images]
     payload = json.dumps(blocks)
@@ -112,29 +137,42 @@ def grok(model, prompt, images, timeout):
             if wait > 0:
                 time.sleep(wait)
             _grok_last[0] = time.time()
-        cwd = empty_dir()
+        cwd, home = empty_dir(), empty_dir()
+        env = {**os.environ, **GROK_ENV, 'HOME': home, 'GROK_HOME': str(Path.home() / '.grok')}
         try:
             done = subprocess.run(
                 ['grok', '--prompt-json', payload, '--output-format', 'json', '--disable-web-search',
-                 '--tools', '', '--max-turns', '1', '--no-subagents', '--reasoning-effort', 'low',
-                 '--system-prompt-override', SYSTEM, '--cwd', cwd],
-                stdin=subprocess.DEVNULL, capture_output=True, text=True, timeout=timeout)
+                 '-m', 'grok-' + model, '--disallowed-tools', GROK_TOOLS, '--deny', 'run_terminal_command',
+                 '--permission-mode', 'default', '--max-turns', '1', '--no-subagents',
+                 '--reasoning-effort', 'low', '--system-prompt-override', SYSTEM, '--cwd', cwd],
+                stdin=subprocess.DEVNULL, capture_output=True, text=True, timeout=timeout, env=env)
         finally:
             shutil.rmtree(cwd, ignore_errors=True)
+            shutil.rmtree(home, ignore_errors=True)
         if 'too quickly' in done.stdout + done.stderr and attempt < 3:
             time.sleep(60*(attempt + 1))
             continue
+        if 'usage limit' in done.stdout + done.stderr:
+            _grok_spent[0] = True
+            raise Skip('grok is at its usage limit')
         try:                                   # the answer is the first JSON object on stdout
             answer, _ = json.JSONDecoder().raw_decode(done.stdout[done.stdout.index('{'):])
         except ValueError:
             raise Failed('grok: ' + (done.stderr or done.stdout)[-300:])
+        kept = grok_session(cwd, answer.get('sessionId', ''))
+        if kept is None:
+            raise Failed("grok: the session record can't be found, so its isolation can't be checked")
+        if any(leak in kept for leak in GROK_LEAKS):
+            raise Failed('grok session was not isolated')
         if not answer.get('text'):
             raise Failed('grok: ' + done.stdout[-300:])
-        return {'text': answer['text'], 'model': ', '.join(answer.get('modelUsage', {})) or 'grok'}
+        return {'text': answer['text'], 'model': ', '.join(answer.get('modelUsage', {})) or 'grok',
+                'tool_calls': kept.count('"tool_calls": [{') + kept.count('"tool_calls":[{')}
 
 
 _grok_lock = threading.Lock()
 _grok_last = [0.0]
+_grok_spent = [False]          # at its usage limit: no more calls this run
 _gemini_key = None
 _gemini_spent = set()          # models out of quota for today
 _gemini_lock = threading.Lock()

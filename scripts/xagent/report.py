@@ -3,6 +3,8 @@
 
     python3 scripts/xagent/report.py [stage2.jsonl]
     python3 scripts/xagent/report.py stage2.jsonl stage3.jsonl     # together, as stage3-report.md
+    python3 scripts/xagent/report.py stage2.jsonl stage3.jsonl grok-isolated.jsonl --drop grok
+        # the October grok rows left out, grok:4.7 in their place, as grok-isolated-report.md
 
 What is scored, and against what, is fixed in PREREG.md. Standard library only.
 """
@@ -42,11 +44,13 @@ def sign_test(wins, losses):
     return min(1, 2*sum(math.comb(n, i) for i in range(k + 1))/2**n) if n else 1
 
 
-def load(paths):
+def load(paths, drop=()):
     rows, waiting = {}, {}
     for path in paths:
         for line in path.read_text().splitlines():
             row = json.loads(line)
+            if row['decoder'] in drop:
+                continue
             if row.get('ok'):
                 rows[row['key']] = row
             else:
@@ -293,13 +297,17 @@ REVS_SEEN = set()   # more than two revisions in the data turns on the Stage 3 c
 
 
 def main():
-    paths = [RESULTS / name for name in (sys.argv[1:] or ['stage2.jsonl'])]
+    args = sys.argv[1:]
+    drop = set(args[args.index('--drop') + 1].split(',')) if '--drop' in args else set()
+    names = [a for i, a in enumerate(args) if a != '--drop' and (i == 0 or args[i - 1] != '--drop')]
+    paths = [RESULTS / name for name in (names or ['stage2.jsonl'])]
     path = paths[-1]
-    rows, failed = load(paths)
+    rows, failed = load(paths, drop)
     REVS_SEEN.update(r[k] for r in rows for k in ('rev', 'left', 'right') if r.get(k))
     out = [f'# {path.stem}: results\n',
            f'{len(rows)} trials answered. Written by `scripts/xagent/report.py` from '
-           + ' and '.join(f'`results/{p.name}`' for p in paths) + '; '
+           + ' and '.join(f'`results/{p.name}`' for p in paths)
+           + (', leaving out ' + ', '.join(f'`{d}`' for d in sorted(drop)) if drop else '') + '; '
            'the measures and thresholds are in `PREREG.md`.\n']
     done = Counter((r['decoder'], r['task']) for r in rows)
     tasks = sorted({r['task'] for r in rows})
