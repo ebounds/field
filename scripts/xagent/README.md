@@ -43,7 +43,7 @@ Run `run.py --task all --dry` (with the same `--revs`, `--out` and `--seen` as a
 ## Things to know
 
 - **Gemini** runs on the free tier: about 20 requests per model per day, shared with the garfield repo's listening tests. The key is `GEMINI_API_KEY`, from the environment or a local env file (`XAGENT_ENV_FILE`, or `.xagent-private/env`, which git ignores). The two revisions of one study always go to the same Gemini model, so a model that runs out of quota leaves its trials for the next day; it doesn't hand them to another model.
-- **Grok** takes the whole prompt as one command-line argument, limited to 128 KB. It runs at 160 and 320 px and not in the taught task. The decoder is `grok:4.7`, isolated as described below; the October rows under `grok` were not.
+- **Grok** takes the whole prompt as one command-line argument, limited to 128 KB. It runs at 160 and 320 px (pairs at 160 only, since a pair at 320 is over that limit) and not in the taught task. The decoder is `grok:4.7`, isolated as described below; the October rows under `grok` were not.
 - **Claude** cells stop by themselves when Edgar's usage passes 70 % of the 5-hour window or 75 % of the week (`CLAUDE_STOP` in `run.py`).
 - **Codex** is told not to run commands; a trial where it did is marked `ran_commands` and counted in the report.
 - `results/pilot-*.jsonl` are trials run while revision 4.5 was still being drawn, on candidates that were later changed. They are kept for the record and are not counted anywhere. `pilot-5.jsonl` is the check of the isolated Grok call (20 October): two naive trials at 320 px, both answered, with the image inline, no tool call, and nothing of Field in the session.
@@ -55,7 +55,7 @@ The `grok` rows in `stage2.jsonl` and `stage3.jsonl` (4–6 October) were not is
 
 - **Tools.** Grok Build ignores `--tools ''`, so every session had its full tool set, the terminal included, and Edgar's config approves tool calls without asking.
 - **Skills.** Grok reads Claude's skills and plugins from the home directory. Every session listed about 70 skills, among them `field`: "render a wordless SVG field around its fixed central drone, expressing the accumulated tone of the whole conversation". No grammar or atlas, and none of the seven words.
-- **What happened.** Grok kept 304 decoder sessions. 22 made tool calls: 21 re-read the session's own image, and 1 wrote its answer to a file in its own empty directory. No command ran and nothing outside the session was read. Codex's skills directory has no Field skill.
+- **What happened.** Grok kept 304 decoder sessions. 22 made tool calls: 21 re-read the session's own image, and 1 wrote its answer to a file in its own empty directory. No command ran and nothing outside the session was read. For Codex, only its skills directory has been checked so far: it has no Field skill.
 
 `grok:4.7` is the isolated call: an empty home directory (so nothing of Claude's, Cursor's or `~/.agents` is found), memory and subagents off, every optional tool removed, the terminal denied and the config's auto-approval overridden. Each call's session record is checked afterwards, and a call whose context names Field, or a path under `.claude/`, fails. What remains in its context is Grok's own bundled skills and Edgar's two Grok user rules (on plain wording and on testing web apps in a browser), which no local file holds and which the October calls had too. None of it is about Field. It reports its model as `grok-4.7-build`; the October calls said `grok-4.7`, from an older CLI.
 

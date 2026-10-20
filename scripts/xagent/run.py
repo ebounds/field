@@ -80,7 +80,9 @@ def trials(task, manifest, wanted, sizes, passes, probe_passes=1, revs=None, onl
         if item['size'] not in sizes:
             continue
         for decoder in wanted:
-            if decoder.partition(':')[0] == 'grok' and (item['size'] > 320 or task == 'taught'):
+            # A pair at 320 px is over Grok's one-argument limit, like anything at 1000 px.
+            if decoder.partition(':')[0] == 'grok' and (item['size'] > 320 or task == 'taught'
+                                                      or (task == 'pair' and item['size'] > 160)):
                 continue
             repeats = passes if kind == 'study' else probe_passes if kind == 'probe' else 1
             for rep in range(1, repeats + 1):
