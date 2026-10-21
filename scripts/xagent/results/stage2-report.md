@@ -1,6 +1,6 @@
 # stage2: results
 
-971 trials answered. Written by `scripts/xagent/report.py` from `results/stage2.jsonl`; the measures and thresholds are in `PREREG.md`.
+975 trials answered. Written by `scripts/xagent/report.py` from `results/stage2.jsonl`; the measures and thresholds are in `PREREG.md`.
 
 | Decoder | naive | pair | taught | models |
 | --- | --- | --- | --- | --- |
@@ -9,7 +9,7 @@
 | claude:sonnet | 96 | 24 | 42 | claude-sonnet-5-5 |
 | codex:astra | 96 | 24 | 42 | gpt-6-astra |
 | codex:sol | 96 | 24 | 42 | gpt-5.6-sol |
-| gemini | 80 | 15 | 14 | gemini-3-flash-preview, gemini-3.5-flash, gemini-3.6-flash, gemini-3.7-flash, gemini-3.8-flash |
+| gemini | 80 | 15 | 18 | gemini-3-flash-preview, gemini-3.5-flash, gemini-3.6-flash, gemini-3.7-flash, gemini-3.8-flash |
 | grok | 51 | 1 | 0 | grok-4.6, grok-4.7 |
 
 0 answers could not be parsed (scored as wrong). 0 Codex trials ran a command despite being told not to. Calls that failed and await a rerun: grok 30, gemini 11.
@@ -99,15 +99,15 @@ Probe fields with one channel moved at a time. "Seen" is how often the decoder s
 
 | Channel | Revision | Size | Seen | False alarm | Mean strength, there / not |
 | --- | --- | --- | --- | --- | --- |
-| second current | 4.3 | 320 | 0.59 (0.36–0.78, n=17) | 0.35 (0.21–0.53, n=31) | 3.9 / 3.4 |
-| second current | 4.3 | 1000 | 0.62 (0.39–0.82, n=16) | 0.44 (0.28–0.61, n=32) | 4.7 / 3.3 |
-| second current | 4.4 | 320 | 0.62 (0.39–0.82, n=16) | 0.33 (0.22–0.47, n=48) | 4.1 / 2.7 |
+| second current | 4.3 | 320 | 0.59 (0.36–0.78, n=17) | 0.34 (0.20–0.52, n=32) | 3.9 / 3.2 |
+| second current | 4.3 | 1000 | 0.62 (0.39–0.82, n=16) | 0.42 (0.27–0.59, n=33) | 4.7 / 3.2 |
+| second current | 4.4 | 320 | 0.62 (0.39–0.82, n=16) | 0.32 (0.21–0.46, n=50) | 4.1 / 2.6 |
 | second current | 4.4 | 1000 | 0.81 (0.57–0.93, n=16) | 0.38 (0.25–0.52, n=48) | 5.1 / 3.2 |
-| held from earlier | 4.3 | 320 | 0.47 (0.25–0.70, n=15) | 0.33 (0.20–0.50, n=33) | 2.9 / 2.7 |
-| held from earlier | 4.3 | 1000 | 0.75 (0.51–0.90, n=16) | 0.53 (0.36–0.69, n=32) | 3.9 / 3.1 |
-| held from earlier | 4.4 | 320 | 0.60 (0.36–0.80, n=15) | 0.14 (0.07–0.27, n=49) | 3.5 / 1.7 |
+| held from earlier | 4.3 | 320 | 0.44 (0.23–0.67, n=16) | 0.33 (0.20–0.50, n=33) | 2.8 / 2.7 |
+| held from earlier | 4.3 | 1000 | 0.75 (0.51–0.90, n=16) | 0.52 (0.35–0.67, n=33) | 3.9 / 3.0 |
+| held from earlier | 4.4 | 320 | 0.60 (0.36–0.80, n=15) | 0.14 (0.07–0.26, n=51) | 3.5 / 1.6 |
 | held from earlier | 4.4 | 1000 | 0.82 (0.59–0.94, n=17) | 0.34 (0.22–0.48, n=47) | 5.5 / 2.7 |
-| reconstructed | 4.4 | 320 | 0.88 (0.66–0.97, n=17) | 0.06 (0.02–0.17, n=47) | 7.4 / 1.2 |
+| reconstructed | 4.4 | 320 | 0.89 (0.67–0.97, n=18) | 0.06 (0.02–0.17, n=48) | 7.4 / 1.2 |
 | reconstructed | 4.4 | 1000 | 0.87 (0.62–0.96, n=15) | 0.02 (0.00–0.11, n=49) | 7.3 / 0.7 |
 
 ## Real-conversation fields (E3), 320 px
