@@ -20,7 +20,8 @@ Stage 3 adds renderer revision 4.5 and keeps its trials in their own file. Stage
 ```bash
 python3 scripts/xagent/run.py --task all --revs 4.5 --out stage3.jsonl --seen stage2.jsonl --dry
 python3 scripts/xagent/run.py --task taught --revs 4.4,4.5 --probe-passes 2 --out stage3.jsonl --seen stage2.jsonl
-python3 scripts/xagent/report.py stage2.jsonl stage3.jsonl   # both together, written as results/stage3-report.md
+python3 scripts/xagent/report.py stage2.jsonl stage3.jsonl   # both together, with the October Grok rows (for the record), as results/stage3-report.md
+python3 scripts/xagent/report.py stage2.jsonl stage3.jsonl grok-isolated.jsonl --drop grok   # the report of record, results/grok-isolated-report.md
 python3 scripts/xagent/sheet.py                              # the blind sheet a person fills in; paste the code back to score it
 ```
 
