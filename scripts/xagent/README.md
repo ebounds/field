@@ -11,7 +11,7 @@ export CHROME_BIN=~/.cache/ms-playwright/chromium-1234/chrome-linux64/chrome   #
 
 python3 scripts/xagent/items.py                          # build the images into .xagent/ (ignored by git)
 python3 scripts/xagent/run.py --task all --dry           # count what is left to run
-python3 scripts/xagent/run.py --task naive --decoders grok
+python3 scripts/xagent/run.py --task naive --decoders grok:4.7 --out grok-isolated.jsonl
 python3 scripts/xagent/report.py                         # score results/stage2.jsonl, write results/stage2-report.md
 ```
 
@@ -28,7 +28,7 @@ python3 scripts/xagent/sheet.py                              # the blind sheet a
 
 ## To pick up a wave
 
-Run `run.py --task all --dry` (with the same `--revs`, `--out` and `--seen` as above for Stage 3) to see what is missing, then run only your own model's cells: `--decoders codex:astra,codex:sol`, `--decoders grok:4.7`, `--decoders gemini`, or `--decoders claude:haiku,claude:sonnet,claude:opus`. Work in your own worktree, commit `results/`, and say in the commit which cells you ran.
+Run `run.py --task all --dry` (with the same `--revs`, `--out` and `--seen` as above for Stage 3) to see what is missing, then run only your own model's cells: `--decoders codex:astra,codex:sol`, `--decoders grok:4.7` (with `--task all --out grok-isolated.jsonl` and no `--revs` or `--seen`, since it reruns every Grok trial of both stages), `--decoders gemini`, or `--decoders claude:haiku,claude:sonnet,claude:opus`. Work in your own worktree, commit `results/`, and say in the commit which cells you ran.
 
 ## What each file does
 
@@ -59,7 +59,7 @@ The `grok` rows in `stage2.jsonl` and `stage3.jsonl` (4–6 October) were not is
 
 `grok:4.7` is the isolated call: an empty home directory (so nothing of Claude's, Cursor's or `~/.agents` is found), memory and subagents off, every optional tool removed, the terminal denied and the config's auto-approval overridden. Each call's session record is checked afterwards, and a call whose context names Field, or a path under `.claude/`, fails. What remains in its context is Grok's own bundled skills and Edgar's two Grok user rules (on plain wording and on testing web apps in a browser), which no local file holds and which the October calls had too. None of it is about Field. It reports its model as `grok-4.7-build`; the October calls said `grok-4.7`, from an older CLI.
 
-Its trials go to `results/grok-isolated.jsonl`, every Grok trial again, under keys of their own. `report.py stage2.jsonl stage3.jsonl grok-isolated.jsonl --drop grok` writes `grok-isolated-report.md`, with these rows in the October rows' place; `stage3-report.md` still has the October rows. Which of the two counts for xAI is Edgar's decision. Until he makes it, the two aren't pooled.
+Its trials go to `results/grok-isolated.jsonl`, every Grok trial again, under keys of their own. `report.py stage2.jsonl stage3.jsonl grok-isolated.jsonl --drop grok` writes `grok-isolated-report.md`, with these rows in the October rows' place; `stage3-report.md` still has the October rows. Edgar ruled on 21 October that the isolated trials are the ones that count for xAI, in Stage 2 and Stage 3 (recorded in `PREREG.md`). `grok-isolated-report.md` is the report of record; `stage2-report.md` and `stage3-report.md` keep the October rows, for the record only.
 
 ## Nightly
 
