@@ -1,6 +1,6 @@
 # stage2: results
 
-975 trials answered. Written by `scripts/xagent/report.py` from `results/stage2.jsonl`; the measures and thresholds are in `PREREG.md`.
+982 trials answered. Written by `scripts/xagent/report.py` from `results/stage2.jsonl`; the measures and thresholds are in `PREREG.md`.
 
 | Decoder | naive | pair | taught | models |
 | --- | --- | --- | --- | --- |
@@ -9,10 +9,10 @@
 | claude:sonnet | 96 | 24 | 42 | claude-sonnet-5-5 |
 | codex:astra | 96 | 24 | 42 | gpt-6-astra |
 | codex:sol | 96 | 24 | 42 | gpt-5.6-sol |
-| gemini | 80 | 15 | 18 | gemini-3-flash-preview, gemini-3.5-flash, gemini-3.6-flash, gemini-3.7-flash, gemini-3.8-flash |
+| gemini | 81 | 15 | 24 | gemini-3-flash-preview, gemini-3.5-flash, gemini-3.6-flash, gemini-3.7-flash, gemini-3.8-flash |
 | grok | 51 | 1 | 0 | grok-4.6, grok-4.7 |
 
-0 answers could not be parsed (scored as wrong). 0 Codex trials ran a command despite being told not to. Calls that failed and await a rerun: grok 30, gemini 11.
+0 answers could not be parsed (scored as wrong). 0 Codex trials ran a command despite being told not to. Calls that failed and await a rerun: grok 30, gemini 9.
 
 ## Naive readers: the right word, six shared studies
 
@@ -99,12 +99,12 @@ Probe fields with one channel moved at a time. "Seen" is how often the decoder s
 
 | Channel | Revision | Size | Seen | False alarm | Mean strength, there / not |
 | --- | --- | --- | --- | --- | --- |
-| second current | 4.3 | 320 | 0.59 (0.36–0.78, n=17) | 0.34 (0.20–0.52, n=32) | 3.9 / 3.2 |
-| second current | 4.3 | 1000 | 0.62 (0.39–0.82, n=16) | 0.42 (0.27–0.59, n=33) | 4.7 / 3.2 |
+| second current | 4.3 | 320 | 0.61 (0.39–0.80, n=18) | 0.33 (0.20–0.50, n=33) | 4.2 / 3.2 |
+| second current | 4.3 | 1000 | 0.59 (0.36–0.78, n=17) | 0.42 (0.27–0.58, n=36) | 4.5 / 3.2 |
 | second current | 4.4 | 320 | 0.62 (0.39–0.82, n=16) | 0.32 (0.21–0.46, n=50) | 4.1 / 2.6 |
 | second current | 4.4 | 1000 | 0.81 (0.57–0.93, n=16) | 0.38 (0.25–0.52, n=48) | 5.1 / 3.2 |
-| held from earlier | 4.3 | 320 | 0.44 (0.23–0.67, n=16) | 0.33 (0.20–0.50, n=33) | 2.8 / 2.7 |
-| held from earlier | 4.3 | 1000 | 0.75 (0.51–0.90, n=16) | 0.52 (0.35–0.67, n=33) | 3.9 / 3.0 |
+| held from earlier | 4.3 | 320 | 0.47 (0.26–0.69, n=17) | 0.32 (0.19–0.49, n=34) | 3.1 / 2.6 |
+| held from earlier | 4.3 | 1000 | 0.72 (0.49–0.88, n=18) | 0.51 (0.36–0.67, n=35) | 3.9 / 3.0 |
 | held from earlier | 4.4 | 320 | 0.60 (0.36–0.80, n=15) | 0.14 (0.07–0.26, n=51) | 3.5 / 1.6 |
 | held from earlier | 4.4 | 1000 | 0.82 (0.59–0.94, n=17) | 0.34 (0.22–0.48, n=47) | 5.5 / 2.7 |
 | reconstructed | 4.4 | 320 | 0.89 (0.67–0.97, n=18) | 0.06 (0.02–0.17, n=48) | 7.4 / 1.2 |
@@ -117,7 +117,7 @@ These have no right word. The table shows what naive readers called them.
 | Revision | Words chosen |
 | --- | --- |
 | 4.3 | integrated 27, tentative 11, exploring 11, gathered 10, strained 1 |
-| 4.4 | integrated 29, gathered 9, exploring 8, tentative 7, strained 4 |
+| 4.4 | integrated 30, gathered 9, exploring 8, tentative 7, strained 4 |
 
 The same decoder gave the same word to both revisions of a reading in 38 of 55 cases.
 
