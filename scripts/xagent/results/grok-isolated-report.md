@@ -1,6 +1,6 @@
 # grok-isolated: results
 
-2124 trials answered. Written by `scripts/xagent/report.py` from `results/stage2.jsonl` and `results/stage3.jsonl` and `results/grok-isolated.jsonl`, leaving out `grok`; the measures and thresholds are in `PREREG.md`.
+2140 trials answered. Written by `scripts/xagent/report.py` from `results/stage2.jsonl` and `results/stage3.jsonl` and `results/grok-isolated.jsonl`, leaving out `grok`; the measures and thresholds are in `PREREG.md`.
 
 | Decoder | naive | pair | taught | models |
 | --- | --- | --- | --- | --- |
@@ -9,7 +9,7 @@
 | claude:sonnet | 147 | 76 | 114 | claude-sonnet-5-5 |
 | codex:astra | 147 | 76 | 114 | gpt-6-astra |
 | codex:sol | 147 | 76 | 114 | gpt-5.6-sol |
-| gemini | 132 | 67 | 95 | gemini-3-flash-preview, gemini-3.5-flash, gemini-3.6-flash, gemini-3.7-flash, gemini-3.8-flash |
+| gemini | 132 | 69 | 109 | gemini-3-flash-preview, gemini-3.5-flash, gemini-3.6-flash, gemini-3.7-flash, gemini-3.8-flash |
 | grok:4.7 | 107 | 38 | 0 | grok-4.7-build |
 
 0 answers could not be parsed (scored as wrong). 0 Codex trials ran a command despite being told not to. Calls that failed and await a rerun: gemini 7.
@@ -182,28 +182,28 @@ Probe fields with one channel moved at a time. "Seen" is how often the decoder s
 | --- | --- | --- | --- | --- | --- |
 | second current | 4.3 | 320 | 0.61 (0.39–0.80, n=18) | 0.33 (0.20–0.50, n=33) | 4.2 / 3.2 |
 | second current | 4.3 | 1000 | 0.59 (0.36–0.78, n=17) | 0.42 (0.27–0.58, n=36) | 4.5 / 3.2 |
-| second current | 4.4 | 320 | 0.62 (0.45–0.76, n=34) | 0.32 (0.24–0.42, n=105) | 4.1 / 2.6 |
-| second current | 4.4 | 1000 | 0.74 (0.58–0.86, n=35) | 0.38 (0.29–0.48, n=105) | 4.9 / 3.0 |
-| second current | 4.5 | 320 | 0.69 (0.52–0.81, n=35) | 0.27 (0.19–0.36, n=105) | 4.7 / 2.2 |
-| second current | 4.5 | 1000 | 0.75 (0.59–0.86, n=36) | 0.25 (0.18–0.35, n=106) | 5.2 / 2.5 |
+| second current | 4.4 | 320 | 0.63 (0.46–0.77, n=35) | 0.31 (0.23–0.41, n=108) | 4.2 / 2.5 |
+| second current | 4.4 | 1000 | 0.75 (0.59–0.86, n=36) | 0.37 (0.29–0.46, n=108) | 5.0 / 2.9 |
+| second current | 4.5 | 320 | 0.69 (0.53–0.82, n=36) | 0.26 (0.19–0.35, n=108) | 4.8 / 2.2 |
+| second current | 4.5 | 1000 | 0.75 (0.59–0.86, n=36) | 0.25 (0.18–0.34, n=108) | 5.2 / 2.5 |
 | held from earlier | 4.3 | 320 | 0.47 (0.26–0.69, n=17) | 0.32 (0.19–0.49, n=34) | 3.1 / 2.6 |
 | held from earlier | 4.3 | 1000 | 0.72 (0.49–0.88, n=18) | 0.51 (0.36–0.67, n=35) | 3.9 / 3.0 |
-| held from earlier | 4.4 | 320 | 0.49 (0.33–0.64, n=35) | 0.13 (0.08–0.21, n=104) | 3.5 / 1.5 |
-| held from earlier | 4.4 | 1000 | 0.77 (0.61–0.88, n=35) | 0.28 (0.20–0.37, n=105) | 5.1 / 2.3 |
-| held from earlier | 4.5 | 320 | 0.40 (0.26–0.56, n=35) | 0.08 (0.04–0.14, n=105) | 3.1 / 1.3 |
-| held from earlier | 4.5 | 1000 | 0.69 (0.52–0.81, n=35) | 0.25 (0.18–0.34, n=107) | 4.2 / 2.1 |
-| reconstructed | 4.4 | 320 | 0.91 (0.78–0.97, n=35) | 0.07 (0.03–0.13, n=104) | 7.5 / 1.1 |
-| reconstructed | 4.4 | 1000 | 0.89 (0.74–0.95, n=35) | 0.02 (0.01–0.07, n=105) | 7.6 / 0.6 |
-| reconstructed | 4.5 | 320 | 0.83 (0.67–0.92, n=35) | 0.06 (0.03–0.12, n=105) | 7.3 / 1.0 |
-| reconstructed | 4.5 | 1000 | 0.83 (0.68–0.92, n=36) | 0.02 (0.01–0.07, n=106) | 7.1 / 0.7 |
+| held from earlier | 4.4 | 320 | 0.50 (0.34–0.66, n=36) | 0.13 (0.08–0.21, n=107) | 3.6 / 1.5 |
+| held from earlier | 4.4 | 1000 | 0.78 (0.62–0.88, n=36) | 0.27 (0.19–0.36, n=108) | 5.1 / 2.2 |
+| held from earlier | 4.5 | 320 | 0.39 (0.25–0.55, n=36) | 0.07 (0.04–0.14, n=108) | 3.0 / 1.3 |
+| held from earlier | 4.5 | 1000 | 0.69 (0.53–0.82, n=36) | 0.25 (0.18–0.34, n=108) | 4.3 / 2.1 |
+| reconstructed | 4.4 | 320 | 0.92 (0.78–0.97, n=36) | 0.07 (0.03–0.13, n=107) | 7.6 / 1.1 |
+| reconstructed | 4.4 | 1000 | 0.89 (0.75–0.96, n=36) | 0.02 (0.01–0.07, n=108) | 7.6 / 0.6 |
+| reconstructed | 4.5 | 320 | 0.83 (0.68–0.92, n=36) | 0.06 (0.03–0.12, n=108) | 7.3 / 0.9 |
+| reconstructed | 4.5 | 1000 | 0.83 (0.68–0.92, n=36) | 0.02 (0.01–0.07, n=108) | 7.1 / 0.7 |
 
 **Seen minus false alarm, both sizes together.** Stage 3 calls it a regression when a later revision is more than 15 points under the one before it.
 
 | Channel | 4.3 | 4.4 | 4.5 | Verdict |
 | --- | --- | --- | --- | --- |
-| second current | +0.22 (n=35, 69) | +0.33 (n=69, 210) | +0.46 (n=71, 211) | no regression (4.5 minus 4.4: +0.13) |
-| held from earlier | +0.18 (n=35, 69) | +0.42 (n=70, 209) | +0.38 (n=70, 212) | no regression (4.5 minus 4.4: -0.05) |
-| reconstructed | – | +0.86 (n=70, 209) | +0.79 (n=71, 211) | no regression (4.5 minus 4.4: -0.06) |
+| second current | +0.22 (n=35, 69) | +0.35 (n=71, 216) | +0.47 (n=72, 216) | no regression (4.5 minus 4.4: +0.12) |
+| held from earlier | +0.18 (n=35, 69) | +0.44 (n=72, 215) | +0.38 (n=72, 216) | no regression (4.5 minus 4.4: -0.06) |
+| reconstructed | – | +0.86 (n=72, 215) | +0.80 (n=72, 216) | no regression (4.5 minus 4.4: -0.06) |
 
 ## Real-conversation fields (E3), 320 px
 

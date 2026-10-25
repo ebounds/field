@@ -1,6 +1,6 @@
 # stage2: results
 
-982 trials answered. Written by `scripts/xagent/report.py` from `results/stage2.jsonl`; the measures and thresholds are in `PREREG.md`.
+984 trials answered. Written by `scripts/xagent/report.py` from `results/stage2.jsonl`; the measures and thresholds are in `PREREG.md`.
 
 | Decoder | naive | pair | taught | models |
 | --- | --- | --- | --- | --- |
@@ -9,7 +9,7 @@
 | claude:sonnet | 96 | 24 | 42 | claude-sonnet-5-5 |
 | codex:astra | 96 | 24 | 42 | gpt-6-astra |
 | codex:sol | 96 | 24 | 42 | gpt-5.6-sol |
-| gemini | 81 | 15 | 24 | gemini-3-flash-preview, gemini-3.5-flash, gemini-3.6-flash, gemini-3.7-flash, gemini-3.8-flash |
+| gemini | 81 | 17 | 24 | gemini-3-flash-preview, gemini-3.5-flash, gemini-3.6-flash, gemini-3.7-flash, gemini-3.8-flash |
 | grok | 51 | 1 | 0 | grok-4.6, grok-4.7 |
 
 0 answers could not be parsed (scored as wrong). 0 Codex trials ran a command despite being told not to. Calls that failed and await a rerun: grok 30, gemini 9.
