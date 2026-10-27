@@ -1,6 +1,6 @@
 # stage3: results
 
-2092 trials answered. Written by `scripts/xagent/report.py` from `results/stage2.jsonl` and `results/stage3.jsonl`; the measures and thresholds are in `PREREG.md`.
+2097 trials answered. Written by `scripts/xagent/report.py` from `results/stage2.jsonl` and `results/stage3.jsonl`; the measures and thresholds are in `PREREG.md`.
 
 | Decoder | naive | pair | taught | models |
 | --- | --- | --- | --- | --- |
@@ -9,7 +9,7 @@
 | claude:sonnet | 147 | 76 | 114 | claude-sonnet-5-5 |
 | codex:astra | 147 | 76 | 114 | gpt-6-astra |
 | codex:sol | 147 | 76 | 114 | gpt-5.6-sol |
-| gemini | 132 | 69 | 109 | gemini-3-flash-preview, gemini-3.5-flash, gemini-3.6-flash, gemini-3.7-flash, gemini-3.8-flash |
+| gemini | 133 | 72 | 110 | gemini-3-flash-preview, gemini-3.5-flash, gemini-3.6-flash, gemini-3.7-flash, gemini-3.8-flash |
 | grok | 87 | 10 | 0 | grok-4.6, grok-4.7 |
 
 4 answers could not be parsed (scored as wrong). 0 Codex trials ran a command despite being told not to. Calls that failed and await a rerun: grok 48, gemini 7.
@@ -25,13 +25,13 @@ Chance is 0.14 (one of seven words). Each cell is the share correct, its 95 % Wi
 | claude:sonnet | 0.33 (0.14–0.61, n=12) | 0.33 (0.14–0.61, n=12) | 0.33 (0.14–0.61, n=12) | 0.42 (0.19–0.68, n=12) | 0.33 (0.14–0.61, n=12) | 0.25 (0.09–0.53, n=12) | 0.17 (0.05–0.45, n=12) | 0.33 (0.14–0.61, n=12) | 0.25 (0.09–0.53, n=12) |
 | codex:astra | 0.25 (0.09–0.53, n=12) | 0.25 (0.09–0.53, n=12) | 0.42 (0.19–0.68, n=12) | 0.17 (0.05–0.45, n=12) | 0.17 (0.05–0.45, n=12) | 0.25 (0.09–0.53, n=12) | 0.25 (0.09–0.53, n=12) | 0.33 (0.14–0.61, n=12) | 0.42 (0.19–0.68, n=12) |
 | codex:sol | 0.58 (0.32–0.81, n=12) | 0.50 (0.25–0.75, n=12) | 0.50 (0.25–0.75, n=12) | 0.33 (0.14–0.61, n=12) | 0.42 (0.19–0.68, n=12) | 0.42 (0.19–0.68, n=12) | 0.33 (0.14–0.61, n=12) | 0.42 (0.19–0.68, n=12) | 0.42 (0.19–0.68, n=12) |
-| gemini | 0.17 (0.05–0.45, n=12) | 0.27 (0.10–0.57, n=11) | 0.42 (0.19–0.68, n=12) | 0.09 (0.02–0.38, n=11) | 0.10 (0.02–0.40, n=10) | 0.25 (0.09–0.53, n=12) | 0.14 (0.03–0.51, n=7) | 0.33 (0.12–0.65, n=9) | 0.42 (0.19–0.68, n=12) |
+| gemini | 0.17 (0.05–0.45, n=12) | 0.27 (0.10–0.57, n=11) | 0.42 (0.19–0.68, n=12) | 0.09 (0.02–0.38, n=11) | 0.10 (0.02–0.40, n=10) | 0.25 (0.09–0.53, n=12) | 0.14 (0.03–0.51, n=7) | 0.40 (0.17–0.69, n=10) | 0.42 (0.19–0.68, n=12) |
 | grok | 0.29 (0.08–0.64, n=7) | 0.22 (0.06–0.55, n=9) | 0.18 (0.05–0.48, n=11) | 0.10 (0.02–0.40, n=10) | 0.00 (0.00–0.30, n=9) | 0.25 (0.09–0.53, n=12) | – | – | – |
 | **Anthropic** | 0.28 (0.16–0.44, n=36) | 0.28 (0.16–0.44, n=36) | 0.22 (0.12–0.38, n=36) | 0.33 (0.20–0.50, n=36) | 0.36 (0.22–0.52, n=36) | 0.28 (0.16–0.44, n=36) | 0.19 (0.10–0.35, n=36) | 0.25 (0.14–0.41, n=36) | 0.19 (0.10–0.35, n=36) |
 | **OpenAI** | 0.42 (0.24–0.61, n=24) | 0.38 (0.21–0.57, n=24) | 0.46 (0.28–0.65, n=24) | 0.25 (0.12–0.45, n=24) | 0.29 (0.15–0.49, n=24) | 0.33 (0.18–0.53, n=24) | 0.29 (0.15–0.49, n=24) | 0.38 (0.21–0.57, n=24) | 0.42 (0.24–0.61, n=24) |
 | **xAI** | 0.29 (0.08–0.64, n=7) | 0.22 (0.06–0.55, n=9) | 0.18 (0.05–0.48, n=11) | 0.10 (0.02–0.40, n=10) | 0.00 (0.00–0.30, n=9) | 0.25 (0.09–0.53, n=12) | – | – | – |
-| **Google** | 0.17 (0.05–0.45, n=12) | 0.27 (0.10–0.57, n=11) | 0.42 (0.19–0.68, n=12) | 0.09 (0.02–0.38, n=11) | 0.10 (0.02–0.40, n=10) | 0.25 (0.09–0.53, n=12) | 0.14 (0.03–0.51, n=7) | 0.33 (0.12–0.65, n=9) | 0.42 (0.19–0.68, n=12) |
-| **All trials** | 0.30 (0.21–0.41, n=79) | 0.30 (0.21–0.41, n=80) | 0.31 (0.22–0.42, n=83) | 0.25 (0.17–0.35, n=81) | 0.27 (0.18–0.37, n=79) | 0.29 (0.20–0.39, n=84) | 0.22 (0.14–0.34, n=67) | 0.30 (0.21–0.42, n=69) | 0.31 (0.21–0.42, n=72) |
+| **Google** | 0.17 (0.05–0.45, n=12) | 0.27 (0.10–0.57, n=11) | 0.42 (0.19–0.68, n=12) | 0.09 (0.02–0.38, n=11) | 0.10 (0.02–0.40, n=10) | 0.25 (0.09–0.53, n=12) | 0.14 (0.03–0.51, n=7) | 0.40 (0.17–0.69, n=10) | 0.42 (0.19–0.68, n=12) |
+| **All trials** | 0.30 (0.21–0.41, n=79) | 0.30 (0.21–0.41, n=80) | 0.31 (0.22–0.42, n=83) | 0.25 (0.17–0.35, n=81) | 0.27 (0.18–0.37, n=79) | 0.29 (0.20–0.39, n=84) | 0.22 (0.14–0.34, n=67) | 0.31 (0.22–0.43, n=70) | 0.31 (0.21–0.42, n=72) |
 
 **The pre-registered gap test** (160 px, each family weighted equally):
 
@@ -43,7 +43,7 @@ Chance is 0.14 (one of seven words). Each cell is the share correct, its 95 % Wi
 
 - Against 4.4 at 160 px: 4.4 0.29, 4.5 0.32 (-0.03, 4.4 minus 4.5); 2 of 4 families have 4.4 ahead (Anthropic +0.06, OpenAI -0.08, xAI +0.04, Google -0.14). No regression.
 - Against 4.4 at 320 px: 4.4 0.19, 4.5 0.28 (-0.09, 4.4 minus 4.5); 1 of 4 families have 4.4 ahead (Anthropic +0.08, OpenAI -0.04, xAI -0.25, Google -0.15). No regression.
-- Against 4.4 at 1000 px: 4.4 0.32, 4.5 0.34 (-0.02, 4.4 minus 4.5); 1 of 3 families have 4.4 ahead (Anthropic +0.06, OpenAI -0.04, Google -0.08). No regression.
+- Against 4.4 at 1000 px: 4.4 0.34, 4.5 0.34 (-0.00, 4.4 minus 4.5); 1 of 3 families have 4.4 ahead (Anthropic +0.06, OpenAI -0.04, Google -0.02). No regression.
 - Against 4.3 at 160 px: 4.3 0.29, 4.5 0.32 (-0.03, 4.3 minus 4.5); 2 of 4 families have 4.3 ahead (Anthropic +0.06, OpenAI -0.04, xAI +0.10, Google -0.25). No regression.
 - Against 4.3 at 320 px: 4.3 0.19, 4.5 0.28 (-0.08, 4.3 minus 4.5); 1 of 4 families have 4.3 ahead (Anthropic +0.06, OpenAI -0.08, xAI -0.15, Google -0.16). No regression.
 - Against 4.3 at 1000 px: 4.3 0.21, 4.5 0.34 (-0.13, 4.3 minus 4.5); 0 of 3 families have 4.3 ahead (Anthropic +0.00, OpenAI -0.12, Google -0.27). No regression.
@@ -53,7 +53,7 @@ Chance is 0.14 (one of seven words). Each cell is the share correct, its 95 % Wi
 | Study | 4.3 at 160 px | 4.4 at 160 px | 4.5 at 160 px | 4.3 at 320 px | 4.4 at 320 px | 4.5 at 320 px | 4.3 at 1000 px | 4.4 at 1000 px | 4.5 at 1000 px |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | gathered | 0.54 (0.29–0.77, n=13) | 0.69 (0.42–0.87, n=13) | 0.57 (0.33–0.79, n=14) | 0.38 (0.18–0.64, n=13) | 0.46 (0.23–0.71, n=13) | 0.50 (0.27–0.73, n=14) | 0.36 (0.15–0.65, n=11) | 0.64 (0.35–0.85, n=11) | 0.67 (0.39–0.86, n=12) |
-| exploring | 0.21 (0.08–0.48, n=14) | 0.25 (0.09–0.53, n=12) | 0.43 (0.21–0.67, n=14) | 0.23 (0.08–0.50, n=13) | 0.15 (0.04–0.42, n=13) | 0.29 (0.12–0.55, n=14) | 0.09 (0.02–0.38, n=11) | 0.18 (0.05–0.48, n=11) | 0.08 (0.01–0.35, n=12) |
+| exploring | 0.21 (0.08–0.48, n=14) | 0.25 (0.09–0.53, n=12) | 0.43 (0.21–0.67, n=14) | 0.23 (0.08–0.50, n=13) | 0.15 (0.04–0.42, n=13) | 0.29 (0.12–0.55, n=14) | 0.09 (0.02–0.38, n=11) | 0.25 (0.09–0.53, n=12) | 0.08 (0.01–0.35, n=12) |
 | strained | 0.08 (0.01–0.33, n=13) | 0.00 (0.00–0.22, n=14) | 0.00 (0.00–0.22, n=14) | 0.08 (0.01–0.33, n=13) | 0.14 (0.04–0.40, n=14) | 0.14 (0.04–0.40, n=14) | 0.00 (0.00–0.24, n=12) | 0.33 (0.14–0.61, n=12) | 0.25 (0.09–0.53, n=12) |
 | tentative | 0.77 (0.50–0.92, n=13) | 0.64 (0.39–0.84, n=14) | 0.62 (0.36–0.82, n=13) | 0.64 (0.39–0.84, n=14) | 0.62 (0.36–0.82, n=13) | 0.57 (0.33–0.79, n=14) | 0.58 (0.32–0.81, n=12) | 0.42 (0.19–0.68, n=12) | 0.50 (0.25–0.75, n=12) |
 | integrated | 0.23 (0.08–0.50, n=13) | 0.23 (0.08–0.50, n=13) | 0.29 (0.12–0.55, n=14) | 0.14 (0.04–0.40, n=14) | 0.25 (0.09–0.53, n=12) | 0.21 (0.08–0.48, n=14) | 0.27 (0.10–0.57, n=11) | 0.25 (0.09–0.53, n=12) | 0.33 (0.14–0.61, n=12) |
@@ -65,7 +65,7 @@ Chance is 0.14 (one of seven words). Each cell is the share correct, its 95 % Wi
 | Study | 4.3 | 4.4 | 4.5 |
 | --- | --- | --- | --- |
 | gathered | gathered 16, integrated 11, tentative 7, exploring 3 | gathered 22, tentative 6, integrated 5, exploring 3 | gathered 23, tentative 8, integrated 8, exploring 1 |
-| exploring | integrated 23, tentative 8, exploring 7 | integrated 19, tentative 7, exploring 7, gathered 2 | integrated 25, exploring 11, tentative 4 |
+| exploring | integrated 23, tentative 8, exploring 7 | integrated 19, exploring 8, tentative 7, gathered 2 | integrated 25, exploring 11, tentative 4 |
 | strained | tentative 25, gathered 6, integrated 3, exploring 2 | tentative 20, gathered 10, strained 6, exploring 2 | tentative 18, exploring 6, integrated 6, gathered 5 |
 | tentative | tentative 26, gathered 11, integrated 1, exploring 1 | tentative 22, gathered 11, exploring 3, integrated 3 | tentative 22, gathered 13, exploring 2, strained 1 |
 | integrated | gathered 16, tentative 11, integrated 8, exploring 3 | gathered 21, integrated 9, tentative 6, exploring 1 | gathered 20, integrated 11, exploring 5, tentative 4 |
@@ -85,11 +85,11 @@ Each pair was shown in both orders. A decoder that chose the same side both time
 | claude:sonnet | 1 / 0 / 5 | 5 / 0 / 1 |
 | codex:astra | 3 / 0 / 3 | 5 / 0 / 1 |
 | codex:sol | 1 / 1 / 4 | 4 / 0 / 2 |
-| gemini | 1 / 1 / 1 | 1 / 1 / 2 |
+| gemini | 2 / 1 / 1 | 1 / 1 / 3 |
 | grok | – | – |
-| **All** | 11 / 3 / 19 | 22 / 1 / 11 |
+| **All** | 12 / 3 / 19 | 22 / 1 / 12 |
 
-Among the pairs with a signal: at 160 px, 4.3 11 and 4.4 3 (sign test p = 0.057); at 320 px, 4.3 22 and 4.4 1 (sign test p = 0.000).
+Among the pairs with a signal: at 160 px, 4.3 12 and 4.4 3 (sign test p = 0.035); at 320 px, 4.3 22 and 4.4 1 (sign test p = 0.000).
 
 **Which would you keep looking at?**
 
@@ -100,11 +100,11 @@ Among the pairs with a signal: at 160 px, 4.3 11 and 4.4 3 (sign test p = 0.057)
 | claude:sonnet | 0 / 1 / 5 | 0 / 4 / 2 |
 | codex:astra | 0 / 3 / 3 | 0 / 5 / 1 |
 | codex:sol | 0 / 2 / 4 | 0 / 6 / 0 |
-| gemini | 1 / 2 / 0 | 0 / 1 / 3 |
+| gemini | 1 / 3 / 0 | 0 / 1 / 4 |
 | grok | – | – |
-| **All** | 2 / 13 / 18 | 1 / 23 / 10 |
+| **All** | 2 / 14 / 18 | 1 / 23 / 11 |
 
-Among the pairs with a signal: at 160 px, 4.3 2 and 4.4 13 (sign test p = 0.007); at 320 px, 4.3 1 and 4.4 23 (sign test p = 0.000).
+Among the pairs with a signal: at 160 px, 4.3 2 and 4.4 14 (sign test p = 0.004); at 320 px, 4.3 1 and 4.4 23 (sign test p = 0.000).
 
 ## Side by side: 4.3 against 4.5
 
@@ -182,17 +182,17 @@ Probe fields with one channel moved at a time. "Seen" is how often the decoder s
 | --- | --- | --- | --- | --- | --- |
 | second current | 4.3 | 320 | 0.61 (0.39–0.80, n=18) | 0.33 (0.20–0.50, n=33) | 4.2 / 3.2 |
 | second current | 4.3 | 1000 | 0.59 (0.36–0.78, n=17) | 0.42 (0.27–0.58, n=36) | 4.5 / 3.2 |
-| second current | 4.4 | 320 | 0.63 (0.46–0.77, n=35) | 0.31 (0.23–0.41, n=108) | 4.2 / 2.5 |
+| second current | 4.4 | 320 | 0.61 (0.45–0.75, n=36) | 0.31 (0.23–0.41, n=108) | 4.1 / 2.5 |
 | second current | 4.4 | 1000 | 0.75 (0.59–0.86, n=36) | 0.37 (0.29–0.46, n=108) | 5.0 / 2.9 |
 | second current | 4.5 | 320 | 0.69 (0.53–0.82, n=36) | 0.26 (0.19–0.35, n=108) | 4.8 / 2.2 |
 | second current | 4.5 | 1000 | 0.75 (0.59–0.86, n=36) | 0.25 (0.18–0.34, n=108) | 5.2 / 2.5 |
 | held from earlier | 4.3 | 320 | 0.47 (0.26–0.69, n=17) | 0.32 (0.19–0.49, n=34) | 3.1 / 2.6 |
 | held from earlier | 4.3 | 1000 | 0.72 (0.49–0.88, n=18) | 0.51 (0.36–0.67, n=35) | 3.9 / 3.0 |
-| held from earlier | 4.4 | 320 | 0.50 (0.34–0.66, n=36) | 0.13 (0.08–0.21, n=107) | 3.6 / 1.5 |
+| held from earlier | 4.4 | 320 | 0.50 (0.34–0.66, n=36) | 0.13 (0.08–0.21, n=108) | 3.6 / 1.5 |
 | held from earlier | 4.4 | 1000 | 0.78 (0.62–0.88, n=36) | 0.27 (0.19–0.36, n=108) | 5.1 / 2.2 |
 | held from earlier | 4.5 | 320 | 0.39 (0.25–0.55, n=36) | 0.07 (0.04–0.14, n=108) | 3.0 / 1.3 |
 | held from earlier | 4.5 | 1000 | 0.69 (0.53–0.82, n=36) | 0.25 (0.18–0.34, n=108) | 4.3 / 2.1 |
-| reconstructed | 4.4 | 320 | 0.92 (0.78–0.97, n=36) | 0.07 (0.03–0.13, n=107) | 7.6 / 1.1 |
+| reconstructed | 4.4 | 320 | 0.92 (0.78–0.97, n=36) | 0.06 (0.03–0.13, n=108) | 7.6 / 1.1 |
 | reconstructed | 4.4 | 1000 | 0.89 (0.75–0.96, n=36) | 0.02 (0.01–0.07, n=108) | 7.6 / 0.6 |
 | reconstructed | 4.5 | 320 | 0.83 (0.68–0.92, n=36) | 0.06 (0.03–0.12, n=108) | 7.3 / 0.9 |
 | reconstructed | 4.5 | 1000 | 0.83 (0.68–0.92, n=36) | 0.02 (0.01–0.07, n=108) | 7.1 / 0.7 |
@@ -201,9 +201,9 @@ Probe fields with one channel moved at a time. "Seen" is how often the decoder s
 
 | Channel | 4.3 | 4.4 | 4.5 | Verdict |
 | --- | --- | --- | --- | --- |
-| second current | +0.22 (n=35, 69) | +0.35 (n=71, 216) | +0.47 (n=72, 216) | no regression (4.5 minus 4.4: +0.12) |
-| held from earlier | +0.18 (n=35, 69) | +0.44 (n=72, 215) | +0.38 (n=72, 216) | no regression (4.5 minus 4.4: -0.06) |
-| reconstructed | – | +0.86 (n=72, 215) | +0.80 (n=72, 216) | no regression (4.5 minus 4.4: -0.06) |
+| second current | +0.22 (n=35, 69) | +0.34 (n=72, 216) | +0.47 (n=72, 216) | no regression (4.5 minus 4.4: +0.13) |
+| held from earlier | +0.18 (n=35, 69) | +0.44 (n=72, 216) | +0.38 (n=72, 216) | no regression (4.5 minus 4.4: -0.06) |
+| reconstructed | – | +0.86 (n=72, 216) | +0.80 (n=72, 216) | no regression (4.5 minus 4.4: -0.06) |
 
 ## Real-conversation fields (E3), 320 px
 
