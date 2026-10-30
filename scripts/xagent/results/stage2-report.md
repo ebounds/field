@@ -1,6 +1,6 @@
 # stage2: results
 
-1009 trials answered. Written by `scripts/xagent/report.py` from `results/stage2.jsonl`; the measures and thresholds are in `PREREG.md`.
+1010 trials answered. Written by `scripts/xagent/report.py` from `results/stage2.jsonl`; the measures and thresholds are in `PREREG.md`.
 
 | Decoder | naive | pair | taught | models |
 | --- | --- | --- | --- | --- |
@@ -9,10 +9,10 @@
 | claude:sonnet | 96 | 24 | 42 | claude-sonnet-5-5 |
 | codex:astra | 96 | 24 | 42 | gpt-6-astra |
 | codex:sol | 96 | 24 | 42 | gpt-5.6-sol |
-| gemini | 95 | 24 | 28 | gemini-3-flash-preview, gemini-3.5-flash, gemini-3.6-flash, gemini-3.7-flash, gemini-3.8-flash |
+| gemini | 96 | 24 | 28 | gemini-3-flash-preview, gemini-3.5-flash, gemini-3.6-flash, gemini-3.7-flash, gemini-3.8-flash |
 | grok | 51 | 1 | 0 | grok-4.6, grok-4.7 |
 
-0 answers could not be parsed (scored as wrong). 0 Codex trials ran a command despite being told not to. Calls that failed and await a rerun: grok 30, gemini 4.
+0 answers could not be parsed (scored as wrong). 0 Codex trials ran a command despite being told not to. Calls that failed and await a rerun: grok 30, gemini 3.
 
 ## Naive readers: the right word, six shared studies
 
@@ -116,8 +116,8 @@ These have no right word. The table shows what naive readers called them.
 
 | Revision | Words chosen |
 | --- | --- |
-| 4.3 | integrated 27, tentative 11, gathered 11, exploring 11, strained 1 |
+| 4.3 | integrated 27, gathered 12, tentative 11, exploring 11, strained 1 |
 | 4.4 | integrated 31, gathered 9, exploring 8, tentative 7, strained 4 |
 
-The same decoder gave the same word to both revisions of a reading in 38 of 57 cases.
+The same decoder gave the same word to both revisions of a reading in 38 of 58 cases.
 

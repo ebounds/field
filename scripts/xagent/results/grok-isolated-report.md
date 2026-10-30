@@ -1,6 +1,6 @@
 # grok-isolated: results
 
-2166 trials answered. Written by `scripts/xagent/report.py` from `results/stage2.jsonl` and `results/stage3.jsonl` and `results/grok-isolated.jsonl`, leaving out `grok`; the measures and thresholds are in `PREREG.md`.
+2167 trials answered. Written by `scripts/xagent/report.py` from `results/stage2.jsonl` and `results/stage3.jsonl` and `results/grok-isolated.jsonl`, leaving out `grok`; the measures and thresholds are in `PREREG.md`.
 
 | Decoder | naive | pair | taught | models |
 | --- | --- | --- | --- | --- |
@@ -9,10 +9,10 @@
 | claude:sonnet | 147 | 76 | 114 | claude-sonnet-5-5 |
 | codex:astra | 147 | 76 | 114 | gpt-6-astra |
 | codex:sol | 147 | 76 | 114 | gpt-5.6-sol |
-| gemini | 146 | 76 | 114 | gemini-3-flash-preview, gemini-3.5-flash, gemini-3.6-flash, gemini-3.7-flash, gemini-3.8-flash |
+| gemini | 147 | 76 | 114 | gemini-3-flash-preview, gemini-3.5-flash, gemini-3.6-flash, gemini-3.7-flash, gemini-3.8-flash |
 | grok:4.7 | 107 | 38 | 0 | grok-4.7-build |
 
-0 answers could not be parsed (scored as wrong). 0 Codex trials ran a command despite being told not to. Calls that failed and await a rerun: gemini 1.
+0 answers could not be parsed (scored as wrong). 0 Codex trials ran a command despite being told not to. No failed calls are waiting.
 
 ## Naive readers: the right word, six shared studies
 
@@ -211,13 +211,13 @@ These have no right word. The table shows what naive readers called them.
 
 | Revision | Words chosen |
 | --- | --- |
-| 4.3 | integrated 27, exploring 13, gathered 11, tentative 10, strained 1 |
+| 4.3 | integrated 27, exploring 13, gathered 12, tentative 10, strained 1 |
 | 4.4 | integrated 36, gathered 9, exploring 8, tentative 6, strained 4 |
 | 4.5 | integrated 29, exploring 13, gathered 10, tentative 8, strained 2, described 1 |
 
-The same decoder gave the same word to 4.3 and 4.4 of a reading in 41 of 62 cases.
+The same decoder gave the same word to 4.3 and 4.4 of a reading in 41 of 63 cases.
 
-The same decoder gave the same word to 4.3 and 4.5 of a reading in 40 of 62 cases.
+The same decoder gave the same word to 4.3 and 4.5 of a reading in 40 of 63 cases.
 
 The same decoder gave the same word to 4.4 and 4.5 of a reading in 40 of 63 cases.
 
