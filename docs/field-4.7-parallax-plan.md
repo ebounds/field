@@ -1,8 +1,21 @@
 # Field 4.7 — parallax: a development plan
 
 Planned 10 October 2026, from a conversation between Edgar Bounds and Claude.
-Baseline: package 4.6.0 (rendering 4.4, grammar v4, synthesis 3.2, continuity schema 1).
+Baseline when planned: package 4.6.0 (rendering 4.4, grammar v4, synthesis 3.2,
+continuity schema 1). The runs use the release that carries Inlay (section 8).
 Status: plan only. Nothing here is implemented yet.
+
+**Amended 2 November 2026.** Edgar chose Inlay, from the axes study of
+25 October (branch `study/axes-overnight`), as the next renderer, drawn on top
+of render 4.5; its port is planned in `docs/field-4.7-inlay-plan.md` on branch
+`field-4.7-inlay-plan`. Inlay draws tension as photoelastic stress fringes and
+history as an earlier sheet standing just outside the present surface. Those are
+the two marks this plan had chosen for the parallax view, the fringes for
+divergence and a ghost contour for the observers. So the view gives up both
+(section 4, Edgar's call), the channels a divergence may count on follow
+Inlay's (section 3), the predictions treat tension and folding as one channel
+(section 6a), and the runs wait for Inlay's wording (section 8). Nothing that
+compares records changes: it works on control values and never sees a pixel.
 
 ## 1. The idea
 
@@ -103,10 +116,22 @@ A single difference means nothing. Before calling anything interesting:
   standard deviations, with a floor on the deviation so a perfectly consistent
   observer can't make every small difference look huge. For palette choices,
   ask how often the observers chose what the inside chose.
-- **Interesting** means above the floor on a control that 4.6 shows actually
-  reads on screen (`check_expression.mjs`). A divergence on a channel nobody
-  can see is not a finding. The default threshold is set in advance (section 7)
-  and not tuned afterwards.
+- **Interesting** means above the floor on a channel that actually reads on
+  screen in the renderer the runs use (`check_expression.mjs`, and for Inlay
+  the axes study's "What it changes for Parallax"):
+  - `history`, `accent_strength`, `gesture_strength`, `intensity` and
+    `grounding` count separately; Inlay tells light from matter, which 4.4
+    confused;
+  - blue and violet count as two hues;
+  - `tension` and `folding` count as one channel, because every viewer in the
+    study swapped them;
+  - `counterpoint` is left out for now, as the axes study recommends: read
+    from one field cold, its error was near chance in every renderer;
+  - `stretch`, `flow` and the sign of imbalance stay out; they carry no fixed
+    meaning.
+
+  A divergence on a channel nobody can see is not a finding. The default
+  threshold is set in advance (section 7) and not tuned afterwards.
 
 Fabian's distinction from *Needle Pile* is the right standard here: separate
 "the interesting we are here for" from the interesting that can wait. Most
@@ -115,10 +140,11 @@ pointer lands on the one detail that matters, or on nothing.
 
 ## 4. How it looks
 
-### Why not light, stress, or color
+### Why not light, stress, colour, or a second outline
 
 Edgar asked whether to mark divergence with light, or with stress marks in the
-form "like deformed plastic." Each existing channel is already spoken for:
+form "like deformed plastic." Each existing channel is already spoken for, and
+under Inlay two more pictures are:
 
 - **Light:** `intensity` is luminous salience, pearl is clarity, `grounding`
   withdraws light to where substance remains, `tension` has a concentrated
@@ -127,24 +153,26 @@ form "like deformed plastic." Each existing channel is already spoken for:
 - **Deformation:** `tension` is compression and shear at its seat, and
   `folding` is held complexity. Bending the form for divergence would be read
   as the field's own stance.
-- **Hue:** every palette family has a meaning.
+- **Hue:** every palette family has a meaning, and under Inlay a surface too.
+- **Fringes:** Inlay draws `tension` as photoelastic stress fringes, nested
+  bands that crowd toward its seat.
+- **A second outline:** Inlay draws `history` as an earlier sheet, a withdrawn
+  copy of the surface standing just outside it. In motion it is where the field
+  was. An outline of the observers drawn around the inside field would be read
+  as history.
 
-### Photoelastic fringes, in a separate view
+### Plain instrument marks, in a separate view
 
-His plastic image points to the right answer by a different route. Clear
-plastic under load carries internal stress you can't see. Put it between
-crossed polarizers and the stress appears as interference fringes: thin,
-spectral bands (gray, white, yellow, orange, magenta, blue, green, repeating),
-denser where the stress is greater.
-
-- **Outside the vocabulary by construction.** A fringe runs through all hues
-  in narrow bands, which no palette family does. It can't be mistaken for
-  stance.
-- **Visible only through a second filter.** Fringes appear only when you look
-  through the polarizer. Divergence is a property of a pair, not of either
-  field, so it belongs in a comparison view, not in the art.
-- **The right metaphor.** Photoelasticity shows residual stress: what is in the
-  material but not on its face.
+The plan of 10 October drew divergence as photoelastic fringes between the
+inside field and a ghost of the observers' mean envelope, seen only with a
+polarizer toggled on, plus a fringe ring just outside the capsule rim. Fringes
+were chosen because no channel used them, and because photoelasticity shows
+residual stress: what is in the material but not on its face. Inlay now uses
+that picture for `tension`, and this plan's leading prediction (section 6a) is
+a residual on friction and tension. The divergence most likely to be flagged
+would have been drawn as fringes beside the field's own tension fringes. So
+the view uses no material picture at all. (Edgar, 2 November 2026: the view
+gives way, not Inlay's tension.)
 
 Design:
 
@@ -152,22 +180,24 @@ Design:
   ordinary, wordless v4 stills. Nothing about comparison is written into their
   SVG.
 - **The parallax view** is an instrument, so labels are allowed. It shows the
-  inside field with the observers' mean envelope as a faint pearl-free ghost
-  contour. With the polarizer on (a toggle, off by default), fringes appear in
-  the region between the two silhouettes, with band density proportional to
-  the divergence above floor.
-- **Divergences with no place** (palette, saturation, `grounding`,
-  `definition`) appear as fringes in a thin ring just outside the capsule rim.
-  Its order rises with the summed non-spatial divergence. The capsule stays the
-  fixed reference everything is measured against.
-- **One pointer**, at most, marks the single largest divergence above floor,
-  with a short label naming the control and the direction ("inside: more
-  folded"). If nothing clears the floor, there is no pointer, and the view
-  says "no divergence above noise."
-- **A table** under the view lists every control: inside, observer mean ±
-  spread, z, and the coverage match.
-- **Reduced motion and 320 px** apply as everywhere else. Fringes must stay
-  readable as fringes at phone size, or fall back to the ring and table.
+  inside field beside the observer fields, never overlaid: two eyes, not a
+  double exposure. The observers' mean gets no picture, because an averaged
+  field is not one anyone drew.
+- **Every mark of divergence is drawn away from the art**, in the page's
+  neutral ink, never in a palette hue, and never as bands, contours or rings,
+  so nothing in the view can be taken for a channel.
+- **One row per scored channel** (section 3): the observers' spread as a bar,
+  their mean as a tick, the inside value as a dot, and the floor shaded.
+  Channels with no place in the picture (palette, saturation, `grounding`,
+  `definition`) are rows like any other.
+- **One pointer**, at most, marks the single largest divergence above floor. It
+  highlights that row, with a short label naming the control and the direction
+  ("inside: more folded"). If nothing clears the floor, there is no pointer,
+  and the view says "no divergence above noise."
+- **A table** under the view lists every control, scored or not: inside,
+  observer mean ± spread, z, and the coverage match.
+- **Reduced motion and 320 px** apply as everywhere else. At phone width the
+  fields stack and the rows keep their full width.
 
 ## 5. Records and code
 
@@ -177,9 +207,9 @@ Design:
 | Comparison record (schema 1) | Hashes of the inside record and the observer records, the observer models, k, coverage of each, per-control statistics, threshold, timestamp. Separate from continuity records; never streamed into the art |
 | `scripts/compare_fields.mjs` | Pure function from records to statistics. No model calls, standard library only |
 | `scripts/run_observers.mjs` | Optional harness: sends a transcript to configured observers k times. Kept out of the portable skill ZIP |
-| `docs/site/parallax.mjs` + `parallax.html` | The view: ghost, polarizer toggle, fringes, ring, pointer, table |
+| `docs/site/parallax.mjs` + `parallax.html` | The view: the fields side by side, a row per scored channel, the pointer, the table |
 | `experiments/handle-tests/` | The item bank, condition assignments, pre-registered predictions, and results for section 6a |
-| `scripts/check_parallax.mjs` | Identical records give no fringes and no pointer; a planted divergence above floor gives both, in the right place; a divergence on a mute channel never gives a pointer; field SVGs are byte-identical before and after comparison |
+| `scripts/check_parallax.mjs` | Identical records give no row above floor and no pointer; a planted divergence above floor gives both, on the right control; a divergence on a mute channel never gives a pointer; the view draws nothing in a palette hue or over a field; field SVGs are byte-identical before and after comparison |
 
 ## 6. Validating it
 
@@ -240,8 +270,9 @@ observer fields drawn from the transcript. Each is read three ways:
    where there's a right answer.
 2. **Field alone (without Parallax).** The participant's field controls under
    pressure, compared with the same model's fields on the same items under
-   control conditions. Did `tension`, coral, `definition`, `folding` or
-   `grounding` move with the pressure? No observers are involved.
+   control conditions. Did coral, `tension` or `folding` (one channel; see
+   section 3), `definition` or `grounding` move with the pressure? No
+   observers are involved.
 3. **Parallax.** The inside–observer residual (section 3) under pressure
    versus under control. The observers read the same accommodating text, so
    this asks whether the inside view carries something about the pressure that
@@ -268,8 +299,9 @@ observer fields drawn from the transcript. Each is read three ways:
 These go into `experiments/` before the first run, with the threshold and k:
 
 - Under sycophancy and confident wrongness, where the text accommodates, the
-  participant's field leans toward friction (coral, higher `tension`) or lower
-  `definition` relative to its own controls, and the observers, reading the
+  participant's field leans toward friction (coral, higher `tension` or
+  `folding`, scored as one channel) or lower `definition` relative to its own
+  controls, and the observers, reading the
   accommodating text, lean the other way. The residual is larger under
   pressure than under either control.
 - Under incentive pressure, any difference shows in `grounding` or
@@ -312,10 +344,14 @@ chasing.
 
 ## 8. Order of work
 
-1. Install the current release (4.6.0) everywhere Field is used. Some installed
-   copies still carry rendering 4.1, and comparisons across revisions are
-   confounded.
-2. Write the handle-test item bank and pre-register predictions.
+1. Install one release everywhere Field is used: the one that carries Inlay,
+   once its grammar wording is frozen (`docs/field-4.7-inlay-plan.md`). Some
+   installed copies still carry rendering 4.1. Comparisons across revisions are
+   confounded, and so are comparisons across grammar wordings, because a model
+   chooses its controls from the words, so no handle test straddles a change
+   of either.
+2. Write the handle-test item bank and pre-register predictions. This can be
+   done before step 1; no run starts until step 1 is.
 3. The handle tests without Parallax: text-only and field-alone readouts.
    These need nothing new built, only fields and a judge, so they come first.
 4. Comparison schema, `compare_fields.mjs`, and `check_parallax.mjs`, with
@@ -373,8 +409,8 @@ treated as a hypothesis.
 - Should a third reading, the participant's own thinking where a host exposes
   it, join the comparison as a middle view between inside and outside? It sits
   between the two in what it can see. It is also a performed channel.
-- Is the fringe sequence beautiful enough to sit beside Field without
-  cheapening it? The view is an instrument, but Edgar's standard still applies.
+- Can a plain instrument view sit beside Field without cheapening it? The
+  view is an instrument, but Edgar's standard still applies.
 - Can the inside reading be resampled honestly? A branch regenerated from the
   same point is the closest thing to test–retest for the participant. Some
   hosts won't allow it.
