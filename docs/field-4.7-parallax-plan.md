@@ -128,8 +128,9 @@ A single difference means nothing. Before calling anything interesting:
   - `counterpoint` is left out for now, as the axes study recommends: read
     from one field cold, its error was near chance in every renderer (Edgar,
     2 November: leave it out);
-  - `stretch`, `flow` and the sign of imbalance stay out; they carry no fixed
-    meaning.
+  - `stretch` and the sign of imbalance stay out, since they carry no fixed
+    meaning. So does `flow`: under v4.1 the field turns only as far as
+    `history` allows, so its turn is read through `history`, which is scored.
 
   A divergence on a channel nobody can see is not a finding. The default
   threshold is set in advance (section 7) and not tuned afterwards.
