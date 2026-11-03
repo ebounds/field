@@ -126,7 +126,8 @@ A single difference means nothing. Before calling anything interesting:
   - `tension` and `folding` count as one channel, because every viewer in the
     study swapped them;
   - `counterpoint` is left out for now, as the axes study recommends: read
-    from one field cold, its error was near chance in every renderer;
+    from one field cold, its error was near chance in every renderer (Edgar,
+    2 November: leave it out);
   - `stretch`, `flow` and the sign of imbalance stay out; they carry no fixed
     meaning.
 
