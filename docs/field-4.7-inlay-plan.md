@@ -10,6 +10,11 @@ Status: plan only. Nothing here is implemented yet.
 1. **Inlay is the next renderer, drawn on top of render 4.5,** not on 4.4. It keeps 4.5's rules: light carries colour, `definition` articulates every mark, marks are made of the field, and the reading order.
 2. **Take the report's two borrowings from the Composite:** its cased core for counterpoint, and its earlier sheet, because Inlay's sheet was read as grounding.
 3. **The parallax view gives way, not Inlay's tension.** Inlay keeps its stress fringes. The parallax plan drops fringes and the observers' ghost outline (`docs/field-4.7-parallax-plan.md`, amended the same day on branch `field-4.7-parallax-plan`).
+4. **The echo is drawn inside the band,** never past the tip (the report's decision 4).
+5. **Tension flattens only slightly, with no cavities** (decision 3).
+6. **Inlay ships in 4.7.0,** as Stage 3b. The release becomes render 4.6.
+7. **The surface per hue is in** (decision 5). Only its strength is open.
+8. **The extra weight is accepted** (decision 7).
 
 ## Why it is a port, not a merge
 
@@ -27,7 +32,7 @@ The study was cut from `main` at `318ebc3`, so its engine is a superset of rende
 
 ## The port, step by step
 
-Cut the working branch, `field-4.7-inlay`, from `field-4.7` **after** the fixes from the 2 November review have landed there. That review covers `render_field.py` and `renderer.mjs`, which are what this port builds on.
+Cut the working branch, `field-4.7-inlay`, from `field-4.7`. The 2 November review's fixes have landed there (`6799c3b`, `6bf9911`), and none of them touched `render_field.py` or `renderer.mjs`, so 4.5 is the base as Stage 3 froze it.
 
 1. **A switch per treatment, off by default.** As in the study's `ALLOC`, every Inlay treatment can be on or off. With all of them off, the renderer is byte-identical to 4.5 on every spec and every harness sweep. Check that after each step, as the study did against 4.4.
 2. **Port the treatments into `scripts/render_field.py`,** one at a time, each re-lit through `tint` and `shade`, its edges following `definition`:
@@ -41,12 +46,12 @@ Cut the working branch, `field-4.7-inlay`, from `field-4.7` **after** the fixes 
    | Core (`counterpoint`) | `core_marks`, `core_centre`, `thread_course` | the parting countercurrent | From the Composite. The fibres part around it. |
    | Earlier sheet (`history`) | `engine.py:272–278`, `372`, `651–677` | the retained ridge | Must read as history (above). |
    | Fringes and a flattened seat (`tension`) | `engine.py:785–806`, `thickness` | the denser seat | Kept, by decision 3. |
-   | Structural gestures | `engine.py:899–` | strand gestures | Braid as two strands, fold as a tucked lip. |
+   | Structural gestures | `engine.py:899–` | strand gestures | Braid as two strands, fold as a tucked lip. The echo stays 4.5's, inside the band (decision 4). |
 
 3. **The report's fixes before anything ships:**
    - Taper the sheet's thin outer edge into both tips. Gemini saw it stop mid-curve as a loose wire.
-   - The echo past the tip, which every critic shown it saw as a second cusp (open: keep, move inside the band, or drop).
-   - How far tension may flatten (open). Fringes don't stop tension and folding being swapped; no renderer did.
+   - The echo goes inside the band (Edgar's decision 4). Every critic shown Inlay's echo past the tip saw a second cusp. Trial C of the Zero Hour curl (axes clone, `out/trials/zero-hour-curl/`, committed `7fda385`) is exactly this: Inlay with its gesture allocation set back to 4.4's, and Zero Hour's gesture is the echo, which 4.4 drew inside the band. Here that means 4.5's echo, with Inlay's braid and fold.
+   - Tension flattens only slightly, with no cavities (Edgar's decision 3). Inlay already does this: at full tension its seat narrows the band by at most 5 % (`thickness`), where 4.4 pinched it by 18 %. The outline is never dented. Fringes don't stop tension and folding being swapped, and no renderer did; Parallax counts them as one channel.
    - Grounding's ribs are **not** on this list. The critics saw 4.4's ribs, and 4.5's are already different. Redrawing low `grounding` is parked under the 4.7 plan's decision 9 until Edgar has lived with the companion's legend.
 4. **Browser port** in `docs/site/renderer.mjs` (the report's estimate: about 250 lines for Inlay, more with the core). Then `check_browser_renderer.py`: its 26 cases, plus the 400 random ones once by hand.
 5. **Motion.** Fibres, fringe rings and braid crossings change in number as their controls move, so each needs a stable `id` for `movement.mjs` to fade them in and out. The report suggests the earlier sheet in motion be the previous expression's real contour, which the companion already samples. That is a good later step, not part of this port.
@@ -56,7 +61,7 @@ Cut the working branch, `field-4.7-inlay`, from `field-4.7` **after** the fixes 
    - the colour table gains a sentence giving each hue family a surface;
    - the manual route's gesture limits ("at most four SVG paths…") are revised, since the braid uses about a dozen filled paths.
 
-   Meanings, ranges and defaults are unchanged. Suggested name: grammar v4.1. Rebuild the template and the atlas, since taught readers are shown the atlas of the revision they read. **Freeze the wording before any counted run.** The parallax plan's handle tests also wait on it, because models choose their controls from these words.
+   Meanings, ranges and defaults are unchanged. The proposed wording is below, under "Proposed grammar wording", for Edgar's approval. Suggested name: grammar v4.1. Rebuild the template and the atlas, since taught readers are shown the atlas of the revision they read. **Freeze the wording before any counted run.** The parallax plan's handle tests also wait on it, because models choose their controls from these words.
 7. **Name it render revision 4.6**, following the pattern so far: package 4.6 drew render 4.4, and 4.7 draws 4.5.
 
 ## Acceptance
@@ -79,25 +84,49 @@ Cut the working branch, `field-4.7-inlay`, from `field-4.7` **after** the fixes 
 - **Naive decoders and pairs:** no regression against 4.5, and side by side on "faster" and "keep looking".
 - **Edgar's sheet 3:** Inlay beside 4.5, in both orders.
 
-The harness needs the new revision added, as it was for 4.5 (`5707cc7`). Its trials key by item, not by build, so a renderer re-pinned mid-run needs its trials cleared by hand (the Stage 3 note).
+The harness needs the new revision added, as it was for 4.5 (`5707cc7`). Since the 2 November fixes, a trial counts only on the images its revision draws now, so a renderer re-pinned mid-run has its earlier answers asked again, and `report.py` leaves them out and counts them.
 
-## Release: Edgar's call
+The bars above come from the report of record, which includes the October Claude rows. Edgar ruled the Codex rows count, and the Claude rows await a ruling (`PREREG.md`, 2 November). If the Claude rows are rerun, the bars are recomputed before any counted run of 4.6.
 
-| | Inlay in 4.7.0 (Stage 3b) | 4.7.0 as planned, Inlay in 4.8.0 |
-| --- | --- | --- |
-| What ships | render 4.6, grammar v4.1 | render 4.5, grammar v4 |
-| What it adds before release | this port, the counted runs above, sheet 3 | nothing |
-| Stage 5 (cross-agent) | runs once, on what ships | its image conditions would need rerunning on 4.8 |
-| Parallax handle tests | wait for 4.7.0 | wait for 4.8.0 |
+## Release: Inlay in 4.7.0 (Edgar, 2 November)
 
-**Leaning:** Inlay in 4.7.0. The release already waits on Stage 4a (Listening 1.2), which isn't built on `field-4.7`, and the port can run alongside it. Shipping 4.5 first would mean Stage 5 and Parallax measuring a renderer that is about to be replaced. If Edgar takes this, Stage 6's line "render revision 4.5 … grammar v4 (unchanged)" in `docs/field-4.7-plan.md` changes. That file isn't edited here, because another session has it open.
+The package becomes 4.7.0 with render revision 4.6 and grammar v4.1. Before release it adds this port, the counted runs above and sheet 3. Stage 5's cross-agent study runs once, on what ships, and the parallax handle tests wait for 4.7.0. The release already waits on Stage 4a (Listening 1.2), which isn't built on `field-4.7`, and the port can run alongside it. Stage 6 in `docs/field-4.7-plan.md` says so as of the same day.
 
 ## Still open
 
-These are from the report's eight decisions for Edgar, after today:
-- **The echo** (decision 4) and **how far tension flattens** (decision 3). Both are needed before the port's renderer freezes.
-- **How strong the surface per hue is** (decision 5). Inlay was tested with it, so it is in; only its strength is open. The study's stronger version, tried after the freeze, separated blue from violet more (4.9 against 4.3).
-- **Weight** (decision 7). The study's SVGs were about a third heavier than 4.4's (up to 660 KB against 428). Measure them again on 4.5.
+- **The proposed grammar wording** (below), for Edgar's approval. It must be frozen before any counted run.
+- **How strong the surface per hue is.** The study's stronger version, tried after the freeze, separated blue from violet more (4.9 against 4.3).
+- **The sheet's design** on 4.5's body, so that it reads as history and not as grounding.
+- **Weight** is accepted, but measure the SVGs again on 4.5. The study's were about a third heavier than 4.4's (up to 660 KB against 428).
 - **Track B** (decision 8) stays out of this port.
 
-Settled today: the body (decision 1, Inlay's, as 4.5 draws it). The grammar's pictures (decision 2) shrink to the small rewording above, now that the core keeps counterpoint's words. Grounding's ribs (decision 6) wait on the 4.7 plan's decision 9.
+Grounding's ribs (decision 6) wait on the 4.7 plan's decision 9.
+
+## Proposed grammar wording (v4.1), for Edgar's approval
+
+All changes are in `references/visual-grammar.md`; `SKILL.md` and `composition-score.md` don't describe these pictures. Every meaning, range and default stays.
+
+**Colour table.** Add after the table:
+
+> Each hue family also has a surface of its own, as Listening gives each a timbre: blue is crisp and clear, violet pearlescent, amber soft, coral satin, pearl luminous, and teal the plain surface. The surface carries the hue's meaning and adds none; it gives neighbouring hues, blue and violet above all, a second way to be told apart.
+
+**Controls.** Two rows change:
+
+| Control | Now | Proposed |
+| --- | --- | --- |
+| `tension` | Supple contour to strong local compression and shear; unresolved pressure. | Supple **surface** to strong local compression and shear; unresolved pressure. |
+| `history` | A restrained, displaced reflection that rejoins the surface. Retained influence of an earlier change, not a timeline. | A restrained, displaced reflection **behind the present surface** that rejoins it. Retained influence of an earlier change, not a timeline. |
+
+`counterpoint` ("An internal current that parts and rejoins"), `complexity`, `accent`, `intensity` and `gesture` keep their words.
+
+**Distinctive gestures.** After "made from at most four SVG paths", add:
+
+> These limits are for gestures added by hand; the renderer's own fold, echo and braid may use more.
+
+**Rendering.** A new paragraph after revision 4.5's two:
+
+> Rendering revision 4.6 keeps every control's meaning, range, and default, and the three rules of 4.5. It gives each quiet meaning a material phenomenon of its own within the one smoothly curved form, with no cuts, notches, or cavities. `intensity` is emitted light: a quiet field is dim but present, never thinned. `counterpoint` is a core of the second quality's hue running inside the material; the fibres part around it and rejoin at both tips. `history` is an earlier sheet, older material in the same hues, standing just behind the present surface and sharing its tips. `tension` gathers light into fringes at its seat, where the surface flattens slightly; the outline is never dented. `complexity` sets how many fibres the material carries. An accent is a vein, a winding line through the material whose sharpness follows `definition`. A fold is a tucked lip and a braid two strands; an echo is a continuation drawn inside the band, never past the tip. Each hue family has its own surface (see the colour table).
+
+And in the paragraph after it, "`data-field-renderer="4.5"`" becomes "4.6", and "Fields drawn by 4.3 or 4.4" becomes "Fields drawn by 4.3, 4.4 or 4.5".
+
+The rendering paragraph is written to fit either design of the sheet ("older material in the same hues" holds whether it ends up paler or darker). It is checked against the port as drawn before it is frozen.
