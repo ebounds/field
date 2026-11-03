@@ -205,7 +205,10 @@ def render(spec, treatments=None):
     turn = math.radians(-18 + 38*p['flow']*turning)
     if A['intensity'] == 'emission':
         # Salience is emitted light. Matter keeps its density whatever the
-        # intensity, so a quiet field is dim but present, never thinned.
+        # intensity, so a quiet field is dim but present, never thinned. A loud
+        # field gives its light off, as its bloom, its shoulder of light and the
+        # room around it, in its own colour; its skin is not lightened, which
+        # would only bleach the hue.
         strength, glow, halo = .26 + .65*.55, .5 + power, .75 + .5*power
         lit = tint
     else:
@@ -487,7 +490,7 @@ def render(spec, treatments=None):
         f = (j + .5) / lanes
         illumination = .46 + .66 * math.exp(-((f - .27) / .3) ** 2)
         illumination += .16 * math.exp(-((f - .91) / .13) ** 2)
-        shades = [lit(color, illumination*glow) for color in body_colors]
+        shades = [lit(color, illumination*min(1, glow)) for color in body_colors]
         svg.append(f'<linearGradient id="field-skin-{j}" gradientUnits="userSpaceOnUse" x1="180" y1="720" x2="820" y2="270"><stop stop-color="{shades[0]}"/><stop offset=".38" stop-color="{shades[1]}"/><stop offset=".69" stop-color="{shades[2]}"/><stop offset="1" stop-color="{shades[3]}"/></linearGradient>')
     sheet_lanes = 9
     if sheet:
@@ -498,10 +501,21 @@ def render(spec, treatments=None):
             f = (j + .5) / sheet_lanes
             illumination = .52 + .58 * math.exp(-((f - .27) / .3) ** 2)
             svg.append(page_ink(f'field-sheet-{j}', [tint(color, illumination*.8*glow, .92) for color in (c1, c2, c1, c1)]))
+    # Each hue family's surface is a texture of the body's own colours, so a
+    # surface never lays one hue over another: over its neighbour that would grey.
+    weights = {}
+    if A['hue'] == 'surface':
+        for name, w in ((p['primary'], .62), (p['secondary'] or p['primary'], .38)):
+            weights[name] = weights.get(name, 0) + w
+    if 'blue' in weights:
+        svg.append(page_ink('field-crisp', [tint(color, 1.8*glow) for color in body_colors]))
+    if 'violet' in weights:
+        for name, degrees, chroma, amount in (('field-pearl-a', 14, 1, 1.32), ('field-pearl-b', -16, 1.15, 1.08), ('field-pearl-c', 30, .9, 1.4)):
+            svg.append(page_ink(name, [tint(turn_hue(color, degrees, chroma), amount*glow) for color in body_colors]))
     svg.append(f'''</defs>
 <rect id="field-background" width="1000" height="1000" fill="url(#background)"/>
 <g id="field-envelope">
-  <ellipse cx="500" cy="500" rx="{min(435,a*fit+45):.2f}" ry="{min(420,b*fit+65):.2f}" fill="url(#field-atmosphere)" transform="rotate({-18+38*p['flow']:.2f} 500 500)"/>''')
+  <ellipse cx="500" cy="500" rx="{min(435,a*fit+45):.2f}" ry="{min(420,b*fit+65):.2f}" fill="url(#field-atmosphere)" transform="rotate({-18+38*p['flow']*turning:.2f} 500 500)"/>''')
     if sheet:
         # Behind the present surface and sharing its tips: the field as it was
         # held before a change that still matters. It overlaps the present sheet
@@ -525,7 +539,7 @@ def render(spec, treatments=None):
                    f'<path d="{ridge}" fill="url(#field-history-ink)" filter="url(#field-recede)"/>'
                    f'<path d="{edge}" fill="none" stroke="{tint(pale(c2,.9,.92),1.3)}" stroke-width="{.9+1.4*p["history"]:.2f}" opacity="{.9*articulate:.3f}" filter="url(#field-fine)"/></g>')
     svg.append(f'''
-  <path d="{outline}" fill="url(#field-ink)" opacity="{strength*.28*(1-.4*weave):.3f}" filter="url(#field-soft)"/>
+  <path d="{outline}" fill="url(#field-ink)" opacity="{strength*.28*(1-.4*weave)*glow:.3f}" filter="url(#field-soft)"/>
   <path d="{outline}" fill="url(#field-ink)" opacity="{strength*(.18+.23*d)*(1-.78*weave):.3f}" filter="url(#field-diffuse)"/>
   <path d="{tapered_strip(.11,.9,.79,.15)}" fill="url(#field-depth)" opacity="{strength*(.08+.16*d):.3f}" filter="url(#field-diffuse)"/>
   <g id="field-surface" opacity="{strength*(.35+.1*d):.3f}" filter="url(#field-diffuse)">''')
@@ -549,16 +563,16 @@ def render(spec, treatments=None):
         for i in range(1, len(edges) - 1):
             lo, hi = .02 + .05*((i*7) % 5)/5, .98 - .05*((i*3) % 4)/4
             groove = lens_along(lambda u, e=edges[i]: thread_course(e, u), lo, hi,
-                                lambda u, lo=lo, hi=hi: .0105*relief*bump(u, lo, hi, 1.4), 44)
-            svg.append(f'<path d="{groove}" fill="url(#field-shade)" opacity="{(.34+.2*d)*met(edges[i]):.3f}"/>')
+                                lambda u, lo=lo, hi=hi: .017*relief*bump(u, lo, hi, 1.4), 44)
+            svg.append(f'<path d="{groove}" fill="url(#field-shade)" opacity="{(.5+.3*d)*met(edges[i]):.3f}"/>')
         svg.append('</g><g id="field-fibre-crests">')
         for i in range(len(edges) - 1 if len(edges) > 2 else 0):
             lo, hi = .03 + .05*((i*5) % 4)/4, .97 - .05*((i*7) % 5)/5
             width = edges[i+1] - edges[i]
             emphasis = .5 + .5*math.sin(1.7*i + .4)**2
             crest = lens_along(lambda u, x=edges[i] + .38*width: thread_course(x, u), lo, hi,
-                               lambda u, w=width, lo=lo, hi=hi: .2*w*bump(u, lo, hi, 1.4), 44)
-            svg.append(f'<path d="{crest}" fill="url(#field-tint)" opacity="{(.3+.45*emphasis)*(.6+.4*d)*met(edges[i] + .38*width):.3f}"/>')
+                               lambda u, w=width, lo=lo, hi=hi: .26*w*bump(u, lo, hi, 1.4), 44)
+            svg.append(f'<path d="{crest}" fill="url(#field-tint)" opacity="{(.4+.5*emphasis)*(.6+.4*d)*met(edges[i] + .38*width):.3f}"/>')
         svg.append('</g>')
     count = 0 if A['complexity'] == 'fibres' else 1 + round(c * 10)
     for j in range(count):
@@ -596,34 +610,29 @@ def render(spec, treatments=None):
         # A held outer edge keeps the described form exact where it is not filled.
         svg.append(f'<path d="{points_path([surface_point(u, .02) for u in us])}" stroke="url(#field-rib)" stroke-width="{.7+1.1*weave+.4*fine:.2f}" opacity="{.3+.4*weave:.3f}"/>')
         svg.append('</g>')
-    svg.append(f'<path id="field-shoulder-light" d="{tapered_strip(.07,.94,.31+.5*weave,(.13+.035*breadth)*(1-.45*weave),.12)}" fill="url(#field-crest)" opacity="{strength*(.45+.4*d):.3f}" filter="url(#field-diffuse)"/>')
+    svg.append(f'<path id="field-shoulder-light" d="{tapered_strip(.07,.94,.31+.5*weave,(.13+.035*breadth)*(1-.45*weave),.12)}" fill="url(#field-crest)" opacity="{strength*(.45+.4*d)*(.6+.4*glow):.3f}" filter="url(#field-diffuse)"/>')
     if A['hue'] == 'surface':
         # Each hue family has a surface of its own as well as its colour, as
         # Listening gives each a timbre: blue crisp and clear, violet
         # pearlescent, amber soft, coral satin, pearl luminous, teal plain.
-        weights = {}
-        for name, w in ((p['primary'], .62), (p['secondary'] or p['primary'], .38)):
-            weights[name] = weights.get(name, 0) + w
         svg.append('<g id="field-hue-surface" filter="url(#field-fine)">')
         w = weights.get('blue', 0)
         if w:
-            hue = pigment('blue')
             crisp = [surface_point(u, .2) for u in us if .09 <= u <= .88]
             rim = [surface_point(u, .9) for u in us if .3 <= u <= .8]
-            svg.append(f'<path d="{points_path(crisp)}" fill="none" stroke="{tint(hue, 1.9*glow)}" stroke-width="{.9+.7*d:.2f}" opacity="{.75*w*(.5+.5*d):.3f}"/>'
-                       f'<path d="{points_path(rim)}" fill="none" stroke="{tint(hue, 1.7*glow)}" stroke-width=".8" opacity="{.4*w*(.5+.5*d):.3f}"/>')
+            svg.append(f'<path d="{points_path(crisp)}" fill="none" stroke="url(#field-crisp)" stroke-width="{.9+.7*d:.2f}" opacity="{.75*w*(.5+.5*d):.3f}"/>'
+                       f'<path d="{points_path(rim)}" fill="none" stroke="url(#field-crisp)" stroke-width=".8" opacity="{.4*w*(.5+.5*d):.3f}"/>')
         w = weights.get('violet', 0)
         if w:
-            hue = pigment('violet')
-            svg.append(f'<path d="{tapered_strip(.06,.92,.15,.12,.1)}" fill="{tint(turn_hue(hue, 14), 1.32*glow)}" opacity="{.62*w:.3f}" filter="url(#field-soft)"/>'
-                       f'<path d="{tapered_strip(.14,.86,.78,.11,.1)}" fill="{tint(turn_hue(hue, -16, 1.15), 1.08*glow)}" opacity="{.5*w:.3f}" filter="url(#field-soft)"/>'
-                       f'<path d="{tapered_strip(.2,.8,.46,.05,.12)}" fill="{tint(turn_hue(hue, 30, .9), 1.4*glow)}" opacity="{.35*w:.3f}" filter="url(#field-diffuse)"/>')
+            svg.append(f'<path d="{tapered_strip(.06,.92,.15,.12,.1)}" fill="url(#field-pearl-a)" opacity="{.62*w:.3f}" filter="url(#field-soft)"/>'
+                       f'<path d="{tapered_strip(.14,.86,.78,.11,.1)}" fill="url(#field-pearl-b)" opacity="{.5*w:.3f}" filter="url(#field-soft)"/>'
+                       f'<path d="{tapered_strip(.2,.8,.46,.05,.12)}" fill="url(#field-pearl-c)" opacity="{.35*w:.3f}" filter="url(#field-diffuse)"/>')
         w = weights.get('amber', 0)
         if w:
-            svg.append(f'<path d="{tapered_strip(.05,.95,.5,.42)}" fill="{tint(pigment("amber"), 1.05*glow)}" opacity="{.32*w:.3f}" filter="url(#field-soft)"/>')
+            svg.append(f'<path d="{tapered_strip(.05,.95,.5,.42)}" fill="url(#field-tint)" opacity="{.32*w:.3f}" filter="url(#field-soft)"/>')
         w = weights.get('coral', 0)
         if w:
-            svg.append(f'<path d="{tapered_strip(.1,.9,.32,.1,.1)}" fill="{tint(pigment("coral"), 1.35*glow)}" opacity="{.4*w:.3f}" filter="url(#field-diffuse)"/>')
+            svg.append(f'<path d="{tapered_strip(.1,.9,.32,.1,.1)}" fill="url(#field-tint)" opacity="{.4*w:.3f}" filter="url(#field-diffuse)"/>')
         w = weights.get('pearl', 0)
         if w:
             svg.append(f'<path d="{tapered_strip(.08,.92,.42,.26)}" fill="#EEF3F6" opacity="{.22*w:.3f}" filter="url(#field-soft)"/>')
@@ -706,14 +715,15 @@ def render(spec, treatments=None):
     if p["accent"] and A['accent'] == 'vein':
         # A vein: the accent's quality running through the material like a
         # mineral inclusion, with a little of its colour diffused round it. Its
-        # line is only as sharp as the field is articulated.
+        # line is denser than the material round it, so it stays its own colour
+        # where it crosses another, and only as sharp as the field is articulated.
         s_ = p['accent_strength']
         span = .13 + .3*s_
         lo, hi = max(.05, .5 - span), min(.95, .5 + span)
         spread = lens_along(vein_course, lo, hi, lambda u: (.035 + .1*s_)*bump(u, lo, hi, .8), 80)
         line = lens_along(vein_course, lo, hi, lambda u: (.008 + .032*s_)*bump(u, lo, hi, .7), 80)
         svg.append(f'<path d="{spread}" fill="{ca}" opacity="{.14+.36*s_:.3f}" filter="url(#field-soft)"/>'
-                   f'<path d="{line}" fill="{tint(ca, 1.12*glow, 1.2)}" opacity="{.45+.5*s_:.3f}" filter="url(#field-fine)"/>')
+                   f'<path d="{line}" fill="{shade(ca, .9, 1.2)}" opacity="{.7+.3*s_:.3f}" filter="url(#field-fine)"/>')
     elif p["accent"]:
         # Accent lives within the same envelope; its location is not a topic axis.
         seg = [surface_point(u, .57) for u in us if .37 <= u <= .69]
@@ -735,7 +745,8 @@ def render(spec, treatments=None):
             return .5 + .3*math.sin(phase)*math.sin(math.pi*v)**.5
         def half(u):
             return (.085 + .045*gs)*bump(u, ua, ub, .35)
-        strand = [mix(c1, c2, .2), mix(c1, c2, .7)]
+        # Each strand is one of the field's two hues; a blend of the two would grey.
+        strand = [c1, c2]
         for j in (0, 1):
             svg.append(f'<path d="{lens_along(lambda u, j=j: course(u, j), ua, ub, half, 90)}" fill="{tint(strand[j], .92*glow, 1.1)}" stroke="none" opacity="{.14+.22*gs:.3f}" filter="url(#field-diffuse)"/>')
         crossings = [ua] + [ua + (ub - ua)*x for x in (.2, .4, .6, .8)] + [ub]

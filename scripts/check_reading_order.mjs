@@ -177,6 +177,10 @@ try {
   const shared = Object.keys(studies).filter(name => studies[name].grounding === undefined);
   const hasPearl = name => ['primary', 'secondary', 'accent'].some(key => studies[name][key] === 'pearl');
   const grounded = Object.hasOwn(candidate.DEFAULTS, 'grounding');
+  // From 4.6 a field turns only as far as history allows, so the same controls
+  // can stand at another angle in the baseline. Its fields are drawn at the
+  // candidate's posture: these clauses are about colour and marks, not angle.
+  const atPosture = candidate.posture || (spec => spec);
   console.log(`Rendering revision ${candidate.REVISION}${commit ? ' at ' + commit : ''}, against revision ${before.REVISION}, at ${WIDTH}px.`);
 
   // A field that carries every second-look mark, so each has the chance to be too loud.
@@ -185,7 +189,7 @@ try {
     gesture: 'braid', gesture_strength: .6};
   const steps = [.05, .2, .4, .6, .8, 1];
   const sweep = (await shots(steps.map(definition => candidate.render({...marked, definition})))).map(fineDetail);
-  const sweepBefore = (await shots(steps.map(definition => before.render({...marked, definition})))).map(fineDetail);
+  const sweepBefore = (await shots(steps.map(definition => before.render(atPosture({...marked, definition}))))).map(fineDetail);
   heading('Fine detail follows definition: % of the frame, on a field carrying every mark');
   steps.forEach((definition, i) => {
     if (i) line(`definition ${steps[i-1]} to ${definition}`, sweep[i], sweep[i-1], sweep[i] >= sweep[i-1]-.05, '≥');
@@ -195,7 +199,7 @@ try {
   steps.forEach((definition, i) => { if (definition <= .2) line(`every mark, definition ${definition}`, sweep[i], sweepBefore[i], sweep[i] <= sweepBefore[i], '≤'); });
 
   const drawn = await shots(shared.map(name => candidate.render(studies[name])));
-  const drawnBefore = await shots(shared.map(name => before.render(studies[name])));
+  const drawnBefore = await shots(shared.map(name => before.render(atPosture(studies[name]))));
   const fine = Object.fromEntries(shared.map((name, i) => [name, fineDetail(drawn[i])]));
   const at = shared.indexOf('tentative');
   line('tentative', fine.tentative, fineDetail(drawnBefore[at]), fine.tentative <= fineDetail(drawnBefore[at]), '≤');
