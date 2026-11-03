@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render Field grammar v4, rendering revision 4.5. Python standard library only."""
+"""Render Field grammar v4, rendering revision 4.6. Python standard library only."""
 import argparse
 import json
 import math
@@ -10,7 +10,23 @@ PALETTE = {
     "teal": "#42BDB0", "blue": "#648DE5", "violet": "#9B7BE8",
     "amber": "#E8B86A", "coral": "#D97979", "pearl": "#DDE5EA",
 }
-RENDERER_REVISION = "4.5"
+RENDERER_REVISION = "4.6"
+# Revision 4.6 gives each quiet meaning a material phenomenon of its own within
+# the one form (the axes study's Inlay, 25 October 2026), drawn under 4.5's
+# rules. Each treatment can be set back to 4.5's drawing; with every entry at
+# "4.5" the output is revision 4.5's, byte for byte (scripts/check_revision_base.py).
+TREATMENTS = {
+    "intensity": "emission",   # salience is emitted light; matter keeps its density
+    "counterpoint": "core",    # a current inside the material, the fibres parting round it
+    "history": "sheet",        # an earlier sheet standing just behind the present surface
+    "tension": "fringes",      # stress fringes at a seat that flattens only slightly
+    "complexity": "fibres",    # the band resolves into strands
+    "accent": "vein",          # a winding inclusion of the accent's colour
+    "gesture": "structural",   # fold and braid change the structure; the echo stays inside the band
+    "hue": "surface",          # each hue family has a surface of its own
+    "turn": "history",         # the field turns from rest only as far as history allows
+}
+REVISION_4_5 = dict.fromkeys(TREATMENTS, "4.5")
 
 
 def srgb_to_linear(v):
@@ -102,20 +118,23 @@ def validate(spec):
     return p
 
 
-def points_path(points, close=False):
+def points_path(points, close=False, digits=2):
     """Interpolate a sampled contour without visible polygon corners."""
-    result = [f"M{points[0][0]:.2f},{points[0][1]:.2f}"]
+    q = f".{digits}f"
+    result = [f"M{points[0][0]:{q}},{points[0][1]:{q}}"]
     for i in range(len(points) - 1):
         before, here = points[max(0, i - 1)], points[i]
         after, beyond = points[i + 1], points[min(len(points) - 1, i + 2)]
         c1 = tuple(here[k] + (after[k] - before[k]) / 6 for k in (0, 1))
         c2 = tuple(after[k] - (beyond[k] - here[k]) / 6 for k in (0, 1))
-        result.append(f"C{c1[0]:.2f},{c1[1]:.2f} {c2[0]:.2f},{c2[1]:.2f} {after[0]:.2f},{after[1]:.2f}")
+        result.append(f"C{c1[0]:{q}},{c1[1]:{q}} {c2[0]:{q}},{c2[1]:{q}} {after[0]:{q}},{after[1]:{q}}")
     return " ".join(result) + (" Z" if close else "")
 
 
-def render(spec):
+def render(spec, treatments=None):
     p = validate(spec)
+    A = TREATMENTS if treatments is None else treatments
+    revision = "4.5" if A == REVISION_4_5 else RENDERER_REVISION
     def pigment(name):
         lightness, a, b = to_oklab(PALETTE[name])
         return oklab_hex((lightness, a*p['saturation'], b*p['saturation']))
@@ -180,8 +199,18 @@ def render(spec):
     gap = math.radians(6 + 112 * o)
     start = -0.42 + gap / 2
     end = 2 * math.pi - 0.42 - gap / 2
-    turn = math.radians(-18 + 38*p['flow'])
-    strength = 0.26 + 0.65 * power
+    # The field turns away from its resting angle only as far as an earlier
+    # change still holds it, so the turn itself says what is retained.
+    turning = p['history'] if A['turn'] == 'history' else 1
+    turn = math.radians(-18 + 38*p['flow']*turning)
+    if A['intensity'] == 'emission':
+        # Salience is emitted light. Matter keeps its density whatever the
+        # intensity, so a quiet field is dim but present, never thinned.
+        strength, glow, halo = .26 + .65*.55, .5 + power, .75 + .5*power
+        lit = tint
+    else:
+        strength, glow, halo = 0.26 + 0.65 * power, 1, 1
+        lit = light
 
     def bezier(u, p0, p1, p2, p3):
         v = 1-u
@@ -201,12 +230,20 @@ def render(spec):
                     x, y = bezier(2*u-1, (0,-250), (180,-255), (360,-50), (285,180))
             envelope = math.sin(math.pi*u)
             x = x*a/295 + 34*skew*envelope + 15*fold*math.sin(5*math.pi*u-.7)*envelope
-            y = y*b/215 + 30*t*math.exp(-((u-.48)/.13)**2) + 22*fold*math.sin(3*math.pi*u+.25)*envelope
+            if A['tension'] == 'fringes':
+                # Pressure flattens the seat a little; it never dents it.
+                press = 18*t*math.exp(-((u-.48)/.28)**2)
+            else:
+                press = 30*t*math.exp(-((u-.48)/.13)**2)
+            y = y*b/215 + press + 22*fold*math.sin(3*math.pi*u+.25)*envelope
             return (x*math.cos(turn)-y*math.sin(turn), x*math.sin(turn)+y*math.cos(turn))
         theta = start + (end - start) * u
         phase = math.atan2(math.sin(theta - 2.65), math.cos(theta - 2.65))
-        strain = math.exp(-(phase / 0.38) ** 2)
-        r = 1 - 0.36 * t * strain + 0.065 * skew * math.cos(theta)
+        if A['tension'] == 'fringes':
+            r = 1 - .18 * t * math.exp(-(phase / .75) ** 2) + 0.065 * skew * math.cos(theta)
+        else:
+            strain = math.exp(-(phase / 0.38) ** 2)
+            r = 1 - 0.36 * t * strain + 0.065 * skew * math.cos(theta)
         r += fold*(.18*math.sin(3*theta+.5) + .07*math.cos(5*theta-.7))
         r += ripple * math.sin(theta * (5 + 3*c) + 0.7)
         x = (a - inset) * math.cos(theta) * r
@@ -215,37 +252,54 @@ def render(spec):
         return (x * math.cos(turn) - y * math.sin(turn),
                 x * math.sin(turn) + y * math.cos(turn))
 
-    # Keep every expressive posture in the same frame with substantial margins.
-    extent = max(abs(v) for i in range(201) for v in raw_point(i/200))
-    fit = min(1, 395/max(1, extent))
-
-    def point(u, inset=0, ripple=0):
+    def offset_raw(u, inset=0, ripple=0):
+        # A point moved `inset` into the material from the outer edge, before
+        # fitting; a negative inset lies beyond the outer edge.
         if form == 'envelope':
-            x, y = raw_point(u, inset, ripple)
-        else:
-            x, y = raw_point(u)
-            before = raw_point(max(0,u-.001))
-            after = raw_point(min(1,u+.001))
-            dx, dy = after[0]-before[0], after[1]-before[1]
-            length = max(1e-6, math.hypot(dx, dy))
-            nx, ny = ((dy/length, -dx/length) if form == 'sweep'
-                      else (-dy/length, dx/length))
-            x += inset*nx
-            y += inset*ny
-        return (500 + fit*x, 500 + fit*y)
-
-    n = 96
-    us = [i / n for i in range(n + 1)]
+            return raw_point(u, inset, ripple)
+        x, y = raw_point(u)
+        before = raw_point(max(0,u-.001))
+        after = raw_point(min(1,u+.001))
+        dx, dy = after[0]-before[0], after[1]-before[1]
+        length = max(1e-6, math.hypot(dx, dy))
+        nx, ny = ((dy/length, -dx/length) if form == 'sweep'
+                  else (-dy/length, dx/length))
+        x += inset*nx
+        y += inset*ny
+        return (x, y)
 
     def thickness(u):
         theta = start + (end - start) * u
         taper = max(0, math.sin(math.pi * u)) ** 0.42
-        width = (16 + 91*breadth + 17*power + 15*(1-d))
+        width = (16 + 91*breadth + 17*(.5 if A['intensity'] == 'emission' else power) + 15*(1-d))
         width *= taper * (.78 + .22*math.sin(theta+fold))
         pinch_phase = math.atan2(math.sin(theta-2.65), math.cos(theta-2.65))
         pinch = math.exp(-(pinch_phase/.45)**2)
-        width *= (1-.18*t*pinch) * (1+.17*fold*math.sin(3*theta+.8))
+        width *= (1-(.05 if A['tension'] == 'fringes' else .18)*t*pinch) * (1+.17*fold*math.sin(3*theta+.8))
         return min(width, min(a,b)*.48)
+
+    sheet = A['history'] == 'sheet' and p['history']
+
+    def sheet_lift(u):
+        # How far the earlier sheet stands beyond the present outer edge: always
+        # well under the band's own width, so the two overlap and never fork
+        # open, and nothing at either tip, where they rejoin.
+        return p['history']*.62*thickness(u)*math.sin(math.pi*u)**.7*(.62+.38*u)*(.9+.1*math.cos(3*math.pi*u+.4))
+
+    # Keep every expressive posture in the same frame with substantial margins,
+    # counting an earlier sheet that stands beyond the outer edge.
+    if sheet:
+        extent = max(abs(v) for i in range(201) for v in offset_raw(i/200, -sheet_lift(i/200)))
+    else:
+        extent = max(abs(v) for i in range(201) for v in raw_point(i/200))
+    fit = min(1, 395/max(1, extent))
+
+    def point(u, inset=0, ripple=0):
+        x, y = offset_raw(u, inset, ripple)
+        return (500 + fit*x, 500 + fit*y)
+
+    n = 96
+    us = [i / n for i in range(n + 1)]
 
     def surface_point(u, fraction):
         # Small changes of surface direction reveal the existing folds. The two
@@ -304,6 +358,82 @@ def render(spec):
         near, far = across(0), across(1)
         return closed(near, far), closed(across(.45), far), closed(near, across(.3)), points_path(far)
 
+    # Revision 4.6's marks are properties of the same surface, drawn through
+    # surface fractions, so the outline stays one continuous curve.
+    def bump(u, u0, u1, power=1.0):
+        return math.sin(math.pi*(u-u0)/(u1-u0))**power if u0 < u < u1 else 0.0
+
+    def band(fa, fb, u0=0., u1=1., steps=64, at=None):
+        # A region of the surface between two fractions that may vary along it.
+        at = at or surface_point
+        section = [u0 + (u1-u0)*i/steps for i in range(steps+1)]
+        outside = [at(u, fa(u)) for u in section]
+        inside = [at(u, fb(u)) for u in reversed(section)]
+        return points_path(outside, digits=1) + " " + points_path(inside, digits=1).replace("M", "L", 1) + " Z"
+
+    def lens_along(course, u0, u1, half, steps=72, at=None):
+        # A thread of material that thickens and thins along a course.
+        return band(lambda u: course(u) - half(u), lambda u: course(u) + half(u), u0, u1, steps, at)
+
+    def loop_path(points):
+        # A closed curve with no seam: the interpolation wraps around.
+        k = len(points)
+        result = [f"M{points[0][0]:.2f},{points[0][1]:.2f}"]
+        for i in range(k):
+            before, here = points[(i-1) % k], points[i]
+            after, beyond = points[(i+1) % k], points[(i+2) % k]
+            c1 = tuple(here[q] + (after[q] - before[q]) / 6 for q in (0, 1))
+            c2 = tuple(after[q] - (beyond[q] - here[q]) / 6 for q in (0, 1))
+            result.append(f"C{c1[0]:.2f},{c1[1]:.2f} {c2[0]:.2f},{c2[1]:.2f} {after[0]:.2f},{after[1]:.2f}")
+        return " ".join(result) + " Z"
+
+    def sheet_point(u, fraction):
+        # The earlier sheet: the same surface, lifted beyond the present one.
+        return point(u, thickness(u)*fraction - sheet_lift(u))
+
+    core = A['counterpoint'] == 'core' and p['counterpoint']
+
+    def core_half(u):
+        # Nothing at either tip, so the fibres part around the core and rejoin.
+        return .2*p['counterpoint']**.8*bump(u, .08, .92, 1.15) if core else 0.0
+
+    def core_centre(u):
+        return .5 + .05*math.sin(2*math.pi*(.7*u + .2))
+
+    def thread_course(fi, u):
+        # Where a strand at fraction fi runs once it has parted round the core.
+        centre, half = core_centre(u), core_half(u)
+        if not half:
+            return fi
+        if fi < centre:
+            return fi*(centre - half)/centre
+        return 1 - (1 - fi)*(1 - centre - half)/(1 - centre)
+
+    def fibre_edges():
+        # Strand boundaries across the band, at uneven, grown intervals.
+        count = 1 + round(17*c)
+        widths = [1 + .45*math.sin(2.4*i+1.1) + .25*math.sin(5.3*i+.3) for i in range(count)]
+        total = sum(widths)
+        edges = [0.0]
+        for w in widths:
+            edges.append(edges[-1] + w/total)
+        return edges
+
+    def vein_course(u):
+        # A meandering course at an uneven rhythm. Beside a core it keeps to
+        # the outer slope, so the two never share a place.
+        if core:
+            return (.24 + .06*math.sin(2*math.pi*(1.08*u+.12)) + .03*math.sin(2*math.pi*(2.9*u+.4))
+                    + .015*math.sin(2*math.pi*(6.3*u+.2)))
+        return (.52 + .17*math.sin(2*math.pi*(1.08*u+.12)) + .07*math.sin(2*math.pi*(2.9*u+.4))
+                + .03*math.sin(2*math.pi*(6.3*u+.2)))
+
+    def turn_hue(color, degrees, chroma=1):
+        # The same lightness at a neighbouring hue: the play of colour in a pearlescent surface.
+        lightness, a_, b_ = to_oklab(color)
+        q = math.radians(degrees)
+        return oklab_hex((lightness, (a_*math.cos(q) - b_*math.sin(q))*chroma, (a_*math.sin(q) + b_*math.cos(q))*chroma))
+
     outline = ribbon(0, 1)
     # The visible seat of compression, following the geometry that tension bends.
     strain_u = min(.86, max(.14, (2.65-start)/(end-start))) if form == 'envelope' else .48
@@ -322,22 +452,25 @@ def render(spec):
                 f'<stop stop-color="{colors[0]}"/><stop offset=".38" stop-color="{colors[1]}"/>'
                 f'<stop offset=".69" stop-color="{colors[2]}"/><stop offset="1" stop-color="{colors[3]}"/></linearGradient>')
     soft = 1.5 + 18 * (1 - d)
+    # Revision 4.5's inks for the marks that 4.6 draws another way.
+    accent_ink = ('' if A['accent'] == 'vein' else
+                  f'\n  <linearGradient id="field-accent-ink"><stop stop-color="{ca}" stop-opacity="0"/><stop offset=".5" stop-color="{ca}" stop-opacity=".72"/><stop offset="1" stop-color="{ca}" stop-opacity="0"/></linearGradient>')
+    history_ink = ('' if A['history'] == 'sheet' else
+                   f'  <linearGradient id="field-history-ink" gradientUnits="userSpaceOnUse" x1="190" y1="730" x2="810" y2="270"><stop stop-color="{pale(c2,.66,.92)}" stop-opacity=".6"/><stop offset=".47" stop-color="{pale(c1,.88,.92)}" stop-opacity=".9"/><stop offset="1" stop-color="{pale(c2,.64,.92)}" stop-opacity=".55"/></linearGradient>\n')
     metadata = escape(json.dumps(p, sort_keys=True, separators=(",", ":")))
-    svg = [f'''<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000" viewBox="0 0 1000 1000" role="img" aria-label="A central titanium capsule with a unified abstract field" data-field-version="4" data-field-renderer="{RENDERER_REVISION}">
+    svg = [f'''<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000" viewBox="0 0 1000 1000" role="img" aria-label="A central titanium capsule with a unified abstract field" data-field-version="4" data-field-renderer="{revision}">
 <metadata id="field-spec">{metadata}</metadata>
 <defs>
   <radialGradient id="background" gradientUnits="userSpaceOnUse" cx="500" cy="500" r="500"><stop stop-color="{bg_centre}"/><stop offset="1" stop-color="{bg_edge}"/></radialGradient>
   <linearGradient id="field-ink" x1="18%" y1="72%" x2="82%" y2="27%"><stop stop-color="{c1}"/><stop offset=".38" stop-color="{c2}"/><stop offset=".69" stop-color="{mix(c1,ca,p['accent_strength']*.85) if p['accent'] else c1}"/><stop offset="1" stop-color="{c1}"/></linearGradient>
-  <radialGradient id="field-atmosphere"><stop stop-color="{c1}" stop-opacity="{.07+.18*breadth:.3f}"/><stop offset=".6" stop-color="{c2}" stop-opacity="{.02+.08*breadth:.3f}"/><stop offset="1" stop-color="{c1}" stop-opacity="0"/></radialGradient>
-  <linearGradient id="field-accent-ink"><stop stop-color="{ca}" stop-opacity="0"/><stop offset=".5" stop-color="{ca}" stop-opacity=".72"/><stop offset="1" stop-color="{ca}" stop-opacity="0"/></linearGradient>
+  <radialGradient id="field-atmosphere"><stop stop-color="{c1}" stop-opacity="{(.07+.18*breadth)*halo:.3f}"/><stop offset=".6" stop-color="{c2}" stop-opacity="{(.02+.08*breadth)*halo:.3f}"/><stop offset="1" stop-color="{c1}" stop-opacity="0"/></radialGradient>{accent_ink}
   <linearGradient id="field-edge-ink" gradientUnits="userSpaceOnUse" x1="180" y1="720" x2="820" y2="270"><stop stop-color="{c1}" stop-opacity=".1"/><stop offset=".32" stop-color="{c2}" stop-opacity=".75"/><stop offset=".58" stop-color="{c1}" stop-opacity=".15"/><stop offset="1" stop-color="{c1}" stop-opacity=".6"/></linearGradient>
-  <linearGradient id="field-crest" gradientUnits="userSpaceOnUse" x1="170" y1="690" x2="790" y2="280"><stop stop-color="{light(c1,1.28)}" stop-opacity=".25"/><stop offset=".36" stop-color="{light(c2,1.45)}" stop-opacity=".9"/><stop offset=".68" stop-color="{light(c1,1.3)}" stop-opacity=".35"/><stop offset="1" stop-color="{light(c1,1.4)}" stop-opacity=".65"/></linearGradient>
+  <linearGradient id="field-crest" gradientUnits="userSpaceOnUse" x1="170" y1="690" x2="790" y2="280"><stop stop-color="{lit(c1,1.28*glow)}" stop-opacity=".25"/><stop offset=".36" stop-color="{lit(c2,1.45*glow)}" stop-opacity=".9"/><stop offset=".68" stop-color="{lit(c1,1.3*glow)}" stop-opacity=".35"/><stop offset="1" stop-color="{lit(c1,1.4*glow)}" stop-opacity=".65"/></linearGradient>
   <linearGradient id="field-depth" gradientUnits="userSpaceOnUse" x1="230" y1="730" x2="760" y2="300"><stop stop-color="#0B1520" stop-opacity="0"/><stop offset=".35" stop-color="#0B1520" stop-opacity=".48"/><stop offset=".7" stop-color="#0B1520" stop-opacity=".1"/><stop offset="1" stop-color="#0B1520" stop-opacity=".3"/></linearGradient>
-  {page_ink('field-tint', [tint(color, 1.08, 1.5) for color in body_colors])}
+  {page_ink('field-tint', [tint(color, 1.08*glow, 1.5) for color in body_colors])}
   {page_ink('field-shade', [shade(color, .68, 1.15) for color in body_colors])}
   {page_ink('field-rib', [tint(color, 1.3, 1.15) for color in body_colors])}
-  <linearGradient id="field-history-ink" gradientUnits="userSpaceOnUse" x1="190" y1="730" x2="810" y2="270"><stop stop-color="{pale(c2,.66,.92)}" stop-opacity=".6"/><stop offset=".47" stop-color="{pale(c1,.88,.92)}" stop-opacity=".9"/><stop offset="1" stop-color="{pale(c2,.64,.92)}" stop-opacity=".55"/></linearGradient>
-  <linearGradient id="field-counter-ink" gradientUnits="userSpaceOnUse" x1="180" y1="720" x2="820" y2="270"><stop stop-color="{shade(counter_hue,.6,1.2)}"/><stop offset=".42" stop-color="{shade(counter_hue,.8,1.2)}"/><stop offset="1" stop-color="{shade(counter_hue,.64,1.2)}"/></linearGradient>
+{history_ink}  <linearGradient id="field-counter-ink" gradientUnits="userSpaceOnUse" x1="180" y1="720" x2="820" y2="270"><stop stop-color="{shade(counter_hue,.6,1.2)}"/><stop offset=".42" stop-color="{shade(counter_hue,.8,1.2)}"/><stop offset="1" stop-color="{shade(counter_hue,.64,1.2)}"/></linearGradient>
   <linearGradient id="drone-metal" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#34414D"/><stop offset=".5" stop-color="#202B35"/><stop offset="1" stop-color="#101922"/></linearGradient>
   <linearGradient id="drone-rim" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#DDE5EA" stop-opacity=".68"/><stop offset=".6" stop-color="#8C9BA9" stop-opacity=".21"/><stop offset="1" stop-color="#DDE5EA" stop-opacity=".30"/></linearGradient>
   <filter id="field-soft" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="{soft:.2f}"/></filter>
@@ -354,13 +487,37 @@ def render(spec):
         f = (j + .5) / lanes
         illumination = .46 + .66 * math.exp(-((f - .27) / .3) ** 2)
         illumination += .16 * math.exp(-((f - .91) / .13) ** 2)
-        shades = [light(color, illumination) for color in body_colors]
+        shades = [lit(color, illumination*glow) for color in body_colors]
         svg.append(f'<linearGradient id="field-skin-{j}" gradientUnits="userSpaceOnUse" x1="180" y1="720" x2="820" y2="270"><stop stop-color="{shades[0]}"/><stop offset=".38" stop-color="{shades[1]}"/><stop offset=".69" stop-color="{shades[2]}"/><stop offset="1" stop-color="{shades[3]}"/></linearGradient>')
+    sheet_lanes = 9
+    if sheet:
+        # The earlier sheet is the same material, older: deeper than the present
+        # skin and nearly as coloured. Drawn paler, it read as grounding's
+        # withdrawn matter instead of as history (axes study, words-only pairs).
+        for j in range(sheet_lanes):
+            f = (j + .5) / sheet_lanes
+            illumination = .52 + .58 * math.exp(-((f - .27) / .3) ** 2)
+            svg.append(page_ink(f'field-sheet-{j}', [tint(color, illumination*.8*glow, .92) for color in (c1, c2, c1, c1)]))
     svg.append(f'''</defs>
 <rect id="field-background" width="1000" height="1000" fill="url(#background)"/>
 <g id="field-envelope">
   <ellipse cx="500" cy="500" rx="{min(435,a*fit+45):.2f}" ry="{min(420,b*fit+65):.2f}" fill="url(#field-atmosphere)" transform="rotate({-18+38*p['flow']:.2f} 500 500)"/>''')
-    if p['history']:
+    if sheet:
+        # Behind the present surface and sharing its tips: the field as it was
+        # held before a change that still matters. It overlaps the present sheet
+        # throughout, so no gap opens between them, and like any retained mark it
+        # keeps its shape only as far as the field is articulated.
+        svg.append(f'<g id="field-history" opacity="{strength*(.55+.4*p["history"]**.6)*(.86+.14*d):.3f}"><g filter="url(#field-recede)">')
+        for j in range(sheet_lanes):
+            region = band(lambda u, j=j: j/sheet_lanes, lambda u, j=j: min(1, (j+1.6)/sheet_lanes), steps=56, at=sheet_point)
+            svg.append(f'<path d="{region}" fill="url(#field-sheet-{j})" opacity=".62"/>')
+        svg.append('</g>')
+        # Its lit outer edge thins into both tips, where the two sheets meet.
+        edge = band(lambda u: 0., lambda u: .03*math.sin(math.pi*u)**.6, .02, .98, 72, at=sheet_point)
+        lift = band(lambda u: .2, lambda u: .2 + .07*math.sin(math.pi*u)**.5, .06, .94, 72, at=sheet_point)
+        svg.append(f'<path d="{edge}" fill="{tint(pale(c2,.9,.92),1.3*glow)}" opacity="{.9*articulate:.3f}" filter="url(#field-fine)"/>'
+                   f'<path d="{lift}" fill="{tint(pale(c1,.95,.92),1.2*glow)}" opacity=".45" filter="url(#field-diffuse)"/></g>')
+    elif p['history'] and A['history'] != 'sheet':
         ridge, edge = history_ridge()
         # Older material in the same hues, dimmer and duller. Its lit edge is an
         # articulated edge like any other, so it is there only when definition is.
@@ -380,7 +537,30 @@ def render(spec):
     svg.append('  </g>')
     # Threads are the grain of the material. Light, the second current and strain lie over them.
     svg.append(f'<g id="field-filaments" fill="none" stroke-linecap="round" opacity="{strength*(.42+.58*d):.3f}" filter="url(#field-fine)">')
-    count = 1 + round(c * 10)
+    if A['complexity'] == 'fibres':
+        # The band resolves into strands, each catching its own light, like a
+        # silk cable: one smooth sheet when simple, a bundle when rich. Widths
+        # and emphasis vary, every strand tapers into the tips, and a strand
+        # thins with the material where the reading was not met.
+        def met(f):
+            return 1 if f >= weave else .3 + .7*(f/max(1e-6, weave))**.7
+        edges, relief = fibre_edges(), .72 + 1.15*breadth
+        svg.append('<g id="field-fibre-grooves">')
+        for i in range(1, len(edges) - 1):
+            lo, hi = .02 + .05*((i*7) % 5)/5, .98 - .05*((i*3) % 4)/4
+            groove = lens_along(lambda u, e=edges[i]: thread_course(e, u), lo, hi,
+                                lambda u, lo=lo, hi=hi: .0105*relief*bump(u, lo, hi, 1.4), 44)
+            svg.append(f'<path d="{groove}" fill="url(#field-shade)" opacity="{(.34+.2*d)*met(edges[i]):.3f}"/>')
+        svg.append('</g><g id="field-fibre-crests">')
+        for i in range(len(edges) - 1 if len(edges) > 2 else 0):
+            lo, hi = .03 + .05*((i*5) % 4)/4, .97 - .05*((i*7) % 5)/5
+            width = edges[i+1] - edges[i]
+            emphasis = .5 + .5*math.sin(1.7*i + .4)**2
+            crest = lens_along(lambda u, x=edges[i] + .38*width: thread_course(x, u), lo, hi,
+                               lambda u, w=width, lo=lo, hi=hi: .2*w*bump(u, lo, hi, 1.4), 44)
+            svg.append(f'<path d="{crest}" fill="url(#field-tint)" opacity="{(.3+.45*emphasis)*(.6+.4*d)*met(edges[i] + .38*width):.3f}"/>')
+        svg.append('</g>')
+    count = 0 if A['complexity'] == 'fibres' else 1 + round(c * 10)
     for j in range(count):
         # Uneven intervals and lost edges give a few lines compositional weight.
         f = .12 + .79 * ((j + 1) / (count + 1)) ** 1.45
@@ -417,7 +597,51 @@ def render(spec):
         svg.append(f'<path d="{points_path([surface_point(u, .02) for u in us])}" stroke="url(#field-rib)" stroke-width="{.7+1.1*weave+.4*fine:.2f}" opacity="{.3+.4*weave:.3f}"/>')
         svg.append('</g>')
     svg.append(f'<path id="field-shoulder-light" d="{tapered_strip(.07,.94,.31+.5*weave,(.13+.035*breadth)*(1-.45*weave),.12)}" fill="url(#field-crest)" opacity="{strength*(.45+.4*d):.3f}" filter="url(#field-diffuse)"/>')
-    if p['counterpoint']:
+    if A['hue'] == 'surface':
+        # Each hue family has a surface of its own as well as its colour, as
+        # Listening gives each a timbre: blue crisp and clear, violet
+        # pearlescent, amber soft, coral satin, pearl luminous, teal plain.
+        weights = {}
+        for name, w in ((p['primary'], .62), (p['secondary'] or p['primary'], .38)):
+            weights[name] = weights.get(name, 0) + w
+        svg.append('<g id="field-hue-surface" filter="url(#field-fine)">')
+        w = weights.get('blue', 0)
+        if w:
+            hue = pigment('blue')
+            crisp = [surface_point(u, .2) for u in us if .09 <= u <= .88]
+            rim = [surface_point(u, .9) for u in us if .3 <= u <= .8]
+            svg.append(f'<path d="{points_path(crisp)}" fill="none" stroke="{tint(hue, 1.9*glow)}" stroke-width="{.9+.7*d:.2f}" opacity="{.75*w*(.5+.5*d):.3f}"/>'
+                       f'<path d="{points_path(rim)}" fill="none" stroke="{tint(hue, 1.7*glow)}" stroke-width=".8" opacity="{.4*w*(.5+.5*d):.3f}"/>')
+        w = weights.get('violet', 0)
+        if w:
+            hue = pigment('violet')
+            svg.append(f'<path d="{tapered_strip(.06,.92,.15,.12,.1)}" fill="{tint(turn_hue(hue, 14), 1.32*glow)}" opacity="{.62*w:.3f}" filter="url(#field-soft)"/>'
+                       f'<path d="{tapered_strip(.14,.86,.78,.11,.1)}" fill="{tint(turn_hue(hue, -16, 1.15), 1.08*glow)}" opacity="{.5*w:.3f}" filter="url(#field-soft)"/>'
+                       f'<path d="{tapered_strip(.2,.8,.46,.05,.12)}" fill="{tint(turn_hue(hue, 30, .9), 1.4*glow)}" opacity="{.35*w:.3f}" filter="url(#field-diffuse)"/>')
+        w = weights.get('amber', 0)
+        if w:
+            svg.append(f'<path d="{tapered_strip(.05,.95,.5,.42)}" fill="{tint(pigment("amber"), 1.05*glow)}" opacity="{.32*w:.3f}" filter="url(#field-soft)"/>')
+        w = weights.get('coral', 0)
+        if w:
+            svg.append(f'<path d="{tapered_strip(.1,.9,.32,.1,.1)}" fill="{tint(pigment("coral"), 1.35*glow)}" opacity="{.4*w:.3f}" filter="url(#field-diffuse)"/>')
+        w = weights.get('pearl', 0)
+        if w:
+            svg.append(f'<path d="{tapered_strip(.08,.92,.42,.26)}" fill="#EEF3F6" opacity="{.22*w:.3f}" filter="url(#field-soft)"/>')
+        svg.append('</g>')
+    if core:
+        # A second current inside the material, in its own hue. The fibres part
+        # around it and rejoin at both tips, and a fine shade along each side
+        # keeps it a current within the material rather than a band of palette.
+        def across(k):
+            return lambda u: core_centre(u) + k*core_half(u)
+        body = band(across(-.8), across(.8), .08, .92, 90)
+        sides = band(across(-1), across(-.8), .08, .92, 90) + ' ' + band(across(.8), across(1), .08, .92, 90)
+        glint = band(across(-.55), across(-.3), .08, .92, 90)
+        svg.append(f'<g id="field-countercurrent" opacity="{strength*(.8+.2*d):.3f}">'
+                   f'<path d="{body}" fill="{tint(counter_hue,1.08*glow,1.2)}" opacity=".88" filter="url(#field-diffuse)"/>'
+                   f'<g filter="url(#field-fine)"><path d="{sides}" fill="url(#field-counter-ink)" opacity=".7"/>'
+                   f'<path d="{glint}" fill="{tint(counter_hue,1.5*glow,.9)}" opacity=".6"/></g></g>')
+    elif p['counterpoint'] and A['counterpoint'] != 'core':
         # A second current lives in the same material. It parts from the surface
         # along one edge, leaving an opening the ground shows through, and returns
         # along the other. Across its width it is its own colour, deep beside the
@@ -431,7 +655,33 @@ def render(spec):
                    f'<path d="{opening}" fill="url(#background)" opacity=".85"/>'
                    f'<path d="{seam}" stroke="{tint(counter_hue,1.6,.7)}" stroke-width="{1+3*p["counterpoint"]:.2f}" opacity=".92"/></g></g>')
     svg.append(f'<path id="field-grazing-light" d="{tapered_strip(.21,.75,.2+.58*weave,.045+.03*breadth,.08)}" fill="url(#field-crest)" opacity="{strength*(.35+.35*d):.3f}"/>')
-    if t:
+    if t and A['tension'] == 'fringes':
+        # Stress made visible as photoelastic fringes: nested contours of the
+        # field's own colour that crowd toward the seat of pressure. The outline
+        # only flattens a little there; it is never dented or cut.
+        seat_f = .45
+        reach = min(.24, strain_u - .03, .97 - strain_u)
+        rings = 2 + round(4*t)
+        def ring(k, grow):
+            s_ = ((k + 1) / rings) ** 1.55
+            du, df, centre = reach*(.16 + .84*s_), min(.42, .045 + .37*s_), seat_f - .05*s_
+            return loop_path([surface_point(strain_u + du*grow*math.cos(q)*(1-.1*math.sin(q)),
+                                            centre + df*grow*math.sin(q)*(1+.16*math.cos(q)))
+                              for q in (2*math.pi*i/84 for i in range(84))])
+        svg.append(f'<g id="field-strain" fill="none" opacity="{strength*(.72+.28*d):.3f}">'
+                   f'<path d="{tapered_strip(max(.02,strain_u-.17),min(.98,strain_u+.17),.46,.05+.1*t,.1)}" fill="url(#field-depth)" opacity="{.55*t:.3f}" filter="url(#field-diffuse)"/>'
+                   f'<path d="{tapered_strip(max(.02,strain_u-.07),min(.98,strain_u+.07),seat_f-.02,.025+.045*t)}" fill="{tint(c1, 1.9*glow)}" opacity="{.85*t**1.1:.3f}" filter="url(#field-diffuse)"/>'
+                   f'<g id="field-strain-shade" filter="url(#field-diffuse)">')
+        for k in range(rings):
+            s_ = ((k + 1) / rings) ** 1.55
+            svg.append(f'<path d="{ring(k, 1.09)}" stroke="url(#field-shade)" stroke-width="{(2.6+2.6*(1-s_))*(.6+.4*t):.2f}" opacity="{.3*t**1.1:.3f}"/>')
+        svg.append(f'</g><g id="field-strain-fringes" filter="url(#field-fine)">'
+                   f'<path d="{tapered_strip(max(.02,strain_u-.035),min(.98,strain_u+.035),seat_f-.02,.012+.02*t)}" fill="{tint(c1, 2.1*glow)}" opacity="{.8*t**1.2:.3f}"/>')
+        for k in range(rings):
+            s_ = ((k + 1) / rings) ** 1.55
+            svg.append(f'<path d="{ring(k, 1)}" stroke="{tint(c1, (1.62-.2*s_)*glow, 1.1)}" stroke-width="{(1.4+2.6*(1-s_))*(.6+.4*t):.2f}" opacity="{(.45+.5*(1-s_))*t**1.1:.3f}"/>')
+        svg.append('</g></g>')
+    elif t:
         # Compression gathers shadow behind the strained contour and concentrates
         # light along it. Unresolved pressure, not alarm.
         lo, hi = max(.02, strain_u-.18), min(.98, strain_u+.18)
@@ -453,7 +703,18 @@ def render(spec):
   <path d="{points_path([surface_point(u, .9) for u in us if .47 <= u <= .84])}" fill="none" stroke="url(#field-edge-ink)" stroke-width="{1+.8*d:.2f}" opacity="{strength*d*.6:.3f}"/>
 </g>''')
     svg.append('<g id="field-accent" fill="none">')
-    if p["accent"]:
+    if p["accent"] and A['accent'] == 'vein':
+        # A vein: the accent's quality running through the material like a
+        # mineral inclusion, with a little of its colour diffused round it. Its
+        # line is only as sharp as the field is articulated.
+        s_ = p['accent_strength']
+        span = .13 + .3*s_
+        lo, hi = max(.05, .5 - span), min(.95, .5 + span)
+        spread = lens_along(vein_course, lo, hi, lambda u: (.035 + .1*s_)*bump(u, lo, hi, .8), 80)
+        line = lens_along(vein_course, lo, hi, lambda u: (.008 + .032*s_)*bump(u, lo, hi, .7), 80)
+        svg.append(f'<path d="{spread}" fill="{ca}" opacity="{.14+.36*s_:.3f}" filter="url(#field-soft)"/>'
+                   f'<path d="{line}" fill="{tint(ca, 1.12*glow, 1.2)}" opacity="{.45+.5*s_:.3f}" filter="url(#field-fine)"/>')
+    elif p["accent"]:
         # Accent lives within the same envelope; its location is not a topic axis.
         seg = [surface_point(u, .57) for u in us if .37 <= u <= .69]
         svg.append(f'<path d="{points_path(seg)}" stroke="url(#field-accent-ink)" stroke-width="{6+25*p["accent_strength"]:.2f}" opacity="{.25+.45*p["accent_strength"]:.2f}" filter="url(#field-soft)"/>')
@@ -464,7 +725,40 @@ def render(spec):
         svg.append(f'<path d="{points_path(glint)}" stroke="{light(c1,1.18)}" stroke-width="1.2" opacity="{strength*(d-.55)*.7:.3f}"/>')
     svg.append('</g><g id="field-gesture" fill="none" stroke-linecap="round" filter="url(#field-fine)">')
     g, gs = p["gesture"], p["gesture_strength"]
-    if g != "none" and gs:
+    if gs and g == 'braid' and A['gesture'] == 'structural':
+        # Two strands of the band wind round each other for a short run, each
+        # lit along its length, passing over and under in turn.
+        ua, ub = .1, .44
+        def course(u, j):
+            v = (u - ua)/(ub - ua)
+            phase = math.pi*(2.6*v + .35*math.sin(math.pi*v)) + j*math.pi
+            return .5 + .3*math.sin(phase)*math.sin(math.pi*v)**.5
+        def half(u):
+            return (.085 + .045*gs)*bump(u, ua, ub, .35)
+        strand = [mix(c1, c2, .2), mix(c1, c2, .7)]
+        for j in (0, 1):
+            svg.append(f'<path d="{lens_along(lambda u, j=j: course(u, j), ua, ub, half, 90)}" fill="{tint(strand[j], .92*glow, 1.1)}" stroke="none" opacity="{.14+.22*gs:.3f}" filter="url(#field-diffuse)"/>')
+        crossings = [ua] + [ua + (ub - ua)*x for x in (.2, .4, .6, .8)] + [ub]
+        for i in range(len(crossings) - 1):
+            j = i % 2
+            a0, a1 = max(ua, crossings[i] - .035), min(ub, crossings[i+1] + .035)
+            def over(u, j=j):
+                return course(u, j)
+            def passing(u, a0=a0, a1=a1):
+                return half(u)*bump(u, a0, a1, .85)
+            svg.append(f'<path d="{lens_along(over, a0, a1, lambda u: 1.4*passing(u), 48)}" fill="url(#field-shade)" stroke="none" opacity="{.22+.26*gs:.3f}" filter="url(#field-diffuse)"/>'
+                       f'<path d="{lens_along(over, a0, a1, passing, 48)}" fill="{tint(strand[j], 1.08*glow, 1.1)}" stroke="none" opacity="{.22+.26*gs:.3f}" filter="url(#field-diffuse)"/>'
+                       f'<path d="{lens_along(lambda u: over(u) - .3*half(u), a0, a1, lambda u: .3*passing(u), 48)}" fill="{tint(strand[j], 1.45*glow, 1.1)}" stroke="none" opacity="{.32+.38*gs:.3f}"/>')
+    elif gs and g == 'fold' and A['gesture'] == 'structural':
+        # A bend that tucks the outer lip over: the underside shows, deeper,
+        # with a shade beneath the tuck and light along its rolled edge.
+        lo, hi = .12, .4
+        def depth(u):
+            return (.2 + .3*gs)*bump(u, lo, hi, 1.1)
+        svg.append(f'<path d="{band(lambda u: 0., depth, lo, hi, 60)}" fill="{shade(c1, .58)}" stroke="none" opacity="{.35+.4*gs:.3f}" filter="url(#field-diffuse)"/>'
+                   f'<path d="{band(depth, lambda u: 1.2*depth(u), lo, hi, 60)}" fill="url(#field-shade)" stroke="none" opacity="{.3+.3*gs:.3f}" filter="url(#field-diffuse)"/>'
+                   f'<path d="{band(lambda u: .86*depth(u), depth, lo, hi, 60)}" fill="{tint(c2, 1.5*glow, 1.2)}" stroke="none" opacity="{.45+.4*gs:.3f}"/>')
+    elif g != "none" and gs:
         seg_us = [u for u in us if .28 <= u <= .64]
         for j in range(2 if g == "braid" else 1):
             pts = []
