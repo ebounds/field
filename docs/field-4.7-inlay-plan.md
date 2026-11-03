@@ -3,7 +3,7 @@
 Planned 2 November 2026, from Edgar's choice of Inlay in the axes study.
 Base: branch `field-4.7`, render revision 4.5 (Stage 3 of `docs/field-4.7-plan.md`).
 Source: the axes study of 25 October, branch `study/axes-overnight`, `studies/axes-overnight/out/` (`REPORT.md`, `renderers/engine.py`, `renderers/A_inlay.py`, `grammar-ledger.md`).
-Status: the renderer is ported and passes every machine check (branch `field-4.7-inlay`, 2 November; "Where the port stands" below). The reader tests have not started.
+Status: the renderer is ported (branch `field-4.7-inlay`, 2–3 November). It passes every check in the repository and has been measured with the study's own harness ("Where the port stands" below). The reader tests have not started.
 
 ## What Edgar decided (2 November 2026)
 
@@ -31,7 +31,7 @@ Done, on branch `field-4.7-inlay`:
 The port changed four things on the way, all because of the colour clauses of `check_reading_order.mjs`:
 - **Emitted light doesn't lighten the skin.** It bleached the hue: `exploring` lost field chroma. A loud field gives its light off as bloom, shoulder light and the room around it, and a quiet one dims.
 - **The surfaces are textures of the body's own colours, and the braid's strands are the field's two hues.** Laying one hue over its neighbour, or blending amber with violet, greyed the field (`playful`).
-- **The vein's line is denser than the material, not lighter.** Where it crossed another hue, a lighter line turned near-white (`exploring`'s crests).
+- **The vein's line is denser than the material, not lighter, and runs along the inner slope.** Where it crossed another hue, a lighter line turned near-white (`exploring`'s crests). Down the middle of the band it ran where the core runs, in the core's hue when there is an accent, so the study's harness put counterpoint and accent at similarity .47. On the outer slope it met the shoulder of light, and the crests turned near-white again. At .74 across the band it clears both.
 - **The fibre grooves are wider and darker.** At first complexity read at 0.59, under its floor of 0.85.
 - **The core has a fine shade along each side,** so it reads as a current, not palette. That is the lesson 4.5's countercurrent taught.
 
@@ -41,10 +41,18 @@ Measured:
 - **`check_expression.mjs`, 4.6 against 4.5:** tension 4.84 (2.96), counterpoint 3.10 (1.87), accent 3.17 (2.51), complexity 1.90 (1.50), history 4.03 (4.51), grounding 5.37 (5.72), gesture 1.01 (1.39) and intensity 6.54 (6.55). Every channel is above its floor.
 - **`check_reading_order.mjs`:** every clause passes. `exploring` is the tightest, with field chroma 19.77 against 19.61 and near-white crests .12 against .13.
 - **Comparable at zero** (every quiet control and `flow` at 0): 0.6–2.4 from 4.5, against 6.55 for one intensity sweep.
+- **The study's harness** (`harness/fieldlab.py`, against 4.5):
+  - Similarity: counterpoint and accent .311, level with 4.5. Intensity and grounding .79, against .76 under 4.5 and about .80 under 4.4, so 4.6 doesn't keep 4.5's small gain here. Breadth and intensity .80, against .77.
+  - Loudness, frame at 320 px: tension 4.1 (2.5), counterpoint 2.4 (1.6), complexity 1.8 (1.0), accent 2.9 (1.6), intensity 9.1 (6.6), secondary 1.4 (0.6), history 3.2 (3.6), gesture 0.8 (1.1), grounding 4.6 (4.6). `flow` reads 0 at `history` 0, by Track B.
+- **Which way intensity goes.** From intensity .1 to 1, mean brightness rises 3.1 (4.5: 2.7), and the lit area grows by 4.4 % of the frame (4.5: 1.3 %). The brightest highlights rise less (99th percentile +50 against +62), since the skin is no longer lightened. A quiet 4.6 field is deeper and more saturated than a quiet 4.5 one, which faded. Whether it still reads as quiet is a question for sheet 3.
 - **Weight:** the reference studies average 480 KB (4.5: 372) and are at most 560 KB; over 67 mixed fields, 527 KB on average and 615 KB at most.
 - **The other suites pass:** continuity, audio, companion and public site.
 
-Not done: the reader tests below (pre-registration, pilots, the counted runs, sheet 3), the lagging sheet, and Stage 6's public assets.
+Known gaps:
+- With a previous expression, the companion's real retained contour replaces the sheet with 4.5-style band work, so the companion and the still draw history differently. The plan defers this.
+- The lagging sheet is not tried.
+- Stage 6's public assets are not rebuilt.
+- **The reader tests below haven't started:** pre-registration, pilots, the counted runs and sheet 3. They are the measure for every change above.
 
 ## Why it is a port, not a merge
 
@@ -162,7 +170,7 @@ Why "adds none": the colour table is a table of meanings, and a second meaning p
 
 **Rendering.** A new paragraph after revision 4.5's two:
 
-> Rendering revision 4.6 keeps every control's range and default, and every meaning but one: a field now turns away from its resting angle only as far as `history` holds an earlier change, so a field with nothing retained sits at rest. It keeps the three rules of 4.5, and gives each quiet meaning a material phenomenon of its own within the one smoothly curved form, with no cuts, notches, or cavities. `intensity` is emitted light: a quiet field is dim but present, never thinned. `counterpoint` is a core running inside the material, in its own hue as in 4.5 (the accent, or the secondary when there is no accent); the fibres part around it and rejoin at both tips. `history` is an earlier sheet, older material in the same hues, standing just behind the present surface and sharing its tips. `tension` gathers light into fringes at its seat, where the surface flattens slightly; the outline is never dented. `complexity` sets how many fibres the material carries. An accent is a vein, a winding line through the material whose sharpness follows `definition`. A fold is a tucked lip and a braid two strands; an echo is a continuation drawn inside the band, never past the tip. Each hue family has its own surface (see the colour table).
+> Rendering revision 4.6 keeps every control's range and default, and every meaning but one: a field now turns away from its resting angle only as far as `history` holds an earlier change, so a field with nothing retained sits at rest. It keeps the three rules of 4.5, and gives each quiet meaning a material phenomenon of its own within the one smoothly curved form, with no cuts, notches, or cavities. `intensity` is emitted light: a quiet field is dim but present, never thinned, and a luminous one glows into the room around it. `counterpoint` is a core running inside the material, in its own hue as in 4.5 (the accent, or the secondary when there is no accent); the fibres part around it and rejoin at both tips. `history` is an earlier sheet, older material in the same hues, standing just behind the present surface and sharing its tips. `tension` gathers light into fringes at its seat, where the surface flattens slightly; the outline is never dented. `complexity` sets how many fibres the material carries. An accent is a vein, a winding line through the material whose sharpness follows `definition`. A fold is a tucked lip and a braid two strands; an echo is a continuation drawn inside the band, never past the tip. Each hue family has its own surface (see the colour table).
 
 **The paragraph after it** becomes: "The SVG root records `data-field-renderer="4.6"`; `field-spec` stores the v4 drawing controls. Fields drawn by 4.3, 4.4 or 4.5 remain comparable in meaning and their controls need no translation. Re-rendered under 4.6, one with `flow` set and `history` at 0 sits at its resting angle."
 
