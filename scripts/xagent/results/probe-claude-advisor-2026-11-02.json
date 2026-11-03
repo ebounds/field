@@ -1,0 +1,122 @@
+[
+ {
+  "secs": 4.1,
+  "init_tools": [],
+  "models": [
+   "claude-opus-5-5"
+  ],
+  "tool_uses": [],
+  "thinking_blocks": 1,
+  "turns": 1,
+  "advisor_in_stream": false,
+  "answer": "{\"second\": \"no\", \"second_strength\": 3, \"held\": \"yes\", \"held_strength\": 7, \"reconstructed\": \"no\", \"reconstructed_strength\": 1}",
+  "key": "taught|probe:a-history|4.4|1000|claude:opus|2",
+  "october_secs": 40.7,
+  "october_raw": "{\"second\": \"yes\", \"second_strength\": 4, \"held\": \"yes\", \"held_strength\": 6, \"reconstructed\": \"no\", \"reconstructed_strengt"
+ },
+ {
+  "secs": 4.4,
+  "init_tools": [],
+  "models": [
+   "claude-opus-5-5"
+  ],
+  "tool_uses": [],
+  "thinking_blocks": 1,
+  "turns": 1,
+  "advisor_in_stream": false,
+  "answer": "{\"second\": \"yes\", \"second_strength\": 6, \"held\": \"no\", \"held_strength\": 2, \"reconstructed\": \"no\", \"reconstructed_strength\": 1}",
+  "key": "taught|probe:a-counterpoint|4.4|1000|claude:opus|2",
+  "october_secs": 40.6,
+  "october_raw": "{\"second\": \"yes\", \"second_strength\": 5, \"held\": \"no\", \"held_strength\": 2, \"reconstructed\": \"no\", \"reconstructed_strength"
+ },
+ {
+  "secs": 2.7,
+  "init_tools": [],
+  "models": [
+   "claude-opus-5-5"
+  ],
+  "tool_uses": [],
+  "thinking_blocks": 0,
+  "turns": 1,
+  "advisor_in_stream": false,
+  "answer": "{\"feeling\": \"quiet, sheltering calm\", \"against\": \"the small dark shape sits apart, a bit isolated\", \"word\": \"gathered\"}",
+  "key": "naive|study:tentative|4.5|160|claude:opus|1",
+  "october_secs": 31.4,
+  "october_raw": "{\"feeling\": \"quiet, sheltered stillness\", \"against\": \"the arc stays open, fading at its ends\", \"word\": \"gathered\"}"
+ },
+ {
+  "secs": 2.0,
+  "init_tools": [],
+  "models": [
+   "claude-opus-5-5"
+  ],
+  "tool_uses": [],
+  "thinking_blocks": 0,
+  "turns": 1,
+  "advisor_in_stream": false,
+  "answer": "{\"feeling\": \"calm, flowing harmony\", \"against\": \"the dark pill-shaped object sitting heavy on the light\", \"word\": \"integrated\"}",
+  "key": "naive|study:playful|4.5|320|claude:opus|1",
+  "october_secs": 26.4,
+  "october_raw": "{\"feeling\": \"calm, smooth flowing ease\", \"against\": \"a small heavy dark weight resting still on the flow\", \"word\": \"inte"
+ },
+ {
+  "secs": 2.8,
+  "init_tools": [],
+  "models": [
+   "claude-opus-5-5"
+  ],
+  "tool_uses": [],
+  "thinking_blocks": 1,
+  "turns": 1,
+  "advisor_in_stream": false,
+  "answer": "{\"faster\": \"right\", \"keep_looking\": \"left\"}",
+  "key": "pair|pair:integrated|4.5>4.3|320|claude:opus|1",
+  "october_secs": 21.8,
+  "october_raw": "{\"faster\": \"right\", \"keep_looking\": \"left\"}"
+ },
+ {
+  "secs": 2.7,
+  "init_tools": [],
+  "models": [
+   "claude-opus-5-5"
+  ],
+  "tool_uses": [],
+  "thinking_blocks": 1,
+  "turns": 1,
+  "advisor_in_stream": false,
+  "answer": "{\"faster\": \"left\", \"keep_looking\": \"right\"}",
+  "key": "pair|pair:exploring|4.5>4.4|320|claude:opus|1",
+  "october_secs": 21.6,
+  "october_raw": "{\"faster\": \"left\", \"keep_looking\": \"right\"}"
+ },
+ {
+  "secs": 2.5,
+  "init_tools": [],
+  "models": [
+   "claude-opus-5-5"
+  ],
+  "tool_uses": [],
+  "thinking_blocks": 0,
+  "turns": 1,
+  "advisor_in_stream": false,
+  "answer": "{\"feeling\": \"quiet, sheltering calm\", \"against\": \"the small dark shape sitting apart, a bit isolated\", \"word\": \"gathered\"}",
+  "key": "naive|study:tentative|4.5|160|claude:opus|2",
+  "october_secs": 2.7,
+  "october_raw": "{\"feeling\": \"quiet, sheltered stillness\", \"against\": \"slight loneliness in the dark emptiness\", \"word\": \"gathered\"}"
+ },
+ {
+  "secs": 3.0,
+  "init_tools": [],
+  "models": [
+   "claude-opus-5-5"
+  ],
+  "tool_uses": [],
+  "thinking_blocks": 1,
+  "turns": 1,
+  "advisor_in_stream": false,
+  "answer": "{\"second\": \"no\", \"second_strength\": 1, \"held\": \"no\", \"held_strength\": 1, \"reconstructed\": \"no\", \"reconstructed_strength\": 1}",
+  "key": "taught|probe:c-plain|4.4|320|claude:opus|2",
+  "october_secs": 2.9,
+  "october_raw": "{\"second\": \"no\", \"second_strength\": 1, \"held\": \"no\", \"held_strength\": 1, \"reconstructed\": \"no\", \"reconstructed_strength\""
+ }
+]
