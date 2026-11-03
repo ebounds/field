@@ -26,7 +26,8 @@ BRANCH = 'field-4.7'
 
 # Gemini runs on what is left of its free daily quota before it resets, so the day's own use is
 # untouched; Grok has no meter, so its cap is the protection, and its first limit message ends the
-# phase. Neither cap is reached by the trials alone in one night.
+# phase. Neither cap is reached by the trials alone in one night. A cap counts calls: a trial asked
+# again because its answer couldn't be read counts twice.
 PHASES = {
     'gemini': {'decoder': 'gemini', 'cap': 75, 'window': ('00:00', '01:50'), 'runs': [
         ['--task', 'all', '--revs', '4.5', '--out', 'stage3.jsonl', '--seen', 'stage2.jsonl'],
@@ -83,9 +84,14 @@ def unfit():
 
 
 def made(decoder, start):
-    """This decoder's calls since the phase began, answered or failed."""
+    """This decoder's trials since the phase began, answered or failed."""
     return [row for name, count in start.items() for row in map(json.loads, rows(name)[count:])
             if row['decoder'] == decoder]
+
+
+def calls(decoder, start):
+    """This decoder's calls since the phase began: a trial tried twice made two."""
+    return sum(row.get('calls', 1) for row in made(decoder, start))
 
 
 def main():
@@ -106,6 +112,9 @@ def main():
     decoder = phase['decoder']
     now = time.localtime().tm_hour*60 + time.localtime().tm_min
     opens, closes = map(minutes, phase['window'])
+    # The window closes today. run.py is given that exact time: an HH:MM that has just gone by
+    # would be taken as tomorrow's.
+    closing = time.strftime('%Y-%m-%dT') + phase['window'][1]
     why = unfit() or (None if opens <= now < closes else f'it is outside its window, {"–".join(phase["window"])}')
 
     if why and not dry:
@@ -116,13 +125,13 @@ def main():
             if start.get(run[run.index('--out') + 1]) is None:
                 start[run[run.index('--out') + 1]] = 0
         for run in phase['runs']:
-            left = phase['cap'] - len(made(decoder, start))
+            left = phase['cap'] - calls(decoder, start)
             now = time.localtime().tm_hour*60 + time.localtime().tm_min
             if not dry and (left <= 0 or now >= closes):
                 notes.append(f'- `{" ".join(run)}`: not started ({"cap reached" if left <= 0 else "window closed"}).')
                 continue
             command = [sys.executable, str(XAGENT / 'run.py'), *run, '--decoders', decoder,
-                       '--limit', str(left), '--deadline', phase['window'][1]] + (['--dry'] if dry else [])
+                       '--limit', str(left), '--deadline', closing] + (['--dry'] if dry else [])
             done = sh(*command)
             log.write(f'$ {" ".join(command[1:])}\n{done.stdout}{done.stderr}\n')
             log.flush()
@@ -131,7 +140,7 @@ def main():
             if 'usage limit' in done.stdout:
                 notes.append(f'  {decoder} reached its usage limit; the phase stops here.')
                 break
-        notes.append(f'\n{len(made(decoder, start))} calls tonight, of a cap of {phase["cap"]}.')
+        notes.append(f'\n{calls(decoder, start)} calls tonight, of a cap of {phase["cap"]}.')
 
         if not dry and not why:
             for args in REPORTS:
@@ -140,10 +149,10 @@ def main():
                     log.write(f'$ report.py {" ".join(args)}: exit {done.returncode}\n{done.stderr}')
             changed = [line[3:] for line in sh('git', 'status', '--porcelain', '--', str(RESULTS)).stdout.splitlines()]
             if changed:
-                calls = made(decoder, start)
-                answered = sum(bool(row.get('ok')) for row in calls)
+                trials = made(decoder, start)
+                answered = sum(bool(row.get('ok')) for row in trials)
                 message = (f'Nightly decoder run, night of {tonight}: {decoder} {answered} answered, '
-                           f'{len(calls) - answered} failed\n\n'
+                           f'{len(trials) - answered} failed\n\n'
                            f'Run by scripts/xagent/nightly.py {name}; the reports are rewritten from the results.\n\n'
                            + TRAILER)
                 sh('git', 'add', '--', *changed)

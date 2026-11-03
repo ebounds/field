@@ -148,7 +148,7 @@ show();
 
 
 def main(sheet_id):
-    items.load()
+    items.load()      # refuses when a revision's sources have moved since items.py drew its SVGs
     sheet = SHEETS[sheet_id]
     revs, key = list(sheet['revs']), RESULTS / sheet['key']
     if key.exists() and '--again' not in sys.argv:
@@ -167,6 +167,8 @@ def main(sheet_id):
             png = SHEET / f'{name}-{rev}-{built[rev]}.png'
             if not png.exists():
                 svg = items.WORK / 'svg' / f'study-{name}-{rev}.svg'
+                if not svg.exists():
+                    sys.exit(f'{svg.name} is missing: run scripts/xagent/items.py first')
                 html = png.with_suffix('.html')
                 html.write_text('<style>html,body{margin:0;background:#000}img{display:block;width:%dpx;height:%dpx}'
                                 '</style><img src="../svg/%s">' % (SIZE, SIZE, svg.name))

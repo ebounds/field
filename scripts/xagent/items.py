@@ -37,6 +37,9 @@ REVISIONS = {
 }
 # What a revision's images are made from. A change in any of these rebuilds them.
 SOURCES = ('scripts/render_field.py', 'assets/reference-atlas.svg', 'references/visual-grammar.md')
+# Stage 2's first trials were written before stamps were recorded (5707cc7). Their images came
+# from 4.3 and 4.4 at the commits above, which have not moved since, so these are their stamps.
+UNSTAMPED = {'4.3': '417e33c923a8', '4.4': '305094f93ec9'}
 SIZES = (160, 320, 1000)
 SHARED = ('gathered', 'exploring', 'strained', 'tentative', 'integrated', 'playful')
 WORDS = SHARED + ('described',)
@@ -85,6 +88,24 @@ def stamp(rev):
     for path in SOURCES:
         digest.update(show(REVISIONS[rev][1], path))
     return digest.hexdigest()[:12]
+
+
+def built(row):
+    """Which build of each revision a trial's image came from."""
+    if row.get('built'):
+        return row['built']
+    drawn = {row.get('rev'), row.get('left'), row.get('right')} - {None}
+    return {rev: UNSTAMPED.get(rev) for rev in drawn}
+
+
+def stamps_now():
+    """The stamp of every revision as its sources are now."""
+    return {rev: stamp(rev) for rev in REVISIONS}
+
+
+def current(row, now):
+    """Whether a trial's image is the one its revisions draw now (`now` from stamps_now())."""
+    return all(now.get(rev) == made for rev, made in built(row).items())
 
 
 def supports_grounding(rev):
@@ -256,8 +277,14 @@ def build():
 
 
 def load():
-    if not MANIFEST.exists():
+    """The manifest, refused when a revision's sources have moved since its images were built."""
+    if not MANIFEST.exists() or not STAMPS.exists():
         sys.exit('No items yet: run scripts/xagent/items.py first')
+    was, now = json.loads(STAMPS.read_text()), stamps_now()
+    moved = [rev for rev in REVISIONS if was.get(rev) != now[rev]]
+    if moved:
+        sys.exit(f'The images of {", ".join(moved)} are from an earlier build of its sources: '
+                 'run scripts/xagent/items.py first')
     return json.loads(MANIFEST.read_text())
 
 

@@ -45,18 +45,23 @@ def sign_test(wins, losses):
 
 
 def load(paths, drop=()):
-    rows, waiting = {}, {}
+    """The answered trials, the failed calls still waiting, and the answers left out because their
+    image came from an earlier build of a revision than the one its sources draw now."""
+    now = items.stamps_now()
+    rows, waiting, stale = {}, {}, Counter()
     for path in paths:
         for line in path.read_text().splitlines():
             row = json.loads(line)
             if row['decoder'] in drop:
                 continue
-            if row.get('ok'):
+            if row.get('ok') and not items.current(row, now):
+                stale[row['decoder']] += 1
+            elif row.get('ok'):
                 rows[row['key']] = row
             else:
                 waiting[row['key']] = row['decoder']
     failed = Counter(decoder for key, decoder in waiting.items() if key not in rows)
-    return list(rows.values()), failed
+    return list(rows.values()), failed, stale
 
 
 def family_gap(shared, first, second, size, least=1):
@@ -302,7 +307,7 @@ def main():
     names = [a for i, a in enumerate(args) if a != '--drop' and (i == 0 or args[i - 1] != '--drop')]
     paths = [RESULTS / name for name in (names or ['stage2.jsonl'])]
     path = paths[-1]
-    rows, failed = load(paths, drop)
+    rows, failed, stale = load(paths, drop)
     REVS_SEEN.update(r[k] for r in rows for k in ('rev', 'left', 'right') if r.get(k))
     out = [f'# {path.stem}: results\n',
            f'{len(rows)} trials answered. Written by `scripts/xagent/report.py` from '
@@ -322,7 +327,9 @@ def main():
     out.append(f'\n{unparsed} answers could not be parsed (scored as wrong). '
                f'{ran} Codex trials ran a command despite being told not to. '
                + ('Calls that failed and await a rerun: ' + ', '.join(f'{d} {n}' for d, n in failed.items()) + '.'
-                  if failed else 'No failed calls are waiting.') + '\n')
+                  if failed else 'No failed calls are waiting.')
+               + (f' Left out, as answers about an earlier build of a revision than its sources draw now: '
+                  + ', '.join(f'{d} {n}' for d, n in sorted(stale.items())) + '.' if stale else '') + '\n')
     naive(rows, out)
     pair(rows, out)
     taught(rows, out)

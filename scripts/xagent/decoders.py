@@ -1,7 +1,9 @@
 """How each decoder is called: one prompt, one or more images, a fresh session.
 
-Every call is isolated from this project: no tools, skills, memory or project
-instructions, and a working directory that holds nothing but the trial's images.
+Every call is isolated from this project and from Edgar's own setup: no tools, skills,
+plugins, hooks, memory or user and project instructions, and a working directory that
+holds nothing but the trial's images. Each call, or each run for Codex, checks that
+nothing more came in, and fails or is skipped if it did.
 Python 3 standard library only.
 """
 import base64
@@ -46,6 +48,28 @@ def empty_dir():
     return tempfile.mkdtemp(prefix='xa-')
 
 
+# Edgar's user settings enable plugins (the Field plugin among them) and name an advisor model, which
+# `--tools ''` leaves in place, and a CLAUDE.md on the way up from the working directory is read.
+# Safe mode drops CLAUDE.md, skills, plugins, hooks and auto-memory, and no settings file is read.
+# What remains is Claude Code's own preamble, the model's name, the date and the account's email
+# (README, "Isolation of the Claude and Codex calls"). A call whose init event shows anything more
+# loaded, in which a hook ran, or in which another model took part, fails.
+CLAUDE_FLAGS = ('--tools', '', '--disable-slash-commands', '--strict-mcp-config', '--no-session-persistence',
+                '--safe-mode', '--setting-sources=', '--include-hook-events')
+
+
+def claude_loaded(event):
+    """What a Claude init event shows loaded beyond Claude Code's own, or ''."""
+    loaded = [name for name in ('tools', 'skills', 'mcp_servers', 'slash_commands') if event.get(name)]
+    loaded += [str(plugin.get('source') or plugin.get('name')) for plugin in event.get('plugins') or []
+               if not str(plugin.get('source', '')).endswith('@builtin')]
+    if event.get('memory_paths'):
+        loaded.append('memory')
+    if event.get('output_style') not in (None, 'default'):
+        loaded.append('output style ' + str(event['output_style']))
+    return ', '.join(loaded)
+
+
 def claude(model, prompt, images, timeout):
     content = [{'type': 'image', 'source': {'type': 'base64', 'media_type': 'image/png', 'data': b64(i)}}
                for i in images] + [{'type': 'text', 'text': prompt}]
@@ -54,8 +78,7 @@ def claude(model, prompt, images, timeout):
     try:
         done = subprocess.run(
             ['claude', '-p', '--model', CLAUDE[model], '--effort', 'low', '--system-prompt', SYSTEM,
-             '--input-format', 'stream-json', '--output-format', 'stream-json', '--verbose',
-             '--tools', '', '--disable-slash-commands', '--strict-mcp-config', '--no-session-persistence'],
+             '--input-format', 'stream-json', '--output-format', 'stream-json', '--verbose', *CLAUDE_FLAGS],
             input=line, capture_output=True, text=True, timeout=timeout, cwd=cwd)
     finally:
         shutil.rmtree(cwd, ignore_errors=True)
@@ -67,17 +90,76 @@ def claude(model, prompt, images, timeout):
             continue
         if event.get('type') == 'system' and event.get('subtype') == 'init':
             used = event.get('model')
-            if event.get('tools') or event.get('skills'):
-                raise Failed('claude session was not isolated')
+            loaded = claude_loaded(event)
+            if loaded:
+                raise Failed('claude session was not isolated: ' + loaded)
+        if event.get('type') == 'system' and str(event.get('subtype', '')).startswith('hook'):
+            raise Failed(f'claude session was not isolated: a hook ran ({event.get("hook_name")})')
         if event.get('type') == 'result':
             result = event
     if not result or result.get('is_error'):
         raise Failed('claude: ' + ((result or {}).get('result') or done.stderr or done.stdout)[-300:])
+    others = set(result.get('modelUsage') or {}) - {CLAUDE[model], used}
+    if others:
+        raise Failed('claude session was not isolated: another model took part (' + ', '.join(sorted(others)) + ')')
     return {'text': result.get('result') or '', 'model': used or CLAUDE[model]}
 
 
+# `--ignore-user-config` skips only config.toml. Codex still reads skills from ~/.agents/skills
+# (Edgar's has 31 firecrawl skills) and from its plugins (about thirty more), and AGENTS.md from
+# CODEX_HOME and the working directory. It runs with an empty home, CODEX_HOME still naming the
+# real one so its sign-in stays where it is, and these features off. The context that gives is
+# rendered once a run (`codex debug prompt-input`, which also reads config.toml, so it sees at
+# least what a call does) and checked: a skill from outside Codex's own bundled set, an AGENTS.md,
+# or a trace of Field skips every Codex trial of the run.
+CODEX_OFF = ('plugins', 'remote_plugin', 'plugin_sharing', 'apps', 'memories', 'hooks', 'image_generation',
+             'browser_use', 'browser_use_external', 'in_app_browser', 'computer_use', 'multi_agent', 'goals',
+             'skill_search', 'skill_mcp_dependency_install')
+
+
+def codex_env(home):
+    return {**os.environ, 'HOME': home, 'CODEX_HOME': os.environ.get('CODEX_HOME') or str(Path.home() / '.codex')}
+
+
+def codex_off():
+    return [arg for feature in CODEX_OFF for arg in ('--disable', feature)]
+
+
+def codex_context():
+    """Why the context a Codex call is given isn't isolated, or ''."""
+    cwd, home = empty_dir(), empty_dir()
+    try:
+        env = codex_env(home)
+        done = subprocess.run(['codex', 'debug', 'prompt-input', '-c', 'mcp_servers={}', *codex_off()],
+                              stdin=subprocess.DEVNULL, capture_output=True, text=True, timeout=120, cwd=cwd, env=env)
+    finally:
+        shutil.rmtree(cwd, ignore_errors=True)
+        shutil.rmtree(home, ignore_errors=True)
+    try:
+        context = json.loads(done.stdout)
+        text = '\n'.join(part.get('text', '') for item in context for part in item.get('content') or ())
+    except (ValueError, AttributeError, TypeError):
+        return "its context can't be read: " + (done.stderr or done.stdout)[-200:]
+    own = str(Path(env['CODEX_HOME']) / 'skills' / '.system')
+    foreign = [root for root in re.findall(r'^- `r\d+` = `([^`]+)`', text, flags=re.M) if root != own]
+    if foreign:
+        return 'skills from ' + ', '.join(foreign)
+    if '<INSTRUCTIONS>' in text:
+        return 'an AGENTS.md'
+    if any(leak in done.stdout for leak in LEAKS):
+        return 'its context names Field'
+    return ''
+
+
 def codex(model, prompt, images, timeout):
-    cwd = Path(empty_dir())
+    with _codex_lock:
+        if _codex_spent[0]:
+            raise Skip('codex is at its usage limit')
+        if _codex_checked[0] is None:
+            _codex_checked[0] = codex_context()
+    if _codex_checked[0]:
+        raise Skip('codex session is not isolated: ' + _codex_checked[0])
+    cwd, home = Path(empty_dir()), empty_dir()
     try:
         files = []
         for image in images:
@@ -85,20 +167,26 @@ def codex(model, prompt, images, timeout):
             shutil.copyfile(image, copy)
             files.append(str(copy))
         out = cwd / 'answer.txt'
-        command = ['codex', 'exec', '--ephemeral', '--ignore-user-config', '--ignore-rules',
+        command = ['codex', 'exec', '--ephemeral', '--ignore-user-config', '--ignore-rules', *codex_off(),
                    '--sandbox', 'read-only', '--skip-git-repo-check', '-C', str(cwd),
                    '-m', CODEX[model], '-c', 'model_reasoning_effort="low"', '-o', str(out),
                    prompt + '\n\nAnswer from the attached image alone. Do not run commands or open files.']
         for file in files:
             command += ['-i', file]
-        done = subprocess.run(command, stdin=subprocess.DEVNULL, capture_output=True, text=True, timeout=timeout)
+        done = subprocess.run(command, stdin=subprocess.DEVNULL, capture_output=True, text=True, timeout=timeout,
+                              env=codex_env(home))
         if not out.exists() or not out.read_text().strip():
+            # Out of credits: every later call would fail the same way, so the run stops calling.
+            if re.search(r'hit your usage limit|purchase more credits', done.stdout + done.stderr):
+                _codex_spent[0] = True
+                raise Skip('codex is at its usage limit')
             raise Failed('codex: ' + (done.stderr or done.stdout)[-300:])
         # Codex prints an "exec" block for every command it runs; a decoder shouldn't run any.
         ran = re.search(r'^exec\b', done.stdout + '\n' + done.stderr, flags=re.M)
         return {'text': out.read_text(), 'model': CODEX[model], 'ran_commands': bool(ran)}
     finally:
         shutil.rmtree(cwd, ignore_errors=True)
+        shutil.rmtree(home, ignore_errors=True)
 
 
 # Grok Build ignores `--tools ''` and reads the Claude and Cursor setups in the home directory, so
@@ -112,7 +200,7 @@ GROK_TOOLS = ('run_terminal_command,read_file,search_replace,list_dir,grep,kill_
               'get_command_or_subagent_output,spawn_subagent,scheduler_create,scheduler_delete,scheduler_list,'
               'monitor,search_tool,use_tool,workflow,enter_plan_mode,exit_plan_mode,ask_user_question,'
               'send_feedback,image_gen,image_edit,image_to_video,reference_to_video,write')
-GROK_LEAKS = ('/.claude/', 'central drone', 'fixed capsule', r'\n- field:')   # as written in the JSON record
+LEAKS = ('/.claude/', 'central drone', 'fixed capsule', r'\n- field:')   # as written in a JSON record
 
 
 def grok_session(cwd, session):
@@ -162,7 +250,7 @@ def grok(model, prompt, images, timeout):
         kept = grok_session(cwd, answer.get('sessionId', ''))
         if kept is None:
             raise Failed("grok: the session record can't be found, so its isolation can't be checked")
-        if any(leak in kept for leak in GROK_LEAKS):
+        if any(leak in kept for leak in LEAKS):
             raise Failed('grok session was not isolated')
         if not answer.get('text'):
             raise Failed('grok: ' + done.stdout[-300:])
@@ -173,6 +261,9 @@ def grok(model, prompt, images, timeout):
 _grok_lock = threading.Lock()
 _grok_last = [0.0]
 _grok_spent = [False]          # at its usage limit: no more calls this run
+_codex_lock = threading.Lock()
+_codex_spent = [False]         # out of credits: no more calls this run
+_codex_checked = [None]        # why its context isn't isolated ('' when it is), once checked
 _gemini_key = None
 _gemini_spent = set()          # models out of quota for today
 _gemini_lock = threading.Lock()
