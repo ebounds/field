@@ -30,8 +30,11 @@ SHEETS = {
     # Stage 3: the new revision beside each of the two before it; `described` only where both draw it.
     '2': {'key': 'blind-sheet-2-key.json', 'revs': ('4.3', '4.4', '4.5'),
           'versus': (('4.4', '4.5'), ('4.3', '4.5')), 'extra': (('described', '4.4', '4.5'),)},
+    # Stage 3b: revision 4.6 beside 4.5, the one it is drawn on.
+    '3': {'key': 'blind-sheet-3-key.json', 'revs': ('4.5', '4.6'), 'versus': (('4.5', '4.6'),),
+          'extra': (('described', '4.5', '4.6'),)},
 }
-LATEST = '2'
+LATEST = '3'
 
 PAGE = '''<title>Field Blind Sheet</title>
 <style>

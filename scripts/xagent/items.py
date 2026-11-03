@@ -34,7 +34,7 @@ REVISIONS = {
     '4.3': ('4.5.1', '005dbae'),
     '4.4': ('4.6.0', 'a244a80'),
     '4.5': ('4.7.0', 'bf6b84d'),
-    '4.6': ('4.7.0', 'WORKTREE'),
+    '4.6': ('4.7.0', '99dede7'),
 }
 # Which revisions are set side by side (each pair in both orders). Stage 3b adds 4.6 beside
 # 4.5 and beside 4.3; 4.6 beside 4.4 would only spend calls.
