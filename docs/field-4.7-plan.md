@@ -249,6 +249,10 @@ Measured inside each field's own outline, the body is lighter than 4.3's in ever
 
 **What this stage did not do.** The public studies, hero and social card still show 4.4, because `build_public_assets.py` would have rewritten `field-4.6.0.zip`; they, the zip, the guide and the README's revision line wait for Stage 6. The template and the atlas *were* rebuilt, since taught readers are shown the atlas of the revision they read. The naive-reader gap Stage 2 found (`strained` read as "tentative", `playful` as "integrated") was not chased; if 4.5's denser coral and coloured braid move it, the counted run will show that.
 
+## Stage 3b — Inlay on render 4.5: render revision 4.6
+
+Edgar chose Inlay, from the axes study of 25 October (branch `study/axes-overnight`), for 4.7.0 (2 November). It is drawn on top of render 4.5 and keeps 4.5's three rules. It gives each quiet meaning a material of its own: a core for counterpoint (borrowed from the Composite), an earlier sheet for history, fringes at a slightly flattened seat for tension, fibres, a vein, structural gestures with the echo inside the band, emitted light, and a surface per hue. The port, its acceptance and the proposed v4.1 wording are in `docs/field-4.7-inlay-plan.md` (branch `field-4.7-inlay-plan` until the port merges). Stage 3's counted run certifies 4.5, not 4.6, so 4.6 gets its own pre-registered run, sheet 3 and more real-field pairs before release.
+
 ## Stage 4 — Sound for the moment and for the background
 
 What 25 September concluded, kept as the plan: a peripheral cue and an alternate channel pull in opposite directions, so they're separated by timescale. A **ground** carries the lasting qualities; an **event** marks a meaningful change; underneath both is **presence**. *The field says what it is; the sound says what it's doing.* The ground gets built and lived with before anything else.
@@ -357,7 +361,7 @@ Results that miss these are reported as they are.
 
 ## Stage 6 — Release 4.7.0
 
-The package becomes 4.7.0 with render revision 4.5, Listening 1.2 plus ground 1.0, companion 1.1, synthesis 3.3 and grammar v4 (unchanged). Rebuild the atlas, presets, the zip and `SHA256SUMS`, and `field-guide.pdf`. With the public studies and hero, move the page's two static labels to 4.5: the playground heading in `docs/index.html` (it says 4.4, the revision of the prebuilt study it first shows, and `app.mjs` replaces it with the live renderer's once it draws) and the hero caption. Write a handback in the 4.6 shape (base and result commits, what changed and why, what was checked, what wasn't, open questions). Edgar uploads the package to claude.ai. Only then do the Stage 5 platform-conformance runs mean anything there.
+The package becomes 4.7.0 with render revision 4.6 (Inlay on 4.5, Stage 3b), Listening 1.2 plus ground 1.0, companion 1.1, synthesis 3.3 and grammar v4.1 (pictures reworded, meanings unchanged). Rebuild the atlas, presets, the zip and `SHA256SUMS`, and `field-guide.pdf`. With the public studies and hero, move the page's two static labels to 4.6: the playground heading in `docs/index.html` (it says 4.4, the revision of the prebuilt study it first shows, and `app.mjs` replaces it with the live renderer's once it draws) and the hero caption. Write a handback in the 4.6 shape (base and result commits, what changed and why, what was checked, what wasn't, open questions). Edgar uploads the package to claude.ai. Only then do the Stage 5 platform-conformance runs mean anything there.
 
 **After the release, to talk through with Edgar (his request, 5 October):** making Field a Claude plugin; what distinguishes a skill or a project from a plugin; the eval that says whether it is ready; and the process for adding it to the Claude directory, if that is appropriate. Nothing here is decided or started.
 
@@ -371,11 +375,12 @@ The package becomes 4.7.0 with render revision 4.5, Listening 1.2 plus ground 1.
 | 1 Removal | — | normal | — (decided) |
 | 2 A way to measure "reads at a glance" | 0 | high | the 10-minute blind sheet |
 | 3 Visual synthesis | 2's baseline | **max** | blind sheet again; watch a transition |
+| 3b Inlay on 4.5 (render 4.6) | 3 | **max** | approve the v4.1 wording; sheet 3 |
 | 4a Portrait 1.2 | — | **max** | listen |
 | 4b Ground | — | **max** | **the three-hour gate** |
 | 4c–4d Directional cues and bridge | the 4b gate | **max** | the cue blind sheet; a live week |
 | 5 Cross-agent | 2's harness | high (pilot), then waves | — (decided) |
-| 6 Release | 1, 3, 4a at least | normal | uploading to claude.ai |
+| 6 Release | 1, 3, 3b, 4a at least | normal | uploading to claude.ai |
 
 Stages 1, 2 and 4a can run in parallel. Stage 3 waits for Stage 2's baseline. 4c waits for Edgar's gate. 4b and 5 can ship after 4.7.0 as 4.7.x if the gate or the pilot takes longer.
 
@@ -406,6 +411,10 @@ Stages 1, 2 and 4a can run in parallel. Stage 3 waits for Stage 2's baseline. 4c
 **Instances and the study's story (5 October, decision 10).** The legend described the drawing in the drawing's words and said what each thing isn't (eight of its fifteen lines carry a "not…"); it gave the limits of the analogy without the analogy. Now an opened line shows, under the picture at each end of its scale, "For instance:" and one sentence about a conversation: `EG` in `reading.mjs`, 32 in all. Their wording follows the composition score and the synthesis procedure, which authors already answer (the three forms are the score's own "gathering and sheltering", "reaching and moving", "arching around a difficult open center"), so readers and writers keep one language. Colour has no scale and gets one, under the palette. Form gets three. Pull gained a balanced picture so that its two ends are none and strong, and keeps its two directions as a second strip. `Met or reconstructed` gets four: under met and .3, and under each of "unsure of the shape" and "sure of the shape, not met". Stretch and flow stay "posture, with no fixed meaning". On narrow screens each comparison picture takes a row with its words beside it, so nothing is cut off.
 
 The scripted study now has the conversation's side: each moment in `companion-studies.mjs` carries a short story in the assistant's words, shown at the top of the legend, and the lines it accounts for carry "In this study: the reservation." The story is passed to the legend only when an update's source is `scripted`; the browser check publishes a live expression whose sequence number matches a study moment and fails if it borrows the story. The wording of all of it is a first draft for Edgar to mark up.
+
+**Decided by Edgar, 2 November 2026:**
+11. Inlay ships in 4.7.0 as render revision 4.6 (Stage 3b). It is drawn on 4.5 and borrows the Composite's core and earlier sheet. The echo goes inside the band, tension flattens only slightly with no cavities, the surface per hue is in, and the extra weight is accepted. The v4.1 wording waits for Edgar's approval.
+12. The October Codex decoder rows count, though they ran with more of Edgar's setup than the Decoders paragraph implies (`PREREG.md`, 2 November). The Claude rows wait on a ruling.
 
 Nothing is waiting on Edgar before work starts. The rest of what he does is in the order table: blind sheets, the three-hour gate, a live week, and uploading the package to claude.ai.
 
