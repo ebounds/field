@@ -1,0 +1,98 @@
+{
+ "sheet": "3",
+ "size": 320,
+ "packages": {
+  "4.5": "4.7.0",
+  "4.6": "4.7.0"
+ },
+ "trials": [
+  {
+   "pair": 1,
+   "study": "integrated",
+   "A": "4.6",
+   "B": "4.5"
+  },
+  {
+   "pair": 2,
+   "study": "gathered",
+   "A": "4.5",
+   "B": "4.6"
+  },
+  {
+   "pair": 3,
+   "study": "exploring",
+   "A": "4.5",
+   "B": "4.6"
+  },
+  {
+   "pair": 4,
+   "study": "tentative",
+   "A": "4.5",
+   "B": "4.6"
+  },
+  {
+   "pair": 5,
+   "study": "strained",
+   "A": "4.5",
+   "B": "4.6"
+  },
+  {
+   "pair": 6,
+   "study": "exploring",
+   "A": "4.6",
+   "B": "4.5"
+  },
+  {
+   "pair": 7,
+   "study": "playful",
+   "A": "4.5",
+   "B": "4.6"
+  },
+  {
+   "pair": 8,
+   "study": "described",
+   "A": "4.5",
+   "B": "4.6"
+  },
+  {
+   "pair": 9,
+   "study": "integrated",
+   "A": "4.5",
+   "B": "4.6"
+  },
+  {
+   "pair": 10,
+   "study": "gathered",
+   "A": "4.6",
+   "B": "4.5"
+  },
+  {
+   "pair": 11,
+   "study": "playful",
+   "A": "4.6",
+   "B": "4.5"
+  },
+  {
+   "pair": 12,
+   "study": "described",
+   "A": "4.6",
+   "B": "4.5"
+  },
+  {
+   "pair": 13,
+   "study": "tentative",
+   "A": "4.6",
+   "B": "4.5"
+  },
+  {
+   "pair": 14,
+   "study": "strained",
+   "A": "4.6",
+   "B": "4.5"
+  }
+ ],
+ "built": {
+  "4.5": "603c23d30c32",
+  "4.6": "1f77e34b6c19"
+ }
+}
