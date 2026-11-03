@@ -414,7 +414,7 @@ The scripted study now has the conversation's side: each moment in `companion-st
 
 **Decided by Edgar, 2 November 2026:**
 11. Inlay ships in 4.7.0 as render revision 4.6 (Stage 3b). It is drawn on 4.5 and borrows the Composite's core and earlier sheet. The echo goes inside the band, tension flattens only slightly with no cavities, the surface per hue is in, and the extra weight is accepted. Track B's first proposal goes in with it, so `flow` turns the field only as far as `history` allows. Edgar left the v4.1 wording to Claude's recommendations.
-12. The October Codex decoder rows count, though they ran with more of Edgar's setup than the Decoders paragraph implies (`PREREG.md`, 2 November). The Claude rows wait on a ruling.
+12. The October Claude and Codex decoder rows count, though both ran with more of Edgar's setup than the Decoders paragraph implies (`PREREG.md`, 2 November). For Claude this rests on a probe of the October command line, which found no second model taking part.
 
 Nothing is waiting on Edgar before work starts. The rest of what he does is in the order table: blind sheets, the three-hour gate, a live week, and uploading the package to claude.ai.
 

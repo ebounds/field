@@ -71,7 +71,7 @@ A review found that the Claude and Codex calls ran with Edgar's real home and us
 
 Now Claude runs with `--safe-mode --setting-sources=`. Its context holds Claude Code's own preamble, the model's name, the date and the account's email, and nothing more. A call fails if its init event shows any tool, skill, MCP server, command, non-built-in plugin, memory or output style, if a hook runs, or if another model takes part. Codex runs with an empty home, `CODEX_HOME` still pointing at the real one for its sign-in, and plugins, apps, memories, hooks and the optional tools off (`CODEX_OFF`). Once per run its context is rendered with `codex debug prompt-input` and checked. A skill from anywhere but Codex's own bundled set, an `AGENTS.md` or a trace of Field skips its cells. What remains is Codex's own bundled skills and its built-in tools, under the read-only sandbox.
 
-The decoder names and the Claude and Codex rows of 4–6 October are unchanged. Whether those rows still count is for Edgar to rule on, as with Grok's (`PREREG.md`).
+The decoder names and the Claude and Codex rows of 4–6 October are unchanged. Edgar ruled on 2 November that those rows count (`PREREG.md`): Codex's because `config.toml` was ignored as written and nothing about Field reached it, and Claude's after a probe of the October command line found no second model taking part.
 
 ## Nightly
 
