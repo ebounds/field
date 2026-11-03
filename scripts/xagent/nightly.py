@@ -22,24 +22,25 @@ XAGENT = Path(__file__).resolve().parent
 RESULTS = XAGENT / 'results'
 ROOT = XAGENT.parents[1]
 NIGHTLY = ROOT / '.xagent/nightly'
-BRANCH = 'field-4.7'
+BRANCH = 'field-4.7-inlay'
 
 # Gemini runs on what is left of its free daily quota before it resets, so the day's own use is
 # untouched; Grok has no meter, so its cap is the protection, and its first limit message ends the
 # phase. Neither cap is reached by the trials alone in one night. A cap counts calls: a trial asked
 # again because its answer couldn't be read counts twice.
 PHASES = {
+    # Stage 3b (PREREG.md): 4.5 read again beside 4.6, into its own file.
     'gemini': {'decoder': 'gemini', 'cap': 75, 'window': ('00:00', '01:50'), 'runs': [
-        ['--task', 'all', '--revs', '4.5', '--out', 'stage3.jsonl', '--seen', 'stage2.jsonl'],
-        ['--task', 'taught', '--revs', '4.4,4.5', '--probe-passes', '2', '--out', 'stage3.jsonl', '--seen', 'stage2.jsonl'],
-        ['--task', 'all', '--only-revs', '4.3,4.4', '--out', 'stage2.jsonl', '--seen', 'stage3.jsonl'],
+        ['--task', 'taught,words', '--revs', '4.5,4.6', '--probe-passes', '2', '--out', 'stage3b.jsonl'],
+        ['--task', 'naive', '--only-revs', '4.5,4.6', '--out', 'stage3b.jsonl'],
+        ['--task', 'pair', '--revs', '4.6', '--out', 'stage3b.jsonl'],
     ]},
     'grok': {'decoder': 'grok:4.7', 'cap': 50, 'window': ('02:00', '05:00'), 'runs': [
-        ['--task', 'all', '--out', 'grok-isolated.jsonl'],
+        ['--task', 'naive', '--only-revs', '4.5,4.6', '--out', 'stage3b.jsonl'],
+        ['--task', 'pair', '--revs', '4.6', '--out', 'stage3b.jsonl'],
     ]},
 }
-REPORTS = [['stage2.jsonl'], ['stage2.jsonl', 'stage3.jsonl'],
-           ['stage2.jsonl', 'stage3.jsonl', 'grok-isolated.jsonl', '--drop', 'grok']]
+REPORTS = [['stage3b.jsonl']]
 TRAILER = ('Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n'
            'Claude-Session: https://claude.ai/code/session_01GNcg7uiHUpSxuCrNVXBcgU')
 
