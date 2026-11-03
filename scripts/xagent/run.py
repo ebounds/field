@@ -50,6 +50,21 @@ Read the second image under that grammar and answer three questions about it. Fo
 
 Reply with only a JSON object: {{"second": "yes", "second_strength": 0, "held": "no", "held_strength": 0, "reconstructed": "no", "reconstructed_strength": 0}}'''
 
+# The taught task without the atlas: the grammar's words alone, and the same three questions.
+WORDS = '''Below is the visual grammar for a kind of abstract picture called a field. The image is one field to read.
+
+<grammar>
+{grammar}
+</grammar>
+
+Read the image under that grammar and answer three questions about it. For each, say yes or no, and give a strength from 0 (not at all) to 10 (unmistakable).
+
+1. Is there a second current: a countercurrent joined to the main body?
+2. Is anything held from earlier: a retained trace of an earlier contour?
+3. Was this reading reconstructed rather than met directly?
+
+Reply with only a JSON object: {{"second": "yes", "second_strength": 0, "held": "no", "held_strength": 0, "reconstructed": "no", "reconstructed_strength": 0}}'''
+
 PAIR = '''Two abstract pictures are shown side by side, one on the left and one on the right. Neither has words in it.
 
 1. Which one tells you faster what it is like?
@@ -62,8 +77,9 @@ def seeded(*parts):
     return random.Random(int(hashlib.sha256('|'.join(map(str, parts)).encode()).hexdigest()[:12], 16))
 
 
-def trials(task, manifest, wanted, sizes, passes, probe_passes=1, revs=None, only=None):
-    """Every (item, decoder, repeat) this task asks for."""
+def trials(task, manifest, wanted, sizes, passes, probe_passes=1, revs=None, only=None, pilot=False):
+    """Every (item, decoder, repeat) this task asks for. A pilot reads the pilot-only probes."""
+    probe = 'pilot' if pilot else 'probe'
     for item_id, item in manifest.items():
         kind = item['kind']
         drawn = {item.get('rev'), item.get('left'), item.get('right')} - {None}
@@ -73,7 +89,7 @@ def trials(task, manifest, wanted, sizes, passes, probe_passes=1, revs=None, onl
             continue
         if task == 'naive' and kind not in ('study', 'e3'):
             continue
-        if task == 'taught' and kind != 'probe':
+        if task in ('taught', 'words') and kind != probe:
             continue
         if task == 'pair' and kind != 'pair':
             continue
@@ -81,10 +97,10 @@ def trials(task, manifest, wanted, sizes, passes, probe_passes=1, revs=None, onl
             continue
         for decoder in wanted:
             # A pair at 320 px is over Grok's one-argument limit, like anything at 1000 px.
-            if decoder.partition(':')[0] == 'grok' and (item['size'] > 320 or task == 'taught'
+            if decoder.partition(':')[0] == 'grok' and (item['size'] > 320 or task in ('taught', 'words')
                                                       or (task == 'pair' and item['size'] > 160)):
                 continue
-            repeats = passes if kind == 'study' else probe_passes if kind == 'probe' else 1
+            repeats = passes if kind == 'study' else probe_passes if kind in ('probe', 'pilot') else 1
             for rep in range(1, repeats + 1):
                 yield {'key': f'{task}|{item_id}|{decoder}|{rep}', 'task': task, 'item': item_id,
                        'decoder': decoder, 'rep': rep, **{k: item.get(k) for k in
@@ -103,6 +119,9 @@ def ask(trial, manifest):
     if trial['task'] == 'taught':
         grammar = (items.ITEMS / f'grammar-{item["rev"]}.md').read_text()
         return TAUGHT.format(grammar=grammar), [items.ITEMS / f'atlas-{item["rev"]}.png', image], {}
+    if trial['task'] == 'words':
+        grammar = (items.ITEMS / f'grammar-{item["rev"]}.md').read_text()
+        return WORDS.format(grammar=grammar), [image], {}
     return PAIR, [image], {}
 
 
@@ -114,7 +133,7 @@ def gemini_model(trial):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument('--task', default='naive', help='naive, taught, pair, or all')
+    ap.add_argument('--task', default='naive', help='naive, taught, words, pair, all, or several with commas')
     ap.add_argument('--decoders', default=','.join(decoders.ALL))
     ap.add_argument('--sizes', default='160,320,1000')
     ap.add_argument('--passes', type=int, default=2, help='passes over the studies')
@@ -126,13 +145,14 @@ def main():
     ap.add_argument('--limit', type=int, help='at most this many calls per decoder, a second try included')
     ap.add_argument('--deadline', help='start no trial after this local time: YYYY-MM-DDTHH:MM, '
                                        'or HH:MM for the next one to come')
+    ap.add_argument('--pilot', action='store_true', help='taught and words read the pilot-only probes')
     ap.add_argument('--dry', action='store_true', help='count what would run')
     args = ap.parse_args()
 
     manifest = items.load()
     wanted = [d for d in args.decoders.split(',') if d]
     sizes = {int(s) for s in args.sizes.split(',')}
-    tasks = ('naive', 'pair', 'taught') if args.task == 'all' else (args.task,)
+    tasks = ('naive', 'pair', 'taught') if args.task == 'all' else tuple(args.task.split(','))
     out = RESULTS / args.out
     RESULTS.mkdir(exist_ok=True)
     # A trial is done when it was answered on the images as they are built now. An answer about
@@ -158,7 +178,7 @@ def main():
 
     queue = {}
     for task in tasks:
-        for trial in trials(task, manifest, wanted, sizes, args.passes, args.probe_passes, revs, only):
+        for trial in trials(task, manifest, wanted, sizes, args.passes, args.probe_passes, revs, only, args.pilot):
             if trial['built'] not in done.get(trial['key'], ()):
                 queue.setdefault(trial['decoder'], []).append(trial)
     for decoder, todo in queue.items():

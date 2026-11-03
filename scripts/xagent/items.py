@@ -34,7 +34,13 @@ REVISIONS = {
     '4.3': ('4.5.1', '005dbae'),
     '4.4': ('4.6.0', 'a244a80'),
     '4.5': ('4.7.0', 'bf6b84d'),
+    '4.6': ('4.7.0', 'WORKTREE'),
 }
+# Which revisions are set side by side (each pair in both orders). Stage 3b adds 4.6 beside
+# 4.5 and beside 4.3; 4.6 beside 4.4 would only spend calls.
+PAIRINGS = ({'4.3', '4.4'}, {'4.3', '4.5'}, {'4.4', '4.5'}, {'4.5', '4.6'}, {'4.3', '4.6'})
+# The real-conversation fields are tabulated, not scored, so 4.6 doesn't draw them.
+E3_REVS = ('4.3', '4.4', '4.5')
 # What a revision's images are made from. A change in any of these rebuilds them.
 SOURCES = ('scripts/render_field.py', 'assets/reference-atlas.svg', 'references/visual-grammar.md')
 # Stage 2's first trials were written before stamps were recorded (5707cc7). Their images came
@@ -54,6 +60,13 @@ PROBE_BASES = {
     'c': {'primary': 'blue', 'secondary': 'violet', 'form': 'mantle',
           'openness': .5, 'breadth': .75, 'definition': .75, 'intensity': .7, 'stretch': .3},
 }
+# A probe base kept out of every counted run, for the pilots of Stage 3b (PREREG.md), so that
+# what the pilot may change is never chosen on a counted item. It is drawn for 4.5 and 4.6 only.
+PILOT_BASES = {
+    'p': {'primary': 'violet', 'secondary': 'teal', 'form': 'envelope',
+          'openness': .7, 'breadth': .65, 'definition': .75, 'intensity': .75, 'flow': .4},
+}
+PILOT_REVS = ('4.5', '4.6')
 PROBE_MOVES = {
     'plain': {},
     'counterpoint': {'counterpoint': .8},
@@ -170,7 +183,12 @@ def specs():
                 if 'grounding' in change and not supports_grounding(rev):
                     continue
                 out[('probe', f'{base}-{move}', rev)] = {**controls, **change}
-        for file in ('readers.json', 'readers-run2.json'):
+        for base, controls in PILOT_BASES.items():
+            if rev not in PILOT_REVS:
+                continue
+            for move, change in PROBE_MOVES.items():
+                out[('pilot', f'{base}-{move}', rev)] = {**controls, **change}
+        for file in ('readers.json', 'readers-run2.json') if rev in E3_REVS else ():
             path = E3_DIR / file
             if not path.exists():
                 continue
@@ -183,7 +201,7 @@ def specs():
 def truth(kind, name, spec):
     if kind == 'study':
         return {'word': name}
-    if kind == 'probe':
+    if kind in ('probe', 'pilot'):
         move = name.split('-')[1]
         return {'second': move == 'counterpoint', 'held': move == 'history',
                 'reconstructed': move == 'grounding'}
@@ -220,7 +238,7 @@ def build():
         if not svg.exists():
             render(rev, spec, svg)
         sources[(kind, name, rev)] = svg
-        sizes = SIZES if kind == 'study' else (320, 1000) if kind == 'probe' else (320,)
+        sizes = SIZES if kind == 'study' else (320, 1000) if kind in ('probe', 'pilot') else (320,)
         for size in sizes:
             item(f'{kind}:{name}|{rev}|{size}',
                  {'kind': kind, 'name': name, 'rev': rev, 'size': size, 'truth': truth(kind, name, spec),
@@ -230,7 +248,7 @@ def build():
     for name in WORDS:
         for left in REVISIONS:
             for right in REVISIONS:
-                if left == right or not {('study', name, left), ('study', name, right)} <= sources.keys():
+                if {left, right} not in PAIRINGS or not {('study', name, left), ('study', name, right)} <= sources.keys():
                     continue
                 for size in (160, 320):
                     item(f'pair:{name}|{left}>{right}|{size}',

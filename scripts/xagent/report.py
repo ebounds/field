@@ -214,11 +214,11 @@ def pair(rows, out):
                        if any(apart.values()) and any(sum(c.values()) for c in apart.values()) else '') + '\n')
 
 
-def taught(rows, out):
-    probes = [r for r in rows if r['task'] == 'taught']
+def taught(rows, out, task='taught', title='Taught readers: the three channels'):
+    probes = [r for r in rows if r['task'] == task]
     if not probes:
         return
-    out.append('## Taught readers: the three channels\n')
+    out.append(f'## {title}\n')
     out.append('Probe fields with one channel moved at a time. "Seen" is how often the decoder said yes when the '
                'channel was there; "false alarm" is how often it said yes when it wasn\'t.\n')
     out.append('| Channel | Revision | Size | Seen | False alarm | Mean strength, there / not |')
@@ -244,6 +244,38 @@ def taught(rows, out):
                 out.append(f'| {label} | {rev} | {size} | {cell(sum(map(yes, there)), len(there))} | '
                            f'{cell(sum(map(yes, absent)), len(absent))} | {strength(there)} / {strength(absent)} |')
     out.append('')
+    said = lambda r, channel: str(r['answer'].get(channel, '')).strip().lower().startswith('y')  # noqa: E731
+    answered = [r for r in probes if r.get('answer')]
+    revs = sorted({r['rev'] for r in answered})
+    # Stage 3b: an earlier sheet read as grounding's withdrawn matter is the failure the axes study found.
+    held = [r for r in answered if r['truth']['held']]
+    if held:
+        out.append('**What remains, read as reconstructed.** How often a history probe drew "reconstructed: yes" '
+                   '(the field carries a retained change and is fully met).\n')
+        out.append('| Revision | Reconstructed on history probes | Reconstructed on plain probes |')
+        out.append('| --- | --- | --- |')
+        for rev in revs:
+            there = [r for r in held if r['rev'] == rev]
+            plain = [r for r in answered if r['rev'] == rev and not any(r['truth'].values())]
+            out.append(f'| {rev} | {cell(sum(said(r, "reconstructed") for r in there), len(there))} | '
+                       f'{cell(sum(said(r, "reconstructed") for r in plain), len(plain))} |')
+        out.append('')
+        # From 4.6 a field turns only as far as history allows, so a base with flow set turns with its history
+        # probe; the others don't. Each base on its own separates the turn from the sheet.
+        out.append('**Held from earlier, by probe base** (seen on history probes / false alarm on the others).\n')
+        bases = sorted({r['name'].split('-')[0] for r in answered})
+        out.append('| Revision | ' + ' | '.join(bases) + ' |')
+        out.append('|' + ' --- |'*(1 + len(bases)))
+        for rev in revs:
+            parts = []
+            for base in bases:
+                these = [r for r in answered if r['rev'] == rev and r['name'].split('-')[0] == base]
+                there = [r for r in these if r['truth']['held']]
+                absent = [r for r in these if not r['truth']['held']]
+                parts.append(f'{sum(said(r, "held") for r in there)}/{len(there)} · {sum(said(r, "held") for r in absent)}/{len(absent)}'
+                             if there else '–')
+            out.append(f'| {rev} | ' + ' | '.join(parts) + ' |')
+        out.append('')
     if len(REVS_SEEN) > 2:
         # Stage 3: how well a channel separates fields that have it from fields that don't, both sizes together.
         out.append('**Seen minus false alarm, both sizes together.** Stage 3 calls it a regression when a later '
@@ -333,6 +365,7 @@ def main():
     naive(rows, out)
     pair(rows, out)
     taught(rows, out)
+    taught(rows, out, 'words', 'Words only: the grammar without its atlas')
     e3(rows, out)
     report = path.with_name(path.stem + '-report.md')
     report.write_text('\n'.join(out) + '\n')

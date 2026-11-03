@@ -23,6 +23,12 @@ python3 scripts/xagent/run.py --task taught --revs 4.4,4.5 --probe-passes 2 --ou
 python3 scripts/xagent/report.py stage2.jsonl stage3.jsonl   # both together, with the October Grok rows (for the record), as results/stage3-report.md
 python3 scripts/xagent/report.py stage2.jsonl stage3.jsonl grok-isolated.jsonl --drop grok   # the report of record, results/grok-isolated-report.md
 python3 scripts/xagent/sheet.py                              # the blind sheet a person fills in; paste the code back to score it
+# Stage 3b (PREREG.md): the pilot, then 4.5 read again beside 4.6 into its own file
+python3 scripts/xagent/run.py --pilot --task taught,words --probe-passes 2 --decoders claude:sonnet,codex:sol --out pilot-3b.jsonl
+python3 scripts/xagent/run.py --task taught,words --revs 4.5,4.6 --probe-passes 2 --out stage3b.jsonl
+python3 scripts/xagent/run.py --task naive --only-revs 4.5,4.6 --out stage3b.jsonl
+python3 scripts/xagent/run.py --task pair --revs 4.6 --out stage3b.jsonl
+python3 scripts/xagent/report.py stage3b.jsonl
 ```
 
 `run.py` appends one line per trial to the results file (`--out`, by default `results/stage2.jsonl`) and skips every trial already answered there or in a file named by `--seen`, so it can be stopped and restarted, and two agents can run different decoders at the same time. A trial counts as answered only on the images as they are built now: when a revision's stamp changes, its earlier answers are asked again, and `report.py` leaves them out and says how many. A call that fails is logged with `"ok": false` and tried again on the next run. Each line records its `calls`: two when an answer that couldn't be read was asked again. `--limit` counts those calls, not trials.

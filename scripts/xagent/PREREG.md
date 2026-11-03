@@ -61,6 +61,66 @@ Written 5 October 2026, after Stage 2's results and before any counted trial on 
 
 **Known limits, said now.** Those of Stage 2. The 4.3 and 4.4 naive and side-by-side answers are from 4–5 October and 4.5's from 5 October on; the decoders are the same named models, but nothing guarantees they answer alike from one day to the next (the taught comparison has a concurrent pass for that reason). Grok and Gemini run on free tiers and may again leave cells empty; empty cells are reported as empty.
 
+## Stage 3b: does rendering revision 4.6 keep what 4.5 holds?
+
+Written 3 November 2026, before any trial on revision 4.6. Revision 4.6 is Inlay from the axes study, drawn on top of 4.5 (`docs/field-4.7-inlay-plan.md`). It is not frozen yet. One pilot round comes first (below). Then the renderer is pinned to a commit in `items.py` (`REVISIONS['4.6']`) before the first counted trial, and that commit is added here.
+
+**Decoders and settings.** As in Stage 3, isolated as the README describes since 2 November:
+- `claude:opus`, `claude:sonnet`, `claude:haiku`;
+- `codex:astra`, `codex:sol`;
+- `grok:4.7`, at 160 and 320 px only, and not in the taught or words-only tasks;
+- `gemini`, its Flash models rotated, with the model recorded.
+
+**4.5 is read again, beside 4.6.** Every 4.5 trial of Stage 3b is asked again now, alongside 4.6, into `results/stage3b.jsonl`, without `--seen`. The report of Stage 3b is written from that file alone (`report.py stage3b.jsonl`). The October answers about 4.5 are not compared with 4.6: they came four weeks earlier, under the earlier settings. How far 4.5's new answers stand from October's is reported as numbers: agreement on the untaught word, and seen minus false alarms per taught channel.
+
+**The pilot (not counted; `results/pilot-3b.jsonl`).**
+- **What it reads.** One round on probe base `p` (`PILOT_BASES` in `items.py`), which no counted task reads: the taught and words-only tasks, 4.5 and 4.6, at 320 and 1000 px, two passes, with `claude:sonnet` and `codex:sol`.
+- **What it may change.** One thing, the earlier sheet's design, by this rule. If 4.6's history probes draw "reconstructed: yes" in the words-only task 15 points or more above 4.5's, the sheet is redrawn to lag the turn (the plan's second design) and the pilot runs once more on that design. After that the renderer is frozen, whatever the second round shows. Nothing else in the renderer changes because of a pilot.
+
+**Untaught readers: no regression against 4.5.** Stage 3's rule, now with 4.6 against 4.5 as read again: at any size, 4.6's family mean is at least 10 points under 4.5's and at least 3 of the 4 families are lower. A family votes at a size only with at least six answered trials there under each revision. A size where fewer than three families can vote is undecided, not passed.
+
+**Taught readers: no regression.** For each of the three channels: seen minus false alarms, both sizes and all decoders together. A regression is a channel where 4.6 is more than 15 points under 4.5. The probes are read twice under each revision.
+
+**Words only: no regression, and the sheet is not read as grounding.**
+- **The task.** The taught task without its atlas: the grammar of the field's own revision, one image, and the same three questions word for word.
+- **The regression rule** is the taught one.
+- **The sheet's own test.** On the history probes, the share answered "reconstructed: yes" must not be more than 15 points above 4.5's. On 4.4's body, the axes study found Inlay's sheet read as grounding in 4 of 5 words-only pairs.
+- **By base.** "Held from earlier" is also reported for each probe base. Base `b` sets `flow` .3, so under 4.6 its history probe turns while its plain probe stays at rest; bases `a` and `c` don't turn. That separates what the turn adds from what the sheet does.
+
+**Side by side.**
+- **4.6 beside 4.5,** in both orders, at 160 and 320 px. The prediction, on "which tells you faster what it is like?" at 320 px, all decoders together, counting only pairs where a decoder chose the same picture in both orders: 4.6 does not lose to 4.5 (4.5 is not chosen over 4.6 at sign-test p < .05).
+- **4.6 beside 4.3** is reported without a prediction. In Stage 3, 4.3 was chosen over 4.5 as faster at 320 px in 10 pairs to 0.
+- **"Which would you keep looking at?"** is reported without a prediction.
+
+**What blocks the release.** Any of these keeps render 4.6 out of 4.7.0 until Edgar decides:
+- a regression of the untaught readers;
+- a regression of the taught readers;
+- a regression in the words-only task;
+- the sheet read as grounding;
+- 4.6 losing to 4.5 on "faster" at 320 px.
+
+Edgar's sheet 3 is the main measure of the first look, as in Stage 3.
+
+**Edgar's sheet 3.** It is made after the freeze: 14 pairs at 320 px, 4.6 beside 4.5 for the six shared studies and `described`, each in both orders. A study counts for a revision only when both orders agree. On "faster" the sheet passes if 4.5 is not chosen over 4.6 in more studies than 4.6 over 4.5. "Keep looking" and `described` are reported.
+
+**Real-field change pairs: a second wave, pre-registered now and not yet in the harness.**
+- **The task.** The axes study's "learned on real fields" condition. Two fields drawn from the controls of one real conversation (the three conversations of the axes study and the nine E3 readings), differing in one quiet control. The decoder has the grammar and atlas of their revision and names the control that changed. On busy real fields every candidate of the study scored under 4.4 (4.4 45 of 48, Inlay 42), and the study named this the likeliest cost of the approach.
+- **The measure.** At least 96 pairs per revision, 4.5 and 4.6, read concurrently. The measure is the share of pairs whose changed control is named, families weighted equally. A regression is 4.6 more than 10 points under 4.5.
+- **Before it runs.** The pairs, the prompt and the controls are fixed here, in a dated entry, before that wave starts.
+
+**Size.** About 2,100 counted trials in the first wave:
+- the taught and words-only tasks, 1,152;
+- the untaught task, 623 (including 4.5's E3 fields, read again for the agreement with October);
+- side by side, 338.
+
+They run in waves, as quotas allow. Claude stops at the usage limits set in `run.py`.
+
+**Known limits.**
+- Those of Stage 3.
+- **The questions predate the core.** The taught and words-only questions are kept word for word. "A countercurrent joined to the main body" fits 4.5's parting current better than 4.6's core; "a retained trace of an earlier contour" fits both.
+- **The new isolation settings.** The decoders are read under these settings for the first time.
+- **The pilot's limit.** It uses two decoders and one base, and can change only the sheet.
+
 ## Stage 5: thresholds (from the plan, unchanged)
 
 - **Communicable:** 2AFC accuracy of at least .70, with the lower 95 % bound above .50, in at least 3 of 4 decoder families, and replicated on held-out items.
