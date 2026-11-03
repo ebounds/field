@@ -284,10 +284,11 @@ def render(spec, treatments=None):
     sheet = A['history'] == 'sheet' and p['history']
 
     def sheet_lift(u):
-        # How far the earlier sheet stands beyond the present outer edge: always
-        # well under the band's own width, so the two overlap and never fork
-        # open, and nothing at either tip, where they rejoin.
-        return p['history']*.62*thickness(u)*math.sin(math.pi*u)**.7*(.62+.38*u)*(.9+.1*math.cos(3*math.pi*u+.4))
+        # How far the earlier sheet stands beyond the present outer edge: far
+        # enough to show as a second outline, still under the band's own width,
+        # so the two overlap and never fork open, and nothing at either tip,
+        # where they rejoin.
+        return p['history']*.7*thickness(u)*math.sin(math.pi*u)**.7*(.62+.38*u)*(.9+.1*math.cos(3*math.pi*u+.4))
 
     # Keep every expressive posture in the same frame with substantial margins,
     # counting an earlier sheet that stands beyond the outer edge.
@@ -524,10 +525,12 @@ def render(spec, treatments=None):
             region = band(lambda u, j=j: j/sheet_lanes, lambda u, j=j: min(1, (j+1.6)/sheet_lanes), steps=56, at=sheet_point)
             svg.append(f'<path d="{region}" fill="url(#field-sheet-{j})" opacity=".62"/>')
         svg.append('</g>')
-        # Its lit outer edge thins into both tips, where the two sheets meet.
+        # Its lit outer edge, the earlier contour, thins into both tips, where
+        # the two sheets meet. It is the second colour, lit only as far as it
+        # holds its chroma: over the dark ground a paler line turns near-white.
         edge = band(lambda u: 0., lambda u: .03*math.sin(math.pi*u)**.6, .02, .98, 72, at=sheet_point)
         lift = band(lambda u: .2, lambda u: .2 + .07*math.sin(math.pi*u)**.5, .06, .94, 72, at=sheet_point)
-        svg.append(f'<path d="{edge}" fill="{tint(pale(c2,.9,.92),1.3*glow)}" opacity="{.9*articulate:.3f}" filter="url(#field-fine)"/>'
+        svg.append(f'<path d="{edge}" fill="{tint(c2,1.15*glow,1.2)}" opacity="{.35+.55*articulate:.3f}" filter="url(#field-fine)"/>'
                    f'<path d="{lift}" fill="{tint(pale(c1,.95,.92),1.2*glow)}" opacity=".45" filter="url(#field-diffuse)"/></g>')
     elif p['history'] and A['history'] != 'sheet':
         ridge, edge = history_ridge()
@@ -636,18 +639,22 @@ def render(spec, treatments=None):
             svg.append(f'<path d="{tapered_strip(.08,.92,.42,.26)}" fill="#EEF3F6" opacity="{.22*w:.3f}" filter="url(#field-soft)"/>')
         svg.append('</g>')
     if core:
-        # A second current inside the material, in its own hue. The fibres part
-        # around it and rejoin at both tips, and a fine shade along each side
-        # keeps it a current within the material rather than a band of palette.
+        # A second current inside the material, in its own hue, parting as 4.5's
+        # does: along its outer side the fibres stand back and leave a narrow
+        # opening the ground shows through; beside the opening it is deep in
+        # colour, and it is lit toward the seam on the other side, where it
+        # rejoins. Drawn as a band of colour alone, it reads as palette.
         def across(k):
             return lambda u: core_centre(u) + k*core_half(u)
         body = band(across(-.8), across(.8), .08, .92, 90)
-        sides = band(across(-1), across(-.8), .08, .92, 90) + ' ' + band(across(.8), across(1), .08, .92, 90)
-        glint = band(across(-.55), across(-.3), .08, .92, 90)
+        opening = band(across(-1.5), across(-.85), .08, .92, 90)
+        deep = band(across(-.85), across(-.4), .08, .92, 90)
+        seam = band(across(.72), across(.9), .08, .92, 90)
         svg.append(f'<g id="field-countercurrent" opacity="{strength*(.8+.2*d):.3f}">'
                    f'<path d="{body}" fill="{tint(counter_hue,1.08*glow,1.2)}" opacity=".88" filter="url(#field-diffuse)"/>'
-                   f'<g filter="url(#field-fine)"><path d="{sides}" fill="url(#field-counter-ink)" opacity=".7"/>'
-                   f'<path d="{glint}" fill="{tint(counter_hue,1.5*glow,.9)}" opacity=".6"/></g></g>')
+                   f'<g filter="url(#field-fine)"><path d="{opening}" fill="url(#background)" opacity=".85"/>'
+                   f'<path d="{deep}" fill="url(#field-counter-ink)" opacity=".85"/>'
+                   f'<path d="{seam}" fill="{tint(counter_hue,1.6*glow,.7)}" opacity=".92"/></g></g>')
     elif p['counterpoint'] and A['counterpoint'] != 'core':
         # A second current lives in the same material. It parts from the surface
         # along one edge, leaving an opening the ground shows through, and returns

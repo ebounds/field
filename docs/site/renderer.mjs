@@ -143,10 +143,10 @@ export function geometry(spec = {}) {
     width *= (1-.05*t*exp(-1*(phase/.45)**2))*(1+.17*fold*sin(3*theta+.8));
     return min(width,min(a,b)*.48);
   }
-  // How far the earlier sheet stands beyond the present outer edge: always well
-  // under the band's own width, so the two overlap and never fork open, and
-  // nothing at either tip, where they rejoin.
-  const sheetLift = u => p.history*.62*thickness(u)*sin(PI*u)**.7*(.62+.38*u)*(.9+.1*cos(3*PI*u+.4));
+  // How far the earlier sheet stands beyond the present outer edge: far enough to
+  // show as a second outline, still under the band's own width, so the two
+  // overlap and never fork open, and nothing at either tip, where they rejoin.
+  const sheetLift = u => p.history*.7*thickness(u)*sin(PI*u)**.7*(.62+.38*u)*(.9+.1*cos(3*PI*u+.4));
   // Keep every expressive posture in the same frame with substantial margins,
   // counting an earlier sheet that stands beyond the outer edge.
   const extent = max(...seq(201, i => p.history ? offsetRaw(i/200, -sheetLift(i/200)) : rawPoint(i/200)).flat().map(abs));
@@ -315,8 +315,10 @@ export function render(spec = {}) {
     add('<g id="field-history" opacity="'+fixed(strength*(.55+.4*p.history**.6)*(.86+.14*d))+'"><g filter="url(#field-recede)">');
     for (let j=0;j<sheetLanes;j++) add(path(band(()=>j/sheetLanes,()=>min(1,(j+1.6)/sheetLanes),0,1,56,sheetPoint),'fill="url(#field-sheet-'+j+')" opacity=".62"'));
     add('</g>');
-    // Its lit outer edge thins into both tips, where the two sheets meet.
-    add(path(band(()=>0,u=>.03*sin(PI*u)**.6,.02,.98,72,sheetPoint),'fill="'+tint(pale(c2,.9,.92),1.3*glow)+'" opacity="'+fixed(.9*articulate)+'" filter="url(#field-fine)"')
+    // Its lit outer edge, the earlier contour, thins into both tips, where the two
+    // sheets meet. It is the second colour, lit only as far as it holds its
+    // chroma: over the dark ground a paler line turns near-white.
+    add(path(band(()=>0,u=>.03*sin(PI*u)**.6,.02,.98,72,sheetPoint),'fill="'+tint(c2,1.15*glow,1.2)+'" opacity="'+fixed(.35+.55*articulate)+'" filter="url(#field-fine)"')
       +path(band(()=>.2,u=>.2+.07*sin(PI*u)**.5,.06,.94,72,sheetPoint),'fill="'+tint(pale(c1,.95,.92),1.2*glow)+'" opacity=".45" filter="url(#field-diffuse)"')+'</g>');
   }
   add(path(outline,'fill="url(#field-ink)" opacity="'+fixed(strength*.28*(1-.4*weave)*glow)+'" filter="url(#field-soft)"'));
@@ -388,14 +390,17 @@ export function render(spec = {}) {
   if(weights.pearl) add(path(strip(.08,.92,.42,.26),'fill="#EEF3F6" opacity="'+fixed(.22*weights.pearl)+'" filter="url(#field-soft)"'));
   add('</g>');
   if(p.counterpoint) {
-    // A second current inside the material, in its own hue. The fibres part
-    // around it and rejoin at both tips, and a fine shade along each side keeps
-    // it a current within the material rather than a band of palette.
+    // A second current inside the material, in its own hue, parting as 4.5's
+    // does: along its outer side the fibres stand back and leave a narrow opening
+    // the ground shows through; beside the opening it is deep in colour, and it
+    // is lit toward the seam on the other side, where it rejoins. Drawn as a band
+    // of colour alone, it reads as palette.
     const across=k=>u=>coreCentre(u)+k*coreHalf(u);
     add('<g id="field-countercurrent" opacity="'+fixed(strength*(.8+.2*d))+'">'
       +path(band(across(-.8),across(.8),.08,.92,90),'fill="'+tint(counterHue,1.08*glow,1.2)+'" opacity=".88" filter="url(#field-diffuse)"')
-      +'<g filter="url(#field-fine)">'+path(band(across(-1),across(-.8),.08,.92,90)+' '+band(across(.8),across(1),.08,.92,90),'fill="url(#field-counter-ink)" opacity=".7"')
-      +path(band(across(-.55),across(-.3),.08,.92,90),'fill="'+tint(counterHue,1.5*glow,.9)+'" opacity=".6"')+'</g></g>');
+      +'<g filter="url(#field-fine)">'+path(band(across(-1.5),across(-.85),.08,.92,90),'fill="url(#background)" opacity=".85"')
+      +path(band(across(-.85),across(-.4),.08,.92,90),'fill="url(#field-counter-ink)" opacity=".85"')
+      +path(band(across(.72),across(.9),.08,.92,90),'fill="'+tint(counterHue,1.6*glow,.7)+'" opacity=".92"')+'</g></g>');
   }
   add(path(strip(.21,.75,.2+.58*weave,.045+.03*breadth,.08),'id="field-grazing-light" fill="url(#field-crest)" opacity="'+fixed(strength*(.35+.35*d))+'"'));
   if(t) {
