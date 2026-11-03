@@ -3,7 +3,7 @@
 Planned 2 November 2026, from Edgar's choice of Inlay in the axes study.
 Base: branch `field-4.7`, render revision 4.5 (Stage 3 of `docs/field-4.7-plan.md`).
 Source: the axes study of 25 October, branch `study/axes-overnight`, `studies/axes-overnight/out/` (`REPORT.md`, `renderers/engine.py`, `renderers/A_inlay.py`, `grammar-ledger.md`).
-Status: plan only. Nothing here is implemented yet.
+Status: the renderer is ported and passes every machine check (branch `field-4.7-inlay`, 2 November; "Where the port stands" below). The reader tests have not started.
 
 ## What Edgar decided (2 November 2026)
 
@@ -17,6 +17,34 @@ Status: plan only. Nothing here is implemented yet.
 8. **The extra weight is accepted** (decision 7).
 9. **Track B's first proposal goes in now** (decision 8): the field turns away from its resting angle only as far as `history` allows, so rotation becomes a second cue for history. It is part of v4.1 and is tested with the rest of 4.6.
 10. **Edgar left the grammar wording to Claude's recommendations** (decision 2). The surface per hue adds no meaning of its own, and the grammar becomes v4.1. The wording is under "Grammar wording" below.
+
+## Where the port stands (2 November)
+
+Done, on branch `field-4.7-inlay`:
+- **Python** (`scripts/render_field.py`) draws render revision 4.6, one switch per treatment (`TREATMENTS`). With every switch set back, it draws 4.5 byte for byte on 412 fields (`scripts/check_revision_base.py`, new).
+- **Browser** (`docs/site/renderer.mjs`) draws 4.6. Python and browser match on the 26 parity cases and on 400 random fields that use every control.
+- **The fixes:** the echo is 4.5's, inside the band. Tension flattens the seat slightly and never dents it. The sheet's outer edge thins into both tips. The sheet is drawn darker than the skin, design 1; the lagging sheet is not tried yet. Grounding's ribs are left alone.
+- **Track B's turn**, in both renderers, the atmosphere included.
+- **Motion:** the fibres and fringes sit in id'd groups, so motion pairs grooves with grooves and rings with rings. The companion's real retained contour still replaces the sheet (`check_companion_browser.mjs` passes).
+- **Wording 4.1** is in `references/visual-grammar.md`, the legend in `reading.mjs` describes 4.6, the template and atlas are rebuilt, and SKILL.md names revision 4.6.
+
+The port changed four things on the way, all because of the colour clauses of `check_reading_order.mjs`:
+- **Emitted light doesn't lighten the skin.** It bleached the hue: `exploring` lost field chroma. A loud field gives its light off as bloom, shoulder light and the room around it, and a quiet one dims.
+- **The surfaces are textures of the body's own colours, and the braid's strands are the field's two hues.** Laying one hue over its neighbour, or blending amber with violet, greyed the field (`playful`).
+- **The vein's line is denser than the material, not lighter.** Where it crossed another hue, a lighter line turned near-white (`exploring`'s crests).
+- **The fibre grooves are wider and darker.** At first complexity read at 0.59, under its floor of 0.85.
+- **The core has a fine shade along each side,** so it reads as a current, not palette. That is the lesson 4.5's countercurrent taught.
+
+`check_reading_order.mjs` now draws its 4.3 baseline at the candidate's posture. Under Track B the same controls can stand at another angle, and posture alone moves `playful`'s field chroma from 17.7 to 12.2 in 4.3's own renderer.
+
+Measured:
+- **`check_expression.mjs`, 4.6 against 4.5:** tension 4.84 (2.96), counterpoint 3.10 (1.87), accent 3.17 (2.51), complexity 1.90 (1.50), history 4.03 (4.51), grounding 5.37 (5.72), gesture 1.01 (1.39) and intensity 6.54 (6.55). Every channel is above its floor.
+- **`check_reading_order.mjs`:** every clause passes. `exploring` is the tightest, with field chroma 19.77 against 19.61 and near-white crests .12 against .13.
+- **Comparable at zero** (every quiet control and `flow` at 0): 0.6–2.4 from 4.5, against 6.55 for one intensity sweep.
+- **Weight:** the reference studies average 480 KB (4.5: 372) and are at most 560 KB; over 67 mixed fields, 527 KB on average and 615 KB at most.
+- **The other suites pass:** continuity, audio, companion and public site.
+
+Not done: the reader tests below (pre-registration, pilots, the counted runs, sheet 3), the lagging sheet, and Stage 6's public assets.
 
 ## Why it is a port, not a merge
 
