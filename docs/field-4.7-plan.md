@@ -10,7 +10,7 @@ Written 4 October 2026 for Edgar Bounds, before any 4.7 work starts.
 3. **Make sound mean something at the moment of change, and work as a background cue.** The plan from 25 September (Stage 4) becomes stages, each with a test it has to pass.
 4. **Start testing across agents.** That includes finding out whether something that's hard or impossible to put in words gets through, in general, reliably, and on every platform.
 
-Stages 0, 1 and 2 are done, and Stage 3's renderer is drawn, frozen and under test (each stage's results are under that stage); nothing after that has been built yet. The renders and numbers below come from the 4.5.1 and 4.6 renderers run on 4 October; the images are in [`plan-4.7/`](plan-4.7/).
+Stages 0, 1 and 2 are done. Stage 3's counted run is complete and written up (2 November); one check, watching a transition into and out of a low-`grounding` field by eye, is still Edgar's. Each stage's results are under that stage. Stage 3b, Inlay on 4.5, is planned and not built, and nothing after it has been built yet. The renders and numbers below come from the 4.5.1 and 4.6 renderers run on 4 October; the images are in [`plan-4.7/`](plan-4.7/).
 
 ## What 4.6 did to the pictures
 
@@ -141,6 +141,8 @@ This is the answer to "don't be reactive". Without it, the art change would be j
 
 **21 October: the xAI figures above come from Grok trials that weren't isolated.** Grok's October sessions had their tools and the Field skill's description in context ([the harness README](../scripts/xagent/README.md) says how). Edgar ruled that isolated reruns count for xAI in Stages 2 and 3, so the report of record is now [`results/grok-isolated-report.md`](../scripts/xagent/results/grok-isolated-report.md), and the change is recorded in [`PREREG.md`](../scripts/xagent/PREREG.md). With the reruns that have finished so far, the verdict is the same: no decoder gap.
 
+**2 November: Stage 2 with every cell filled.** Every Stage 2 trial has now been answered, Grok's by its isolated reruns, and Edgar ruled the October Claude and Codex rows count after the review described in `PREREG.md`. In the report of record the naive gap test now reads 4.5.1 .26 against 4.6 .31 at 160 px, with 1 of 4 families ahead under 4.5.1 (Anthropic +.00, OpenAI +.04, xAI −.17, Google −.08). The 29 % and 29 % above became 26 % and 31 %, and xAI's sign turned, but the verdict is the same: no decoder gap. The taught figures in that report differ from those quoted below ("held from earlier" seen .50 at 320 px rather than 60 %, the reconstructed reading .92 and .89 rather than 87–88 %) because it pools 4.6's second taught pass, read in Stage 3, with the first. Nothing in Stage 2's conclusions changes.
+
 What else the baseline shows:
 
 - **Asked directly, the models describe the trade Edgar described.** Shown both renders side by side at 320 px, they said 4.5.1 "tells you faster what it's like" in 22 pairs and 4.6 in 1 (11 gave no signal), and that they'd "keep looking at" 4.6 in 23 pairs against 1 (10 no signal). At 160 px it's the same direction and weaker (11 to 3, and 13 to 2, with 19 and 18 no signal). Opus, Sonnet, Astra and Sol all agree; Haiku mostly gave no signal, and Gemini, on the seven pairs it has answered, split. This is a stated preference between two pictures, not a measured speed, and it doesn't change the verdict above. It does say that the loss isn't in which word a field suggests; it's in how the two pictures compare when seen together.
@@ -189,7 +191,7 @@ Counting a study only when both orders agree: 4.5.1 is faster for `exploring`, `
 6. Edgar's blind sheet, now with three versions.
 7. The usual suite passes: `check_browser_renderer.py` (Python and browser renders match), `check_continuity.mjs`, `check_companion_browser.mjs` and `check_public_site.mjs`. Then watch one transition into and out of a low-`grounding` field by eye.
 
-**Stage 3 results so far (5 October).** Render revision 4.5 is drawn in both renderers, frozen at `bf6b84d`, and under test. The machine checks pass. Edgar's second sheet is answered and passes as pre-registered, with one study going clearly the other way (`described`). The decoder run is pre-registered and under way.
+**Stage 3 results (5 October to 2 November).** Render revision 4.5 is drawn in both renderers and frozen at `bf6b84d`. The machine checks pass. Edgar's second sheet is answered and passes as pre-registered, with one study going clearly the other way (`described`). The counted decoder run is complete: it passes every no-regression test and one of its two side-by-side predictions, and misses the other (below, "The counted run"). Watching a low-`grounding` transition by eye is still Edgar's.
 
 **What was drawn.** Geometry is untouched: every outline is where 4.4 put it. Three rules do the work, and the grammar's rendering section now states them.
 
@@ -223,7 +225,33 @@ Measured inside each field's own outline, the body is lighter than 4.3's in ever
 - Side by side at 320 px, an early candidate was called faster than 4.4 in 5 pairs to 0 (7 no signal) and level with 4.3 (1 to 0 for 4.3; 11 no signal), by Sonnet and Sol. A later, more articulated candidate beat 4.4 in 6 to 0 and lost to 4.3 in 5 to 0, all five from Astra. Astra calls the plainer picture faster and the richer one the one to keep looking at, every time. Both candidates were chosen over 4.3 on "keep looking" (8 to 0, 9 to 0).
 - **Taught readers are where the cost showed.** `grounding` held throughout (seen every time, as under 4.4). The second current did not: drawn as a coloured band, plain fields were called countercurrents (false alarms up from .33 to .53), and when the grammar said so more carefully, real ones were missed at 320 px. Opus and Sonnet carry almost all of this channel's signal in Stage 2 (Astra says yes to nearly everything, Haiku no). The countercurrent was redrawn on this evidence, first modelled across its width, then given the opening. **That last redraw is in the frozen renderer and was not piloted**: Codex had reached its usage limit and Claude's window was nearly spent.
 
-**The counted run.** [`PREREG.md`](../scripts/xagent/PREREG.md) fixed the Stage 3 rules before any counted trial: for naive readers, Stage 2's gap rule turned against 4.5; for taught readers, a channel more than 15 points under 4.4 on seen minus false alarms is a regression, with two passes of the probes under both revisions; for the pairs, 4.5 over 4.4 on "faster", and not losing to 4.3. The trials go to `results/stage3.jsonl` and `report.py stage2.jsonl stage3.jsonl` writes `results/stage3-report.md`. Since 21 October the report of record is `results/grok-isolated-report.md` instead, with Grok's isolated reruns in place of its October trials (see `PREREG.md`). It runs in waves as quotas allow: Gemini and Grok first, Claude after its window reset, Codex after its limit lifted. **Its results are not in this section yet.** Stage 2's missing Grok and Gemini trials are not part of it; a run without `--revs` into `stage2.jsonl` fills those when their quotas allow.
+**The counted run.** [`PREREG.md`](../scripts/xagent/PREREG.md) fixed the Stage 3 rules before any counted trial: for naive readers, Stage 2's gap rule turned against 4.5; for taught readers, a channel more than 15 points under 4.4 on seen minus false alarms is a regression, with two passes of the probes under both revisions; for the pairs, 4.5 over 4.4 on "faster", and not losing to 4.3. The trials go to `results/stage3.jsonl` and `report.py stage2.jsonl stage3.jsonl` writes `results/stage3-report.md`. Since 21 October the report of record is `results/grok-isolated-report.md` instead, with Grok's isolated reruns in place of its October trials (see `PREREG.md`). It ran in waves as quotas allowed, from 5 October to the night of 29 October, and Stage 2's missing Grok and Gemini cells were filled alongside it.
+
+**The counted run's results (written up 2 November).** The report of record covers Stages 2 and 3 together: 2,167 answered trials from seven decoders, none unparsed, no Codex trial that ran a command, and every answer about the build its revision draws now. A review on 2 November found that the Claude and Codex calls had run with more of Edgar's setup than the Decoders paragraph implies; Edgar ruled that their October rows count (`PREREG.md`, 2 November).
+
+| Pre-registered test | Result | Verdict |
+| --- | --- | --- |
+| Naive readers, 4.5 against 4.4, 160 px | 4.5 .38, 4.4 .31; 1 of 4 families has 4.4 ahead | no regression |
+| Naive readers, 320 px | 4.5 .28, 4.4 .29; 1 of 4 | no regression |
+| Naive readers, 1000 px | 4.5 .34, 4.4 .32; 1 of 3 (no Grok at this size) | no regression |
+| Taught, second current (seen minus false alarms) | 4.5 +.47, 4.4 +.34 | no regression (+.13) |
+| Taught, held from earlier | 4.5 +.38, 4.4 +.44 | no regression (−.06) |
+| Taught, reconstructed | 4.5 +.80, 4.4 +.86 | no regression (−.06) |
+| Side by side, "faster" at 320 px: 4.5 chosen over 4.4 | 4.5 in 15 pairs, 4.4 in 1, p = .001 | **met** |
+| Side by side, "faster" at 320 px: 4.5 does not lose to 4.3 | 4.3 chosen in 10 pairs, 4.5 in 0, p = .002 | **not met** |
+
+What else the run shows:
+
+- **The models find 4.3 faster than 4.5 and would keep looking at 4.5.** At 320 px, besides the 10 to 0 on "faster" (Astra 5, Opus 2, Sol 2, Gemini 1; every other pair gave no signal), they chose 4.5 over 4.3 on "keep looking" 21 to 0. At 160 px neither question separates the two (12 to 8, p = .50; 7 to 16, p = .09). This is Stage 2's pattern again: the plainer picture is called faster, the richer one the one to keep looking at. Edgar's sheet 2 leaned the same way on "faster" pair by pair (4.3 in 5, 4.5 in 3, with 4 no difference) and passed only by its own rule, and on "keep looking" went the other way from the models (4.3 in 8, 4.5 in 0).
+- **Against 4.4, 4.5 took the first look back for the models too:** 15 to 2 on "faster" at 160 px and 15 to 1 at 320. On "keep looking" at 320 px the count is 4.4 11, 4.5 3 (p = .06); there was no prediction for it. Naive accuracy at 160 px is .26, .31 and .38 for 4.3, 4.4 and 4.5, inside the noise; Gemini's five Flash models answered each revision in the same mix, so the rotation doesn't explain it.
+- **The second current reads better than under 4.4.** Seen at 320 px .69 against .61, false alarms .26 against .31; at 1000 px seen .75 for both, false alarms .25 against .37. This is the frozen countercurrent, including the one change made after the pilots. "Held from earlier" is seen less at 320 px (.39 against .50) with fewer false alarms (.07 against .13), within the rule. The reconstructed reading stays the clearest channel.
+- **The naive gap Stage 2 found didn't move.** Under 4.5 `strained` is still mostly called "tentative" (17 of 40) and named in 6, `playful` is called "integrated" in 30 of 40 and named once, and `described` is never named. The denser coral and the coloured braid didn't change how a stance reads without the grammar.
+- **What it sets for Stage 3b.** Render 4.6 is measured against 4.5. It is also reported beside 4.3 on "faster", which is where 4.5 already loses among the models.
+- **Limits.**
+  - Those of Stage 2.
+  - The pilots used the same items, and the countercurrent's last redraw wasn't piloted.
+  - The revisions were answered on different dates: 4.3 and 4.4 on 4–5 October (with 4.4's second taught pass alongside 4.5), and 4.5 from 5 October. Grok's isolated reruns came two weeks later, from a later CLI, and Grok wasn't in the taught task.
+  - Both isolation rulings (Grok's on 21 October; Claude's and Codex's on 2 November) were made after the results had been seen.
 
 **Edgar's sheet 2 (5 October).** [The sheet](https://claude.ai/artifact/Hyxkx49MpB8RpHoZJUiGmj): 26 pairs at 320 px, 4.5 beside 4.4 and beside 4.3 for the six shared studies in both orders, and `described` beside 4.4. Scored by `sheet.py` against `results/blind-sheet-2-key.json`; his answers are in `results/blind-sheet-edgar-2.txt`.
 
