@@ -39,6 +39,13 @@ PHASES = {
         ['--task', 'naive', '--only-revs', '4.5,4.6', '--out', 'stage3b.jsonl'],
         ['--task', 'pair', '--revs', '4.6', '--out', 'stage3b.jsonl'],
     ]},
+    # Codex shares one usage window between its two decoders and says when it reopens, so this
+    # phase is tried a few times a day (crontab) and its first limit message ends it.
+    'codex': {'decoder': 'codex:astra,codex:sol', 'cap': 150, 'window': ('05:30', '23:50'), 'runs': [
+        ['--task', 'taught,words', '--revs', '4.5,4.6', '--probe-passes', '2', '--out', 'stage3b.jsonl'],
+        ['--task', 'naive', '--only-revs', '4.5,4.6', '--out', 'stage3b.jsonl'],
+        ['--task', 'pair', '--revs', '4.6', '--out', 'stage3b.jsonl'],
+    ]},
 }
 REPORTS = [['stage3b.jsonl']]
 TRAILER = ('Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n'
@@ -87,7 +94,7 @@ def unfit():
 def made(decoder, start):
     """This decoder's trials since the phase began, answered or failed."""
     return [row for name, count in start.items() for row in map(json.loads, rows(name)[count:])
-            if row['decoder'] == decoder]
+            if row['decoder'] in decoder.split(',')]
 
 
 def calls(decoder, start):
