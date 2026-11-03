@@ -93,7 +93,7 @@ Cut the working branch, `field-4.7-inlay`, from `field-4.7`. The 2 November revi
 
 The harness needs the new revision added, as it was for 4.5 (`5707cc7`). Since the 2 November fixes, a trial counts only on the images its revision draws now, so a renderer re-pinned mid-run has its earlier answers asked again, and `report.py` leaves them out and counts them.
 
-The bars above come from the report of record, which includes the October Claude rows. Edgar ruled the Codex rows count, and the Claude rows await a ruling (`PREREG.md`, 2 November). If the Claude rows are rerun, the bars are recomputed before any counted run of 4.6.
+The bars above come from the report of record. Edgar ruled on 2 November that the October Claude and Codex rows count (`PREREG.md`), so the bars stand as written.
 
 ## Release: Inlay in 4.7.0 (Edgar, 2 November)
 
