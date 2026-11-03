@@ -1,5 +1,7 @@
 # Field v4 visual grammar
 
+Wording 4.1: the pictures of rendering revision 4.6, and `flow` turns a field only as far as `history` allows. The drawing controls, their ranges and defaults are those of v4.
+
 ## Stable identity, expressive environment
 
 Use the bundled renderer or adapt a copy of the template. Preserve the square 1000-unit viewBox, frontal viewpoint, and central 128-by-64 titanium capsule at (500,500), with its original material and pearl rim. Preserve readable margins and the same palette meanings. These are the reference points for comparison. The field's silhouette, orientation, fullness, intricacy, and background color are expressive variables.
@@ -18,6 +20,8 @@ Do not equate comparability with sameness. Use visibly different shapes and colo
 | amber | #E8B86A | Warmth, care, constructive affiliation; not automatic agreement. |
 | coral | #D97979 | Friction, consequential concern, or live tension; not necessarily anger or danger. |
 | pearl | #DDE5EA | Clarity or integration; never a truth guarantee. |
+
+Each hue family also has a surface of its own, as Listening gives each a timbre: blue is crisp and clear, violet pearlescent, amber soft, coral satin, pearl luminous, and teal the plain surface. The surface belongs to the hue's meaning and adds none of its own; it gives neighbouring hues, blue and violet above all, a second way to be told apart.
 
 The renderer permits saturation and luminosity changes within these hue families. Neighboring colors may blend and form intermediate shades. A dominant hue plus one or two interacting hues is usually enough; the background may carry another relevant family. Preserve the meanings of familiar hues when inventing nuances.
 
@@ -48,13 +52,13 @@ Pass these keys as a JSON object. Unknown keys and invalid ranges are rejected. 
 | breadth | 0..1 / .4 | Thin, specifically focused contour to broad, enveloping fullness. |
 | folding | 0..1 / .2 | Smooth continuous stance to distinctly folded, interwoven qualities held together. Complexity or ambivalence, not automatically distress. |
 | stretch | -1..1 / 0 | Vertically or horizontally elongates the selected form. Direction is expressive posture, with no fixed moral or emotional polarity. |
-| flow | -1..1 / 0 | Rotates the field's orientation coherently around the fixed body. Direction has no fixed topic or emotional label. |
-| tension | 0..1 / .15 | Supple contour to strong local compression and shear; unresolved pressure. |
+| flow | -1..1 / 0 | Rotates the field's orientation coherently around the fixed body, but only as far as `history` allows: a field with no retained change sits at its resting angle, and the turn shows how far an earlier change still holds it. Direction has no fixed topic or emotional label. |
+| tension | 0..1 / .15 | Supple surface to strong local compression and shear; unresolved pressure. |
 | definition | 0..1 / .65 | Diffuse/indeterminate to clearly articulated/coherent. Not a correctness score. |
 | complexity | 0..1 / .35 | Few filaments to rich, interwoven fine structure. Simultaneous considerations, not message count. |
 | intensity | 0..1 / .5 | Quiet presence to strong luminous salience. Not certainty. |
 | imbalance | -1..1 / 0 | Magnitude adds a lateral pull; sign chooses direction only. Live unresolved pulls, not left/right topic buckets. |
-| history | 0..1 / 0 | A restrained, displaced reflection that rejoins the surface. Retained influence of an earlier change, not a timeline. |
+| history | 0..1 / 0 | A restrained, displaced reflection behind the present surface that rejoins it. Retained influence of an earlier change, not a timeline. |
 | counterpoint | 0..1 / 0 | An internal current that parts and rejoins. A meaningful quality held alongside another, not automatic conflict. |
 | gesture | none, fold, echo, braid / none | Optional local inflection; bend, continuation, or intertwining. |
 | gesture_strength | 0..1 / 0 | The gesture's visual presence, from delicate to pronounced. |
@@ -77,7 +81,7 @@ Keep `grounding` consistent with the `field-coverage` record described in the sy
 
 ## Distinctive gestures and new vocabulary
 
-Combine continuous controls before adding custom elements. If the result needs a nuance the controls cannot express, use one gesture or two closely related gestures inside `field-gesture`, made from at most four SVG paths. They may be filled translucent folds or strokes up to 4 units wide and opacity up to .65, using existing hues or their blends. Keep them attached to, intersecting, or clearly continuous with the field, occupying no more than roughly two fifths of its visible span. Give a meaningful gesture enough presence to register at phone size.
+Combine continuous controls before adding custom elements. If the result needs a nuance the controls cannot express, use one gesture or two closely related gestures inside `field-gesture`, made from at most four SVG paths. These limits are for gestures added by hand; the renderer's own fold, echo and braid may use more. They may be filled translucent folds or strokes up to 4 units wide and opacity up to .65, using existing hues or their blends. Keep them attached to, intersecting, or clearly continuous with the field, occupying no more than roughly two fifths of its visible span. Give a meaningful gesture enough presence to register at phone size.
 
 A folded lip, a curling thread, a split-and-rejoined contour, or a local interference pattern may act like an unfamiliar word. Its relation to the shared expression should make it interpretable, even if it has no exact verbal translation. Avoid independent orbiting icons, unrelated decoration, or labels. Novelty must serve the exchange, not advertise a model signature. When a gesture is later explained and reused, preserve its intended meaning without claiming other models automatically know it.
 
@@ -95,7 +99,9 @@ Three rules do this. **Light carries colour.** A mark is lit only as far as its 
 
 A described field keeps its glow and its hue. Reticulation is drawn in a lit tint of the colour beneath it, and threads thin with the material they belong to. At about 320 pixels these marks show as a change of colour or value; at full size they resolve as structure. Run `scripts/check_reading_order.mjs` beside `scripts/check_expression.mjs`: the first fails when the marks speak over the field, the second when a control stops speaking.
 
-The SVG root records `data-field-renderer="4.5"`; `field-spec` stores the v4 drawing controls. Fields drawn by 4.3 or 4.4 remain comparable in meaning and their controls need no translation.
+Rendering revision 4.6 keeps every control's range and default, and every meaning but one: a field now turns away from its resting angle only as far as `history` holds an earlier change, so a field with nothing retained sits at rest. It keeps the three rules of 4.5, and gives each quiet meaning a material phenomenon of its own within the one smoothly curved form, with no cuts, notches, or cavities. `intensity` is emitted light: a quiet field is dim but present, never thinned, and a luminous one glows into the room around it. `counterpoint` is a core running inside the material, in its own hue as in 4.5 (the accent, or the secondary when there is no accent); the fibres part around it and rejoin at both tips. `history` is an earlier sheet, older material in the same hues, standing just behind the present surface and sharing its tips. `tension` gathers light into fringes at its seat, where the surface flattens slightly; the outline is never dented. `complexity` sets how many fibres the material carries. An accent is a vein, a winding line through the material whose sharpness follows `definition`. A fold is a tucked lip and a braid two strands; an echo is a continuation drawn inside the band, never past the tip. Each hue family has its own surface (see the colour table).
+
+The SVG root records `data-field-renderer="4.6"`; `field-spec` stores the v4 drawing controls. Fields drawn by 4.3, 4.4 or 4.5 remain comparable in meaning and their controls need no translation. Re-rendered under 4.6, one with `flow` set and `history` at 0 sits at its resting angle.
 
 Make the silhouette, aperture, and space around the capsule read first. Let secondary detail support that expression on closer inspection. Preserve generous breathing room and the selected posture; do not fill empty areas just because they are available. Use smooth, deliberate curves and tapered ends. Avoid accidental corners, repetitive outlines of equal weight, and abrupt seams between surface layers.
 
