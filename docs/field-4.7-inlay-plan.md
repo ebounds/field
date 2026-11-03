@@ -88,7 +88,7 @@ Cut the working branch, `field-4.7-inlay`, from `field-4.7`. The 2 November revi
 - **Taught decoders, against 4.5, by Stage 3's rule** (a channel more than 15 points under on seen minus false alarms is a regression), with two passes of the probes. The second current and "held from earlier" are the channels at risk.
 - **Words only**, as in the study's second condition: every channel Inlay redraws, and the sheet above all (history, not grounding).
 - **Real fields.** On busy real fields, all five candidates scored below 4.4 (Inlay 42 of 48 pairs, 4.4 45). That is within noise for any one candidate, but it is the likeliest cost of the approach: marks made part of one material blend into a busy base. Run more pairs than 48, against 4.5.
-- **Naive decoders and pairs:** no regression against 4.5, and side by side on "faster" and "keep looking".
+- **Naive decoders and pairs:** no regression against 4.5, and side by side on "faster" and "keep looking". Report 4.6 beside 4.3 on "faster" as well. That is the one Stage 3 prediction 4.5 missed: at 320 px the models chose 4.3 in 10 pairs and 4.5 in none, and more material detail is more likely to widen that gap than close it.
 - **Edgar's sheet 3:** Inlay beside 4.5, in both orders.
 
 The harness needs the new revision added, as it was for 4.5 (`5707cc7`). Since the 2 November fixes, a trial counts only on the images its revision draws now, so a renderer re-pinned mid-run has its earlier answers asked again, and `report.py` leaves them out and counts them.
