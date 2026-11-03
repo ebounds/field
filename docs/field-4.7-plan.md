@@ -357,7 +357,7 @@ Results that miss these are reported as they are.
 
 ## Stage 6 — Release 4.7.0
 
-The package becomes 4.7.0 with render revision 4.5, Listening 1.2 plus ground 1.0, companion 1.1, synthesis 3.3 and grammar v4 (unchanged). Rebuild the atlas, presets, the zip and `SHA256SUMS`, and `field-guide.pdf`. Write a handback in the 4.6 shape (base and result commits, what changed and why, what was checked, what wasn't, open questions). Edgar uploads the package to claude.ai. Only then do the Stage 5 platform-conformance runs mean anything there.
+The package becomes 4.7.0 with render revision 4.5, Listening 1.2 plus ground 1.0, companion 1.1, synthesis 3.3 and grammar v4 (unchanged). Rebuild the atlas, presets, the zip and `SHA256SUMS`, and `field-guide.pdf`. With the public studies and hero, move the page's two static labels to 4.5: the playground heading in `docs/index.html` (it says 4.4, the revision of the prebuilt study it first shows, and `app.mjs` replaces it with the live renderer's once it draws) and the hero caption. Write a handback in the 4.6 shape (base and result commits, what changed and why, what was checked, what wasn't, open questions). Edgar uploads the package to claude.ai. Only then do the Stage 5 platform-conformance runs mean anything there.
 
 **After the release, to talk through with Edgar (his request, 5 October):** making Field a Claude plugin; what distinguishes a skill or a project from a plugin; the eval that says whether it is ready; and the process for adding it to the Claude directory, if that is appropriate. Nothing here is decided or started.
 

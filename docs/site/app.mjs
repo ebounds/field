@@ -1,4 +1,4 @@
-import {render, validate, PALETTE} from './renderer.mjs';
+import {render, validate, PALETTE, REVISION} from './renderer.mjs';
 import {PRESETS} from './presets.mjs';
 import {createListening} from './listening.mjs';
 
@@ -96,6 +96,8 @@ function paint() {
     const next = URL.createObjectURL(new Blob([currentSvg],{type:'image/svg+xml'}));
     $('#field-image').src = next;
     $('#field-mini').src = next;
+    // The page first shows a prebuilt study; from here the picture is the live renderer's.
+    $('#field-revision').textContent = 'FIELD / '+REVISION;
     $('#field-image').alt = 'A wordless '+state.primary+(state.secondary?' and '+state.secondary:'')+' '+state.form+' around a fixed titanium capsule.';
     if (imageUrl) URL.revokeObjectURL(imageUrl);
     imageUrl = next;
