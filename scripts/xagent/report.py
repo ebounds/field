@@ -116,8 +116,12 @@ def naive(rows, out):
             line(f'**{family}**', chosen)
     line('**All trials**', shared)
 
-    out.append('\n**The pre-registered gap test** (160 px, each family weighted equally):\n')
-    means, directions = family_gap(shared, revs[0], revs[1], 160) if len(revs) >= 2 else ({}, [])
+    # Stage 2's gap test asks only about 4.3 against 4.4. A file that starts later (Stage 3b's starts at
+    # 4.5) has no such baseline, and every revision after its first is tested for a regression instead.
+    stage2 = revs[:2] == ['4.3', '4.4']
+    if stage2:
+        out.append('\n**The pre-registered gap test** (160 px, each family weighted equally):\n')
+    means, directions = family_gap(shared, revs[0], revs[1], 160) if stage2 else ({}, [])
     if directions:
         gap = means[revs[0]] - means[revs[1]]
         agree = sum(d > 0 for _, d in directions)
@@ -127,7 +131,7 @@ def naive(rows, out):
         verdict = gap >= .10 and agree >= 3
         out.append(f'- {agree} of {len(directions)} families have {revs[0]} ahead. '
                    + ('**A gap, as pre-registered.**' if verdict else '**No decoder gap, as pre-registered.**'))
-    for new in revs[2:]:
+    for new in revs[2:] if stage2 else revs[1:]:
         # Stage 3: a later revision must not read worse than the ones before it.
         out.append(f'\n**The Stage 3 test: does {new} read worse?** A regression is the same size of gap, '
                    'against it: 10 points on the family mean, with 3 of 4 families the same way. '
