@@ -104,7 +104,7 @@ Grounding's ribs (decision 6) wait on the 4.7 plan's decision 9.
 
 ## Proposed grammar wording (v4.1), for Edgar's approval
 
-All changes are in `references/visual-grammar.md`; `SKILL.md` and `composition-score.md` don't describe these pictures. Every meaning, range and default stays.
+All changes are in `references/visual-grammar.md`. `SKILL.md` mentions "retained history", "a joined countercurrent" and "a retained trace or a countercurrent must remain visibly joined to the material" (steps 2 and 4). Those still fit the sheet and the core, so it doesn't change; `composition-score.md` doesn't describe the pictures. Every meaning, range and default stays.
 
 **Colour table.** Add after the table:
 
@@ -125,7 +125,7 @@ All changes are in `references/visual-grammar.md`; `SKILL.md` and `composition-s
 
 **Rendering.** A new paragraph after revision 4.5's two:
 
-> Rendering revision 4.6 keeps every control's meaning, range, and default, and the three rules of 4.5. It gives each quiet meaning a material phenomenon of its own within the one smoothly curved form, with no cuts, notches, or cavities. `intensity` is emitted light: a quiet field is dim but present, never thinned. `counterpoint` is a core of the second quality's hue running inside the material; the fibres part around it and rejoin at both tips. `history` is an earlier sheet, older material in the same hues, standing just behind the present surface and sharing its tips. `tension` gathers light into fringes at its seat, where the surface flattens slightly; the outline is never dented. `complexity` sets how many fibres the material carries. An accent is a vein, a winding line through the material whose sharpness follows `definition`. A fold is a tucked lip and a braid two strands; an echo is a continuation drawn inside the band, never past the tip. Each hue family has its own surface (see the colour table).
+> Rendering revision 4.6 keeps every control's meaning, range, and default, and the three rules of 4.5. It gives each quiet meaning a material phenomenon of its own within the one smoothly curved form, with no cuts, notches, or cavities. `intensity` is emitted light: a quiet field is dim but present, never thinned. `counterpoint` is a core running inside the material, in its own hue as in 4.5 (the accent, or the secondary when there is no accent); the fibres part around it and rejoin at both tips. `history` is an earlier sheet, older material in the same hues, standing just behind the present surface and sharing its tips. `tension` gathers light into fringes at its seat, where the surface flattens slightly; the outline is never dented. `complexity` sets how many fibres the material carries. An accent is a vein, a winding line through the material whose sharpness follows `definition`. A fold is a tucked lip and a braid two strands; an echo is a continuation drawn inside the band, never past the tip. Each hue family has its own surface (see the colour table).
 
 And in the paragraph after it, "`data-field-renderer="4.5"`" becomes "4.6", and "Fields drawn by 4.3 or 4.4" becomes "Fields drawn by 4.3, 4.4 or 4.5".
 
