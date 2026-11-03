@@ -15,6 +15,8 @@ Status: plan only. Nothing here is implemented yet.
 6. **Inlay ships in 4.7.0,** as Stage 3b. The release becomes render 4.6.
 7. **The surface per hue is in** (decision 5). Only its strength is open.
 8. **The extra weight is accepted** (decision 7).
+9. **Track B's first proposal goes in now** (decision 8): the field turns away from its resting angle only as far as `history` allows, so rotation becomes a second cue for history. It is part of v4.1 and is tested with the rest of 4.6.
+10. **Edgar left the grammar wording to Claude's recommendations** (decision 2). The surface per hue adds no meaning of its own, and the grammar becomes v4.1. The wording is under "Grammar wording" below.
 
 ## Why it is a port, not a merge
 
@@ -29,6 +31,8 @@ The study was cut from `main` at `318ebc3`, so its engine is a superset of rende
 **The core is code that exists but has never been seen on this body.** `core_marks()` in `engine.py` draws a second current inside the material, and the strands part around it (`thread_course`). The vein keeps to the outer slope beside it (`vein_course`). The engine allows it on the 4.4 body, but the study only ever rendered it on silk and glass. It replaces 4.5's countercurrent, which just improved for taught readers: at 320 px, seen .69 with false alarms at .26, against 4.4's .61 and .31 (`results/grok-isolated-report.md`, on `field-4.7`, not yet pushed). Those numbers are its bar. The grammar keeps counterpoint's words ("an internal current that parts and rejoins"), which is the reason the report gave for borrowing it.
 
 **The Composite's sheet is not separate code.** Both candidates draw the earlier sheet with the same code (`engine.py:651–677`), and its geometry (`sheet_lift`, `thickness`) does not depend on the body. The difference the words-only test found came from the body underneath: on silk, the withdrawn sheet read as history (5 of 5), and on 4.4's body it read as grounding's "outer depth" (4 of 5). So "take the Composite's sheet" becomes a requirement, not a lift: **on 4.5's body, the sheet must read as history, not grounding, from the grammar's words alone.** That needs design work. The first thing to try, as a hypothesis for the words-only test: the sheet is drawn paler (less chroma, less light), which is what makes it look like grounding's withdrawn matter, so draw it darker instead, keeping its chroma, as 4.5 draws its retained ridge. (4.5 drew the ridge darker for another reason: desaturating it paled the body's highlights where the ridge lies under them.) Its bar is 4.5's "held from earlier" at 320 px: seen .39, false alarms .07.
+
+Track B gives a second thing to try (decision 9). The sheet lags behind the present surface's turn, so the angle between them is the change that still holds. It must still share the tips and rejoin, because SKILL.md says a retained trace "must remain visibly joined to the material, never become a separate object". So the sheet bends back to the tips rather than turning whole. Try darker first and this second, and test each in words only.
 
 ## The port, step by step
 
@@ -56,13 +60,16 @@ Cut the working branch, `field-4.7-inlay`, from `field-4.7`. The 2 November revi
 4. **Browser port** in `docs/site/renderer.mjs` (the report's estimate: about 250 lines for Inlay, more with the core). Then `check_browser_renderer.py`: its 26 cases, plus the 400 random ones once by hand.
 5. **Motion.** Fibres, fringe rings and braid crossings change in number as their controls move, so each needs a stable `id` for `movement.mjs` to fade them in and out. The report suggests the earlier sheet in motion be the previous expression's real contour, which the companion already samples. That is a good later step, not part of this port.
 6. **Grammar wording,** following `grammar-ledger.md`. With the core, counterpoint keeps its words. What changes:
+   - `flow` turns the field only as far as `history` allows (Track B);
    - history gains "behind the present surface";
    - tension's "contour" becomes "surface", since the outline now only flattens slightly;
    - the colour table gains a sentence giving each hue family a surface;
    - the manual route's gesture limits ("at most four SVG paths…") are revised, since the braid uses about a dozen filled paths.
 
-   Meanings, ranges and defaults are unchanged. The proposed wording is below, under "Proposed grammar wording", for Edgar's approval. Suggested name: grammar v4.1. Rebuild the template and the atlas, since taught readers are shown the atlas of the revision they read. **Freeze the wording before any counted run.** The parallax plan's handle tests also wait on it, because models choose their controls from these words.
-7. **Name it render revision 4.6**, following the pattern so far: package 4.6 drew render 4.4, and 4.7 draws 4.5.
+   Ranges and defaults are unchanged, and so is every meaning except `flow`'s. The wording is below, under "Grammar wording (v4.1)". It becomes grammar v4.1. Rebuild the template and the atlas, since taught readers are shown the atlas of the revision they read. **Freeze the wording before any counted run.** The parallax plan's handle tests also wait on it, because models choose their controls from these words.
+7. **Track B, the turn.** Rotation becomes `turn = −18° + 38° · flow · history`, in `render_field.py` (the field at line 183, the atmosphere's ellipse at 362) and in `renderer.mjs` (101 and 234). A field with no retained change sits at its resting angle. The companion's legend (`reading.mjs`) stops calling `flow` "posture, with no fixed meaning". `movement.mjs` already eases rotation between expressions.
+   - **What it costs:** any field re-rendered with `flow` set and `history` at 0 sits at rest. Among the reference studies, `strained` (flow −.35) and `playful` (.65) go back to rest, and `exploring` (.45, history .2) turns about 3° instead of 17°. So did two of the three real conversations in the axes study. Saved SVGs don't change.
+8. **Name it render revision 4.6**, following the pattern so far: package 4.6 drew render 4.4, and 4.7 draws 4.5.
 
 ## Acceptance
 
@@ -74,7 +81,7 @@ Cut the working branch, `field-4.7-inlay`, from `field-4.7`. The 2 November revi
 - `check_browser_renderer.py`, `check_continuity.mjs`, `check_audio.mjs`, `check_companion_browser.mjs` and `check_public_site.mjs`.
 
 **Two more, from the study:**
-- comparable at zero: the frame difference from 4.5 with every quiet control at 0, reported against one `intensity` sweep;
+- comparable at zero: the frame difference from 4.5 with every quiet control at 0 and `flow` at 0, reported against one `intensity` sweep. The turn is reported on its own, since Track B moves every field that has `flow` set and `history` at 0;
 - the loudness and similarity measures, against 4.5. Counterpoint and accent must stay apart, and intensity and grounding decoupled.
 
 **Readers.** Pre-register in `scripts/xagent/PREREG.md` first. Pilot uncounted, then count:
@@ -94,30 +101,32 @@ The package becomes 4.7.0 with render revision 4.6 and grammar v4.1. Before rele
 
 ## Still open
 
-- **The proposed grammar wording** (below), for Edgar's approval. It must be frozen before any counted run.
+- **Freeze the grammar wording** (below) before any counted run, after checking it against the port as drawn.
 - **How strong the surface per hue is.** The study's stronger version, tried after the freeze, separated blue from violet more (4.9 against 4.3).
-- **The sheet's design** on 4.5's body, so that it reads as history and not as grounding.
+- **The sheet's design** on 4.5's body, so that it reads as history and not as grounding: darker first, then the lagging sheet.
 - **Weight** is accepted, but measure the SVGs again on 4.5. The study's were about a third heavier than 4.4's (up to 660 KB against 428).
-- **Track B** (decision 8) stays out of this port.
 
-Grounding's ribs (decision 6) wait on the 4.7 plan's decision 9.
+Grounding's ribs (decision 6) wait on the 4.7 plan's decision 9. Track B's other two proposals (the pull toward the seat of tension, and stretch from the form) stay out.
 
-## Proposed grammar wording (v4.1), for Edgar's approval
+## Grammar wording (v4.1)
 
-All changes are in `references/visual-grammar.md`. `SKILL.md` mentions "retained history", "a joined countercurrent" and "a retained trace or a countercurrent must remain visibly joined to the material" (steps 2 and 4). Those still fit the sheet and the core, so it doesn't change; `composition-score.md` doesn't describe the pictures. Every meaning, range and default stays.
+Edgar left this to Claude's recommendations (2 November). Every change is in `references/visual-grammar.md`. `SKILL.md` mentions "retained history", "a joined countercurrent" and "a retained trace or a countercurrent must remain visibly joined to the material" (steps 2 and 4). Those still fit the sheet and the core, so it doesn't change. `composition-score.md` doesn't describe the pictures.
 
 **Colour table.** Add after the table:
 
-> Each hue family also has a surface of its own, as Listening gives each a timbre: blue is crisp and clear, violet pearlescent, amber soft, coral satin, pearl luminous, and teal the plain surface. The surface carries the hue's meaning and adds none; it gives neighbouring hues, blue and violet above all, a second way to be told apart.
+> Each hue family also has a surface of its own, as Listening gives each a timbre: blue is crisp and clear, violet pearlescent, amber soft, coral satin, pearl luminous, and teal the plain surface. The surface belongs to the hue's meaning and adds none of its own; it gives neighbouring hues, blue and violet above all, a second way to be told apart.
 
-**Controls.** Two rows change:
+Why "adds none": the colour table is a table of meanings, and a second meaning per hue would change how models choose colour, which this release doesn't intend. The surfaces were chosen to suit the meanings they sit under (blue's precision is crisp, amber's warmth is soft), so they add nothing that needs saying.
 
-| Control | Now | Proposed |
+**Controls.** Three rows change:
+
+| Control | Now | v4.1 |
 | --- | --- | --- |
+| `flow` | Rotates the field's orientation coherently around the fixed body. Direction has no fixed topic or emotional label. | Rotates the field's orientation coherently around the fixed body, **but only as far as `history` allows: a field with no retained change sits at its resting angle, and the turn shows how far an earlier change still holds it.** Direction has no fixed topic or emotional label. |
 | `tension` | Supple contour to strong local compression and shear; unresolved pressure. | Supple **surface** to strong local compression and shear; unresolved pressure. |
 | `history` | A restrained, displaced reflection that rejoins the surface. Retained influence of an earlier change, not a timeline. | A restrained, displaced reflection **behind the present surface** that rejoins it. Retained influence of an earlier change, not a timeline. |
 
-`counterpoint` ("An internal current that parts and rejoins"), `complexity`, `accent`, `intensity` and `gesture` keep their words.
+`counterpoint` ("An internal current that parts and rejoins"), `complexity`, `accent`, `intensity`, `stretch`, `imbalance` and `gesture` keep their words.
 
 **Distinctive gestures.** After "made from at most four SVG paths", add:
 
@@ -125,8 +134,10 @@ All changes are in `references/visual-grammar.md`. `SKILL.md` mentions "retained
 
 **Rendering.** A new paragraph after revision 4.5's two:
 
-> Rendering revision 4.6 keeps every control's meaning, range, and default, and the three rules of 4.5. It gives each quiet meaning a material phenomenon of its own within the one smoothly curved form, with no cuts, notches, or cavities. `intensity` is emitted light: a quiet field is dim but present, never thinned. `counterpoint` is a core running inside the material, in its own hue as in 4.5 (the accent, or the secondary when there is no accent); the fibres part around it and rejoin at both tips. `history` is an earlier sheet, older material in the same hues, standing just behind the present surface and sharing its tips. `tension` gathers light into fringes at its seat, where the surface flattens slightly; the outline is never dented. `complexity` sets how many fibres the material carries. An accent is a vein, a winding line through the material whose sharpness follows `definition`. A fold is a tucked lip and a braid two strands; an echo is a continuation drawn inside the band, never past the tip. Each hue family has its own surface (see the colour table).
+> Rendering revision 4.6 keeps every control's range and default, and every meaning but one: a field now turns away from its resting angle only as far as `history` holds an earlier change, so a field with nothing retained sits at rest. It keeps the three rules of 4.5, and gives each quiet meaning a material phenomenon of its own within the one smoothly curved form, with no cuts, notches, or cavities. `intensity` is emitted light: a quiet field is dim but present, never thinned. `counterpoint` is a core running inside the material, in its own hue as in 4.5 (the accent, or the secondary when there is no accent); the fibres part around it and rejoin at both tips. `history` is an earlier sheet, older material in the same hues, standing just behind the present surface and sharing its tips. `tension` gathers light into fringes at its seat, where the surface flattens slightly; the outline is never dented. `complexity` sets how many fibres the material carries. An accent is a vein, a winding line through the material whose sharpness follows `definition`. A fold is a tucked lip and a braid two strands; an echo is a continuation drawn inside the band, never past the tip. Each hue family has its own surface (see the colour table).
 
-And in the paragraph after it, "`data-field-renderer="4.5"`" becomes "4.6", and "Fields drawn by 4.3 or 4.4" becomes "Fields drawn by 4.3, 4.4 or 4.5".
+**The paragraph after it** becomes: "The SVG root records `data-field-renderer="4.6"`; `field-spec` stores the v4 drawing controls. Fields drawn by 4.3, 4.4 or 4.5 remain comparable in meaning and their controls need no translation. Re-rendered under 4.6, one with `flow` set and `history` at 0 sits at its resting angle."
 
-The rendering paragraph is written to fit either design of the sheet ("older material in the same hues" holds whether it ends up paler or darker). It is checked against the port as drawn before it is frozen.
+**The name.** v4.1, because the meanings table changes. Revisions 4.4 and 4.5 only added rendering text and kept v4. The control set, the ranges and the defaults don't change and old specs need no translation, so `data-field-version` stays 4.
+
+The rendering paragraph is written to fit either design of the sheet ("older material in the same hues" holds whether it ends up darker or lags the turn). It is checked against the port as drawn before it is frozen.
