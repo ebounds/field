@@ -248,11 +248,10 @@ export function render(spec = {}) {
     if (!half) return fi;
     return fi < centre ? fi*(centre-half)/centre : 1-(1-fi)*(1-centre-half)/(1-centre);
   };
-  // A meandering course at an uneven rhythm. Beside a core it keeps to the
-  // outer slope, so the two never share a place.
-  const veinCourse = u => p.counterpoint
-    ? .24+.06*sin(2*PI*(1.08*u+.12))+.03*sin(2*PI*(2.9*u+.4))+.015*sin(2*PI*(6.3*u+.2))
-    : .52+.17*sin(2*PI*(1.08*u+.12))+.07*sin(2*PI*(2.9*u+.4))+.03*sin(2*PI*(6.3*u+.2));
+  // A meandering course at an uneven rhythm along the inner slope, clear of the
+  // core, which shares its hue when there is an accent, and of the shoulder of
+  // light on the outer slope.
+  const veinCourse = u => .74+.06*sin(2*PI*(1.08*u+.12))+.03*sin(2*PI*(2.9*u+.4))+.015*sin(2*PI*(6.3*u+.2));
   // The same lightness at a neighbouring hue: the play of colour in a pearlescent surface.
   const turnHue = (color,degrees,chroma=1) => {
     const [l,a0,b0] = toOklab(color), q = degrees*PI/180;

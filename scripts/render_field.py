@@ -423,13 +423,11 @@ def render(spec, treatments=None):
         return edges
 
     def vein_course(u):
-        # A meandering course at an uneven rhythm. Beside a core it keeps to
-        # the outer slope, so the two never share a place.
-        if core:
-            return (.24 + .06*math.sin(2*math.pi*(1.08*u+.12)) + .03*math.sin(2*math.pi*(2.9*u+.4))
-                    + .015*math.sin(2*math.pi*(6.3*u+.2)))
-        return (.52 + .17*math.sin(2*math.pi*(1.08*u+.12)) + .07*math.sin(2*math.pi*(2.9*u+.4))
-                + .03*math.sin(2*math.pi*(6.3*u+.2)))
+        # A meandering course at an uneven rhythm along the inner slope, clear
+        # of the core, which shares its hue when there is an accent, and of the
+        # shoulder of light on the outer slope.
+        return (.74 + .06*math.sin(2*math.pi*(1.08*u+.12)) + .03*math.sin(2*math.pi*(2.9*u+.4))
+                + .015*math.sin(2*math.pi*(6.3*u+.2)))
 
     def turn_hue(color, degrees, chroma=1):
         # The same lightness at a neighbouring hue: the play of colour in a pearlescent surface.
